@@ -9,7 +9,7 @@ class ResizeableArrowItem final : public QGraphicsLineItem
 public:
     ResizeableArrowItem(QGraphicsView* pView, ICollision* pLine);
     const static int kType = QGraphicsItem::UserType + 14;
-    virtual int type() const { return kType; }
+    int type() const override { return kType; }
 protected:
     void hoverLeaveEvent( QGraphicsSceneHoverEvent* aEvent ) override;
     void hoverMoveEvent( QGraphicsSceneHoverEvent* aEvent ) override;

@@ -62,6 +62,10 @@ set(PROJECT_SOURCES
         resizeablearrowitem.hpp
         resizeablerectitem.cpp
         resizeablerectitem.hpp
+        CameraGraphicsItem.cpp
+        CameraGraphicsItem.hpp
+        EditorGraphicsScene.cpp
+        EditorGraphicsScene.hpp
         resources.qrc
         ${TS_FILES}
 )
