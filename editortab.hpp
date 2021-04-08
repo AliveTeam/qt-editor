@@ -1,0 +1,32 @@
+#pragma once
+
+#include <QMainWindow>
+#include <QDockWidget>
+#include <QCloseEvent>
+#include <QGraphicsScene>
+#include <memory>
+#include "model.hpp"
+
+namespace Ui
+{
+    class EditorTab;
+}
+
+class EditorGraphicsScene;
+
+class EditorTab final : public QMainWindow
+{
+    Q_OBJECT
+public:
+    explicit EditorTab(QWidget* aParent, UP_Model model);
+    ~EditorTab();
+    void ZoomIn();
+    void ZoomOut();
+    void ResetZoom();
+    Model& GetModel() const { return *mModel; }
+private:
+    Ui::EditorTab* ui = nullptr;
+    float iZoomLevel = 1.0f;
+    UP_Model mModel;
+    std::unique_ptr<EditorGraphicsScene> mScene;
+};
