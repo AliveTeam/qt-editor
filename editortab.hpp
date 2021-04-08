@@ -4,6 +4,7 @@
 #include <QDockWidget>
 #include <QCloseEvent>
 #include <QGraphicsScene>
+#include <QUndoStack>
 #include <memory>
 #include "model.hpp"
 
@@ -28,5 +29,6 @@ private:
     Ui::EditorTab* ui = nullptr;
     float iZoomLevel = 1.0f;
     UP_Model mModel;
+    QUndoStack mUndoStack;
     std::unique_ptr<EditorGraphicsScene> mScene;
 };

@@ -7,6 +7,7 @@
 #include <QDebug>
 #include <QGraphicsSceneMouseEvent>
 #include <QOpenGLWidget>
+#include <QUndoCommand>
 #include "resizeablearrowitem.hpp"
 #include "resizeablerectitem.hpp"
 #include "CameraGraphicsItem.hpp"
@@ -17,6 +18,53 @@ const float KZoomFactor = 0.10f;
 const float KMaxZoomOutLevels = 5.0f;
 const float KMaxZoomInLevels = 14.0f;
 
+class SetSelectionCommand : public QUndoCommand
+{
+public:
+    SetSelectionCommand(QGraphicsScene* pScene, QList<QGraphicsItem*>& oldSelection, QList<QGraphicsItem*>& newSelection) 
+      : mScene(pScene),
+        mOldSelection(oldSelection),
+        mNewSelection(newSelection)
+    {
+        mFirst = true;
+        if (mNewSelection.count() > 0)
+        {
+            setText(QString("Select %1 item(s)").arg(mNewSelection.count()));
+        }
+        else
+        {
+            setText("Clear selection");
+        }
+    }
+
+    void redo() override
+    {
+        if (!mFirst)
+        {
+            mScene->clearSelection();
+            for (auto& item : mNewSelection)
+            {
+                item->setSelected(true);
+            }
+        }
+        mFirst = false;
+    }
+
+    void undo() override
+    {
+        mScene->clearSelection();
+        for (auto& item : mOldSelection)
+        {
+            item->setSelected(true);
+        }
+    }
+
+private:
+    QGraphicsScene* mScene = nullptr;
+    QList<QGraphicsItem*> mOldSelection;
+    QList<QGraphicsItem*> mNewSelection;
+    bool mFirst = false;
+};
 
 EditorTab::EditorTab(QWidget* aParent, UP_Model model)
     : QMainWindow(aParent),
@@ -35,6 +83,12 @@ EditorTab::EditorTab(QWidget* aParent, UP_Model model)
 
 
     mScene = std::make_unique<EditorGraphicsScene>();
+
+    connect(mScene.get(), &EditorGraphicsScene::SelectionChanged, this, [&](QList<QGraphicsItem*> oldSelection, QList<QGraphicsItem*> newSelection)
+        {
+            mUndoStack.push(new SetSelectionCommand(mScene.get(), oldSelection, newSelection));
+        });
+
 
     iZoomLevel = 1.0f;
     for (int i = 0; i < 2; ++i)
@@ -85,6 +139,7 @@ EditorTab::EditorTab(QWidget* aParent, UP_Model model)
 
     ui->graphicsView->setScene(mScene.get());
 
+    ui->undoView->setStack(&mUndoStack);
 }
 
 void EditorTab::ZoomIn()

@@ -8,10 +8,10 @@ const static int kHeight = 100;
 class FireWidget final : public QWidget
 {
 public:
-    FireWidget( QWidget* aParent = NULL );
+    FireWidget( QWidget* aParent = nullptr );
 protected:
-    virtual void paintEvent( QPaintEvent* aEvent );
-    virtual void mousePressEvent( QMouseEvent* aEvent );
+    void paintEvent( QPaintEvent* aEvent ) override;
+    void mousePressEvent( QMouseEvent* aEvent ) override;
 private:
     void change_fire_colour();
     void init_fire_tab();

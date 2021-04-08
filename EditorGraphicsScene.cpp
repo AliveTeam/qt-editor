@@ -41,3 +41,20 @@ void EditorGraphicsScene::CreateBackgroundBrush()
     QBrush brushBackground(singleGrid);
     setBackgroundBrush(brushBackground);
 }
+
+void EditorGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent* pEvent)
+{
+    mOldSelection = selectedItems();
+    QGraphicsScene::mousePressEvent(pEvent);
+}
+
+void EditorGraphicsScene::mouseMoveEvent(QGraphicsSceneMouseEvent* pEvent)
+{
+    QGraphicsScene::mouseMoveEvent(pEvent);
+}
+
+void EditorGraphicsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent* pEvent)
+{
+    QGraphicsScene::mouseReleaseEvent(pEvent);
+    emit SelectionChanged(mOldSelection, selectedItems());
+}
