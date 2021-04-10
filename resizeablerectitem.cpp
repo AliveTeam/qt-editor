@@ -340,3 +340,13 @@ void ResizeableRectItem::SetViewCursor(Qt::CursorShape cursor)
 {
     mView->setCursor(cursor);
 }
+
+QRectF ResizeableRectItem::SaveRect() const
+{
+    return rect();
+}
+
+void ResizeableRectItem::RestoreRect(const QRectF& rect)
+{
+    setRect(rect);
+}

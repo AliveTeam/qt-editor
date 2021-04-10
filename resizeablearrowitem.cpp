@@ -56,7 +56,7 @@ void ResizeableArrowItem::mouseMoveEvent( QGraphicsSceneMouseEvent* aEvent )
         return;
     }
 
-    QLineF newLine = m_endOfLineClicked == eLinePoints_P1  ? QLineF( aEvent->pos(), m_fixedPoint ) : QLineF( m_fixedPoint, aEvent->pos() );
+    QLineF newLine = m_endOfLineClicked == eLinePoints_P1  ? QLineF( aEvent->pos(), m_AnchorPoint ) : QLineF( m_AnchorPoint, aEvent->pos() );
     const auto kMinLineLength = 15;
     if ( newLine.length() <= kMinLineLength )
     {
@@ -212,10 +212,20 @@ void ResizeableArrowItem::CalcWhichEndOfLineClicked( QPointF aPos, Qt::KeyboardM
     }
 
     m_endOfLineClicked = p1Distance.length() > p2Distance.length()  ? eLinePoints_P2 : eLinePoints_P1;
-    m_fixedPoint = m_endOfLineClicked == eLinePoints_P2 ? line().p1() : line().p2();
+    m_AnchorPoint = m_endOfLineClicked == eLinePoints_P2 ? line().p1() : line().p2();
 }
 
 void ResizeableArrowItem::SetViewCursor(Qt::CursorShape cursor)
 {
     mView->setCursor(cursor);
+}
+
+QLineF ResizeableArrowItem::SaveLine() const
+{
+    return line();
+}
+
+void ResizeableArrowItem::RestoreLine(const QLineF& line)
+{
+    setLine(line);
 }

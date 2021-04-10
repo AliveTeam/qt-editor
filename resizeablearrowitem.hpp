@@ -8,8 +8,10 @@ class ResizeableArrowItem final : public QGraphicsLineItem
 {
 public:
     ResizeableArrowItem(QGraphicsView* pView, ICollision* pLine);
-    const static int kType = QGraphicsItem::UserType + 14;
-    int type() const override { return kType; }
+    enum { Type = UserType + 2 };
+    int type() const override { return Type; }
+    QLineF SaveLine() const;
+    void RestoreLine(const QLineF& line);
 protected:
     void hoverLeaveEvent( QGraphicsSceneHoverEvent* aEvent ) override;
     void hoverMoveEvent( QGraphicsSceneHoverEvent* aEvent ) override;
@@ -32,7 +34,7 @@ private:
         eLinePoints_P2
     };
     eLinePoints m_endOfLineClicked = eLinePoints_None;
-    QPointF m_fixedPoint;
+    QPointF m_AnchorPoint;
     bool m_MouseIsDown = false;
     QGraphicsView* mView = nullptr;
     ICollision* mLine = nullptr;

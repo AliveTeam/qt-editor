@@ -8,8 +8,10 @@ class ResizeableRectItem final : public QGraphicsRectItem
 {
 public:
     ResizeableRectItem(QGraphicsView* pView,  MapObject* pMapObject );
-    const static int kType = QGraphicsItem::UserType + 12;
-    int type() const override { return kType; }
+    enum { Type = UserType + 1 };
+    int type() const override { return Type; }
+    QRectF SaveRect() const;
+    void RestoreRect(const QRectF& rect);
 protected:  // From QGraphicsItem
     void mousePressEvent(QGraphicsSceneMouseEvent* aEvent) override;
     void mouseMoveEvent(QGraphicsSceneMouseEvent* aEvent) override;

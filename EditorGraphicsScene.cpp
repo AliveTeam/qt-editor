@@ -1,5 +1,7 @@
 #include "EditorGraphicsScene.hpp"
 #include <QPainter>
+#include "resizeablearrowitem.hpp"
+#include "resizeablerectitem.hpp"
 
 EditorGraphicsScene::EditorGraphicsScene()
 {
@@ -44,13 +46,21 @@ void EditorGraphicsScene::CreateBackgroundBrush()
 
 void EditorGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent* pEvent)
 {
+    // Record what we had before a click
     mOldSelection = selectedItems();
+    
+    // Do the click
     QGraphicsScene::mousePressEvent(pEvent);
+
     if (mOldSelection != selectedItems())
     {
+        // A single item just got selected by being clicked on
         emit SelectionChanged(mOldSelection, selectedItems());
         mOldSelection = selectedItems();
     }
+
+    // Save the locations of what is selected after click
+    mOldPositions.Save(mOldSelection);
 }
 
 void EditorGraphicsScene::mouseMoveEvent(QGraphicsSceneMouseEvent* pEvent)
@@ -60,9 +70,78 @@ void EditorGraphicsScene::mouseMoveEvent(QGraphicsSceneMouseEvent* pEvent)
 
 void EditorGraphicsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent* pEvent)
 {
+    // Handle the button up
     QGraphicsScene::mouseReleaseEvent(pEvent);
-    if (mOldSelection != selectedItems())
+
+    // Find out what is selected
+    QList<QGraphicsItem*> currentSelection = selectedItems();
+
+    if (mOldSelection != currentSelection)
     {
-        emit SelectionChanged(mOldSelection, selectedItems());
+        // Between mouse up/down the selection changed
+        emit SelectionChanged(mOldSelection, currentSelection);
     }
+
+    if (mOldPositions.Count() > 0)
+    {
+        // Get the position of where the selected items are now
+        ItemPositionData newPositions;
+        newPositions.Save(currentSelection);
+
+        if (mOldPositions != newPositions)
+        {
+            // They've moved since mouse down
+            emit ItemsMoved(mOldPositions, newPositions);
+        }
+    }
+}
+
+void ItemPositionData::Save(QList<QGraphicsItem*>& items)
+{
+    mRects.clear();
+    mLines.clear();
+
+    for (auto& item : items)
+    {
+        ResizeableRectItem* pRect = qgraphicsitem_cast<ResizeableRectItem*>(item);
+        if (pRect)
+        {
+            AddRect(pRect);
+        }
+        else
+        {
+            ResizeableArrowItem* pArrow = qgraphicsitem_cast<ResizeableArrowItem*>(item);
+            if (pArrow)
+            {
+                AddLine(pArrow);
+            }
+        }
+    }
+}
+
+void ItemPositionData::Restore()
+{
+    for (auto& [rect, pos] : mRects)
+    {
+        rect->RestoreRect(pos.rect);
+        rect->setX(pos.x);
+        rect->setY(pos.y);
+    }
+
+    for (auto& [line, pos] : mLines)
+    {
+        line->RestoreLine(pos.line);
+        line->setX(pos.x);
+        line->setY(pos.y);
+    }
+}
+
+void ItemPositionData::AddRect(ResizeableRectItem* pItem)
+{
+    mRects[pItem] = { pItem->x(), pItem->y(), pItem->SaveRect() };
+}
+
+void ItemPositionData::AddLine(ResizeableArrowItem* pItem)
+{
+    mLines[pItem] = { pItem->x(), pItem->y(), pItem->SaveLine() };
 }

@@ -68,6 +68,87 @@ private:
     bool mFirst = false;
 };
 
+
+class MoveItemsCommand : public QUndoCommand
+{
+public:
+    MoveItemsCommand(QGraphicsScene* pScene, ItemPositionData oldPositions, ItemPositionData newPositions)
+        : mScene(pScene),
+        mOldPositions(oldPositions),
+        mNewPositions(newPositions)
+    {
+        mFirst = true;
+
+        if (mNewPositions.Count() == 1)
+        {
+            auto pNewLine = mNewPositions.FirstLinePos();
+            auto pOldRect = mOldPositions.FirstRectPos();
+            if (pNewLine)
+            {
+                auto pOldLine = mOldPositions.FirstLinePos();
+                const bool posChange = pOldLine->x != pNewLine->x || pOldLine->y != pNewLine->y;
+                const bool lineChanged = pOldLine->line != pNewLine->line;
+                if (posChange && lineChanged)
+                {
+                    setText(QString("Move and resize collision"));
+                }
+                else if (posChange && !lineChanged)
+                {
+                    setText(QString("Move collision"));
+                }
+                else
+                {
+                    setText(QString("Move collision point"));
+                }
+            }
+            else
+            {
+                auto pNewRect = mNewPositions.FirstRectPos();
+                const bool posChange = pOldRect->x != pNewRect->x || pOldRect->y != pNewRect->y;
+                const bool rectChanged = pNewRect->rect != pOldRect->rect;
+                if (posChange && rectChanged)
+                {
+                    setText(QString("Move and resize map object"));
+                }
+                else if (posChange && !rectChanged)
+                {
+                    setText(QString("Move map object"));
+                }
+                else
+                {
+                    setText(QString("Resize map object"));
+                }
+            }
+        }
+        else
+        {
+            setText(QString("Move %1 item(s)").arg(mNewPositions.Count()));
+        }
+    }
+
+    void redo() override
+    {
+        if (!mFirst)
+        {
+            mNewPositions.Restore();
+            mScene->update();
+        }
+        mFirst = false;
+    }
+
+    void undo() override
+    {
+        mOldPositions.Restore();
+        mScene->update();
+    }
+
+private:
+    QGraphicsScene* mScene = nullptr;
+    ItemPositionData mOldPositions;
+    ItemPositionData mNewPositions;
+    bool mFirst = false;
+};
+
 EditorTab::EditorTab(QWidget* aParent, UP_Model model)
     : QMainWindow(aParent),
     ui(new Ui::EditorTab),
@@ -91,6 +172,10 @@ EditorTab::EditorTab(QWidget* aParent, UP_Model model)
             mUndoStack.push(new SetSelectionCommand(mScene.get(), oldSelection, newSelection));
         });
 
+    connect(mScene.get(), &EditorGraphicsScene::ItemsMoved, this, [&](ItemPositionData oldPositions, ItemPositionData newPositions)
+        {
+            mUndoStack.push(new MoveItemsCommand(mScene.get(), oldPositions, newPositions));
+        });
 
     iZoomLevel = 1.0f;
     for (int i = 0; i < 2; ++i)
