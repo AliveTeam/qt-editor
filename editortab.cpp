@@ -46,6 +46,7 @@ public:
             {
                 item->setSelected(true);
             }
+            mScene->update();
         }
         mFirst = false;
     }
@@ -57,6 +58,7 @@ public:
         {
             item->setSelected(true);
         }
+        mScene->update();
     }
 
 private:

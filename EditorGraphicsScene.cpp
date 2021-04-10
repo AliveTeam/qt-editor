@@ -46,6 +46,11 @@ void EditorGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent* pEvent)
 {
     mOldSelection = selectedItems();
     QGraphicsScene::mousePressEvent(pEvent);
+    if (mOldSelection != selectedItems())
+    {
+        emit SelectionChanged(mOldSelection, selectedItems());
+        mOldSelection = selectedItems();
+    }
 }
 
 void EditorGraphicsScene::mouseMoveEvent(QGraphicsSceneMouseEvent* pEvent)
@@ -56,5 +61,8 @@ void EditorGraphicsScene::mouseMoveEvent(QGraphicsSceneMouseEvent* pEvent)
 void EditorGraphicsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent* pEvent)
 {
     QGraphicsScene::mouseReleaseEvent(pEvent);
-    emit SelectionChanged(mOldSelection, selectedItems());
+    if (mOldSelection != selectedItems())
+    {
+        emit SelectionChanged(mOldSelection, selectedItems());
+    }
 }
