@@ -30,6 +30,8 @@ public:
     Model& GetModel() const { return *mModel; }
     void ClearPropertyEditor();
     void PopulatePropertyEditor(QGraphicsItem* pItem);
+    void Undo();
+    void Redo();
 private:
     Ui::EditorTab* ui = nullptr;
     float iZoomLevel = 1.0f;

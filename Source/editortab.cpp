@@ -380,3 +380,13 @@ void EditorTab::PopulatePropertyEditor(QGraphicsItem* pItem)
     pTree->setItemWidget(items[2], 1, spin);
     */
 }
+
+void EditorTab::Undo()
+{
+    mUndoStack.undo();
+}
+
+void EditorTab::Redo()
+{
+    mUndoStack.redo();
+}
