@@ -12,6 +12,7 @@ public:
     int type() const override { return Type; }
     QRectF SaveRect() const;
     void RestoreRect(const QRectF& rect);
+    MapObject* GetMapObject() const { return mMapObject; }
 protected:  // From QGraphicsItem
     void mousePressEvent(QGraphicsSceneMouseEvent* aEvent) override;
     void mouseMoveEvent(QGraphicsSceneMouseEvent* aEvent) override;

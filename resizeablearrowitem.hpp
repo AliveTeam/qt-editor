@@ -12,6 +12,7 @@ public:
     int type() const override { return Type; }
     QLineF SaveLine() const;
     void RestoreLine(const QLineF& line);
+    ICollision* GetCollisionItem() const { return mLine; }
 protected:
     void hoverLeaveEvent( QGraphicsSceneHoverEvent* aEvent ) override;
     void hoverMoveEvent( QGraphicsSceneHoverEvent* aEvent ) override;

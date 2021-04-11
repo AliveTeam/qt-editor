@@ -223,35 +223,18 @@ void Model::LoadJson(const std::string& jsonFile)
                     jsonxx::Object properties = ReadObject(mapObject, "properties");
                     for (const EnumOrBasicTypeProperty& property : pObjStructure->mEnumAndBasicTypeProperties)
                     {
-                        bool isEnum = false;
-                        for (const auto& enumType : mEnums)
-                        {
-                            if (enumType->mName == property.mType)
-                            {
-                                isEnum = true;
-                                break;
-                            }
-                        }
-                       
-                        bool isBasicType = false;
-                        for (const auto& basicType : mBasicTypes)
-                        {
-                            if (basicType->mName == property.mType)
-                            {
-                                isBasicType = true;
-                                break;
-                            }
-                        }
-
-                        if (!isBasicType && !isEnum)
+                        const FoundType foundTypes = FindType(property.mType);
+                        if (!foundTypes.mEnum && !foundTypes.mBasicType)
                         {
                             // corrupted schema type name has no definition
                             throw ObjectPropertyTypeNotFoundException(property.mName, property.mType);
                         }
-
+                        
                         auto tmpProperty = std::make_unique<MapObjectProperty>();
                         tmpProperty->mName = property.mName;
-                        if (isBasicType)
+                        tmpProperty->mTypeName = property.mType;
+                        tmpProperty->mVisible = property.mVisible;
+                        if (foundTypes.mBasicType)
                         {
                             tmpProperty->mBasicTypeValue = ReadNumber(properties, property.mName);
                         }

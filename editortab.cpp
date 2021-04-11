@@ -203,9 +203,6 @@ EditorTab::EditorTab(QWidget* aParent, UP_Model model)
 
     setCentralWidget(ui->graphicsView);
 
-    addDockWidget(Qt::RightDockWidgetArea, ui->propertyDockWidget);
-    addDockWidget(Qt::RightDockWidgetArea, ui->undoHistoryDockWidget);
-
     // Disable "already disabled" context menus on the QDockWidgets
     ui->propertyDockWidget->setContextMenuPolicy(Qt::PreventContextMenu);
     ui->undoHistoryDockWidget->setContextMenuPolicy(Qt::PreventContextMenu);
@@ -247,6 +244,7 @@ EditorTab::EditorTab(QWidget* aParent, UP_Model model)
     ui->undoView->setStack(&mUndoStack);
 
     QTreeWidget* pTree = ui->treeWidget;
+
     // Two columns, property and value
     pTree->setColumnCount(2);
 
@@ -258,11 +256,19 @@ EditorTab::EditorTab(QWidget* aParent, UP_Model model)
 
     pTree->setAlternatingRowColors(true);
     pTree->setStyleSheet("QTreeView::item { height:23px; font:6px; padding:0px; margin:0px; }");
+    
+    pTree->header()->resizeSection(0, 200);
+    pTree->header()->resizeSection(1, 90);
+
     pTree->setUniformRowHeights(true);
 
     pTree->setRootIsDecorated(false);
-    //pTree->setIndentation(2);
 
+
+    addDockWidget(Qt::RightDockWidgetArea, ui->propertyDockWidget);
+    addDockWidget(Qt::RightDockWidgetArea, ui->undoHistoryDockWidget);
+
+    ui->propertyDockWidget->setMinimumWidth(310);
 
 }
 
@@ -310,34 +316,66 @@ void EditorTab::PopulatePropertyEditor(QGraphicsItem* pItem)
 
     QTreeWidget* pTree = ui->treeWidget;
 
+    auto pLine = qgraphicsitem_cast<ResizeableArrowItem*>(pItem);
+    auto pRect = qgraphicsitem_cast<ResizeableRectItem*>(pItem);
+
     QList<QTreeWidgetItem*> items;
-    for (int i = 0; i < 10; i++)
+    QTreeWidgetItem* parent = nullptr;
+    const QString kIndent("    ");
+    if (pRect)
     {
-        QStringList strings;
-        strings.append(QString("    item: %1").arg(i));
-        strings.append(QString("lol"));
+        MapObject* pMapObject = pRect->GetMapObject();
 
-        QTreeWidgetItem* parent = nullptr;
-        auto item = new QTreeWidgetItem(parent, strings);
+        items.append(new QTreeWidgetItem(parent, QStringList({ kIndent + "Name", pMapObject->mName.c_str() })));
 
-        if ((i % 2) == 0)
+        items.append(new QTreeWidgetItem(parent, QStringList({ kIndent + "XPos", QString::number(pMapObject->mXPos) })));
+        items.append(new QTreeWidgetItem(parent, QStringList({ kIndent + "YPos", QString::number(pMapObject->mYPos) })));
+        items.append(new QTreeWidgetItem(parent, QStringList({ kIndent + "Width", QString::number(pMapObject->mWidth) })));
+        items.append(new QTreeWidgetItem(parent, QStringList({ kIndent + "Height", QString::number(pMapObject->mHeight) })));
+
+        for (UP_MapObjectProperty& property : pMapObject->mProperties)
         {
-            item->setBackground(0, QColor(255, 255, 191));
-            item->setBackground(1, QColor(255, 255, 191));
-        }
-        else
-        {
-            item->setBackground(0, QColor(255, 255, 222));
-            item->setBackground(1, QColor(255, 255, 222));
-        }
+            if (property->mVisible)
+            {
+                QStringList strings;
+                strings.append(kIndent + property->mName.c_str());
 
-        items.append(item);
+                const Model::FoundType foundType = mModel->FindType(property->mTypeName);
+                if (foundType.mBasicType)
+                {
+                    strings.append(QString::number(property->mBasicTypeValue));
+                }
+                else if (foundType.mEnum)
+                {
+                    strings.append(property->mEnumValue.c_str());
+                }
+                items.append(new QTreeWidgetItem(parent, strings));
+            }
+        }
     }
+    else if (pLine)
+    {
+        ICollision* pCollisionItem = pLine->GetCollisionItem();
+
+        items.append(new QTreeWidgetItem(parent, QStringList({ kIndent + "X1", QString::number(pCollisionItem->mPos.mX1) })));
+        items.append(new QTreeWidgetItem(parent, QStringList({ kIndent + "Y1", QString::number(pCollisionItem->mPos.mY1) })));
+        items.append(new QTreeWidgetItem(parent, QStringList({ kIndent + "X2", QString::number(pCollisionItem->mPos.mX2) })));
+        items.append(new QTreeWidgetItem(parent, QStringList({ kIndent + "Y2", QString::number(pCollisionItem->mPos.mY2) })));
+
+        // TODO: Add AO/AE specific line props polymorphically
+    }
+
+    for (int i = 0; i < items.count(); i++)
+    {
+        const int b = (i % 2) == 0 ? 191 : 222;
+        items[i]->setBackground(0, QColor(255, 255, b));
+        items[i]->setBackground(1, QColor(255, 255, b));
+    }
+
     pTree->insertTopLevelItems(0, items);
 
+    /*
     auto spin = new QSpinBox();
     pTree->setItemWidget(items[2], 1, spin);
-
- 
-   // pTree->setIndentation(0);
+    */
 }

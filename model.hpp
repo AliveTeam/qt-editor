@@ -65,8 +65,10 @@ private:
 struct MapObjectProperty final
 {
     std::string mName;
+    std::string mTypeName;
     int mBasicTypeValue = 0;
     std::string mEnumValue;
+    bool mVisible = true;
 };
 using UP_MapObjectProperty = std::unique_ptr<MapObjectProperty>;
 
@@ -187,6 +189,33 @@ public:
     std::vector<UP_ICollision>& CollisionItems()
     {
         return mCollisions;
+    }
+
+    struct FoundType
+    {
+        Enum* mEnum = nullptr;
+        BasicType* mBasicType = nullptr;
+    };
+
+    FoundType FindType(const std::string& toFind)
+    {
+        for (const auto& enumType : mEnums)
+        {
+            if (enumType->mName == toFind)
+            {
+                return { enumType.get(), nullptr };
+            }
+        }
+
+        for (const auto& basicType : mBasicTypes)
+        {
+            if (basicType->mName == toFind)
+            {
+               return { nullptr, basicType.get() };
+            }
+        }
+
+        return { nullptr, nullptr };
     }
 
 private:

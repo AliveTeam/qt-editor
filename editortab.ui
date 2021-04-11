@@ -23,6 +23,12 @@
       <height>211</height>
      </rect>
     </property>
+    <property name="minimumSize">
+     <size>
+      <width>171</width>
+      <height>93</height>
+     </size>
+    </property>
     <property name="floating">
      <bool>false</bool>
     </property>
