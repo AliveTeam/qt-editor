@@ -19,7 +19,8 @@ build_script:
  - cd build
  - echo %platform%
  - echo %APPVEYOR_BUILD_NUMBER%
- - set QT_DIR=C:\Qt\5.15.2\msvc2019_64
+ - if %platform%==x64 set QT_DIR=C:\Qt\5.15.2\msvc2019_64
+ - if %platform%==x86 set QT_DIR=C:\Qt\5.15.2\msvc2019
  - set PATH=%PATH%;%QT_DIR%;%QT_DIR%\bin
  - echo %PATH%
  - if %platform%==x64 (cmake .. -DBUILD_NUMBER=%APPVEYOR_BUILD_NUMBER% -DCI_PROVIDER=AppVeyor -G "Visual Studio 16 2019")
