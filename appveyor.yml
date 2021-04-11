@@ -12,8 +12,9 @@ configuration:
 clone_folder: c:\editor
 
 install:
-  - set QTDIR=C:\Qt\6.0.1\msvc2019_64
-  - set PATH=%PATH%;%QTDIR%\bin
+ - git submodule update --init --recursive
+ - set QTDIR=C:\Qt\6.0.1\msvc2019_64
+ - set PATH=%PATH%;%QTDIR%\bin
 
 build_script:
  - mkdir build
@@ -24,7 +25,5 @@ build_script:
  - if %platform%==x86 (cmake .. -DBUILD_NUMBER=%APPVEYOR_BUILD_NUMBER% -DCI_PROVIDER=AppVeyor -G "Visual Studio 15 2017")
  - cmake --build . --config %configuration% -- /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 
-install:
- - git submodule update --init --recursive
 
 test: off
