@@ -31,6 +31,10 @@ private slots:
 
     void on_action_zoom_out_triggered();
 
+    void on_action_undo_triggered();
+
+    void on_action_redo_triggered();
+
 private:
     void onOpenPath(QString fileName);
 

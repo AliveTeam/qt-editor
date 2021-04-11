@@ -169,3 +169,21 @@ void EditorMainWindow::on_action_zoom_out_triggered()
         pTab->ZoomOut();
     }
 }
+
+void EditorMainWindow::on_action_undo_triggered()
+{
+    EditorTab* pTab = getActiveTab(m_ui->tabWidget);
+    if (pTab)
+    {
+        pTab->Undo();
+    }
+}
+
+void EditorMainWindow::on_action_redo_triggered()
+{
+    EditorTab* pTab = getActiveTab(m_ui->tabWidget);
+    if (pTab)
+    {
+        pTab->Redo();
+    }
+}
