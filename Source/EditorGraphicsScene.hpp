@@ -103,4 +103,5 @@ private:
 private:
     QList<QGraphicsItem*> mOldSelection;
     ItemPositionData mOldPositions;
+    bool mLeftButtonDown = false;
 };

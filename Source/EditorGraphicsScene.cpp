@@ -1,5 +1,7 @@
 #include "EditorGraphicsScene.hpp"
 #include <QPainter>
+#include <QDebug>
+#include <QGraphicsSceneMouseEvent>
 #include "resizeablearrowitem.hpp"
 #include "resizeablerectitem.hpp"
 
@@ -46,21 +48,42 @@ void EditorGraphicsScene::CreateBackgroundBrush()
 
 void EditorGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent* pEvent)
 {
-    // Record what we had before a click
-    mOldSelection = selectedItems();
-    
-    // Do the click
-    QGraphicsScene::mousePressEvent(pEvent);
-
-    if (mOldSelection != selectedItems())
+    if (pEvent->button() != Qt::LeftButton)
     {
-        // A single item just got selected by being clicked on
-        emit SelectionChanged(mOldSelection, selectedItems());
-        mOldSelection = selectedItems();
+        qDebug() << "Ignore non left click";
+        pEvent->ignore();
+        return;
     }
 
-    // Save the locations of what is selected after click
-    mOldPositions.Save(mOldSelection);
+    if (pEvent->button() == Qt::LeftButton)
+    {
+        mLeftButtonDown = true;
+
+        qDebug() << "left press";
+
+        // Record what we had before a click
+        mOldSelection = selectedItems();
+
+        // Do the click
+        QGraphicsScene::mousePressEvent(pEvent);
+
+        if (mOldSelection != selectedItems())
+        {
+            qDebug() << "left press selection changed";
+
+            // A single item just got selected by being clicked on
+            emit SelectionChanged(mOldSelection, selectedItems());
+            mOldSelection = selectedItems();
+        }
+
+        // Save the locations of what is selected after click
+        mOldPositions.Save(mOldSelection);
+    }
+    else
+    {
+        qDebug() << "mouse press";
+        QGraphicsScene::mousePressEvent(pEvent);
+    }
 }
 
 void EditorGraphicsScene::mouseMoveEvent(QGraphicsSceneMouseEvent* pEvent)
@@ -73,26 +96,36 @@ void EditorGraphicsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent* pEvent)
     // Handle the button up
     QGraphicsScene::mouseReleaseEvent(pEvent);
 
-    // Find out what is selected
-    QList<QGraphicsItem*> currentSelection = selectedItems();
-
-    if (mOldSelection != currentSelection)
+    if (pEvent->button() == Qt::LeftButton)
     {
-        // Between mouse up/down the selection changed
-        emit SelectionChanged(mOldSelection, currentSelection);
-    }
+        qDebug() << "left release";
 
-    if (mOldPositions.Count() > 0)
-    {
-        // Get the position of where the selected items are now
-        ItemPositionData newPositions;
-        newPositions.Save(currentSelection);
+        // Find out what is selected
+        QList<QGraphicsItem*> currentSelection = selectedItems();
 
-        if (mOldPositions != newPositions)
+        if (mOldSelection != currentSelection)
         {
-            // They've moved since mouse down
-            emit ItemsMoved(mOldPositions, newPositions);
+            // Between mouse up/down the selection changed
+            qDebug() << "left release selection changed";
+            emit SelectionChanged(mOldSelection, currentSelection);
         }
+
+        if (mOldPositions.Count() > 0)
+        {
+            // Get the position of where the selected items are now
+            ItemPositionData newPositions;
+            newPositions.Save(currentSelection);
+
+            if (mOldPositions != newPositions)
+            {
+                qDebug() << "left release positions changed";
+
+                // They've moved since mouse down
+                emit ItemsMoved(mOldPositions, newPositions);
+            }
+        }
+
+        mLeftButtonDown = false;
     }
 }
 

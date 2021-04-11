@@ -167,6 +167,37 @@ private:
     bool mFirst = false;
 };
 
+class EditorGraphicsView : public QGraphicsView
+{
+public:
+    void mousePressEvent(QMouseEvent* pEvent) override
+    {
+        if (pEvent->button() != Qt::LeftButton)
+        {
+            // prevent band dragging on other buttons
+            qDebug() << "Ignore non left press";
+            pEvent->ignore();
+            return;
+        }
+
+        qDebug() << "view mouse press (left)";
+        QGraphicsView::mousePressEvent(pEvent);
+    }
+
+    void mouseReleaseEvent(QMouseEvent* pEvent) override
+    {
+        if (pEvent->button() != Qt::LeftButton)
+        {
+            qDebug() << "Ignore non left release";
+            pEvent->ignore();
+            return;
+        }
+
+        qDebug() << "view mouse release (left)";
+        QGraphicsView::mouseReleaseEvent(pEvent);
+    }
+};
+
 EditorTab::EditorTab(QWidget* aParent, UP_Model model)
     : QMainWindow(aParent),
     ui(new Ui::EditorTab),
@@ -174,7 +205,11 @@ EditorTab::EditorTab(QWidget* aParent, UP_Model model)
 {
     ui->setupUi(this);
 
+    // TODO: Set as a promoted type
+    delete ui->graphicsView;
+    ui->graphicsView = new EditorGraphicsView();
     QGraphicsView* pView = ui->graphicsView;
+    pView->setDragMode(QGraphicsView::RubberBandDrag);
 
     pView->setRenderHint(QPainter::SmoothPixmapTransform);
     pView->setRenderHint(QPainter::HighQualityAntialiasing);
@@ -271,6 +306,7 @@ EditorTab::EditorTab(QWidget* aParent, UP_Model model)
 
     ui->propertyDockWidget->setMinimumWidth(310);
 
+    setContextMenuPolicy(Qt::PreventContextMenu);
 }
 
 void EditorTab::ZoomIn()
