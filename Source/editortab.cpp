@@ -241,6 +241,7 @@ EditorTab::EditorTab(QWidget* aParent, UP_Model model)
 
     ui->graphicsView->setScene(mScene.get());
 
+    mUndoStack.setUndoLimit(100);
     ui->undoView->setStack(&mUndoStack);
 
     QTreeWidget* pTree = ui->treeWidget;
