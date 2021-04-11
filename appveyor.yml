@@ -7,14 +7,12 @@ platform:
  - x64
 
 configuration:
- - Debug
+ - Release
 
 clone_folder: c:\editor
 
 install:
- - dir C:\Qt\5.15.2\msvc2019_64
  - git submodule update --init --recursive
-
 
 build_script:
  - mkdir build
@@ -24,9 +22,15 @@ build_script:
  - set QT_DIR=C:\Qt\5.15.2\msvc2019_64
  - set PATH=%PATH%;%QT_DIR%;%QT_DIR%\bin
  - echo %PATH%
- - if %platform%==x64 (cmake .. -DBUILD_NUMBER=%APPVEYOR_BUILD_NUMBER% -DCI_PROVIDER=AppVeyor -G "Visual Studio 16 2019 Win64")
- - if %platform%==x86 (cmake .. -DBUILD_NUMBER=%APPVEYOR_BUILD_NUMBER% -DCI_PROVIDER=AppVeyor -G "Visual Studio 16 2019")
+ - if %platform%==x64 (cmake .. -DBUILD_NUMBER=%APPVEYOR_BUILD_NUMBER% -DCI_PROVIDER=AppVeyor -G "Visual Studio 16 2019")
+ - if %platform%==x86 (cmake .. -DBUILD_NUMBER=%APPVEYOR_BUILD_NUMBER% -DCI_PROVIDER=AppVeyor -G "Visual Studio 16 2019 -A Win32")
  - cmake --build . --config %configuration% -- /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 
+after_build:
+ - 7z a Editor_%CONFIGURATION%_%PLATFORM%_%APPVEYOR_BUILD_NUMBER%.zip cC:\editor\build\%CONFIGURATION%\qt-editor.exe %QT_DIR%\bin\Qt5Multimedia.dll %QT_DIR%\bin\Qt5Widgets.dll %QT_DIR%\bin\Qt5Gui.dll %QT_DIR%\bin\Qt5Core.dll
+
+artifacts:
+ - path: build\Editor*.zip
+   name: Editor_$(configuration)_$(APPVEYOR_BUILD_NUMBER)
 
 test: off
