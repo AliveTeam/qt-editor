@@ -12,7 +12,7 @@ configuration:
 clone_folder: c:\editor
 
 install:
- - dir C:\Qt\6.0.1\msvc2019_64
+ - dir C:\Qt\5.15.2\msvc2019_64
  - git submodule update --init --recursive
 
 
@@ -21,7 +21,7 @@ build_script:
  - cd build
  - echo %platform%
  - echo %APPVEYOR_BUILD_NUMBER%
- - set QT_DIR=C:\Qt\6.0.1\msvc2019_64
+ - set QT_DIR=C:\Qt\5.15.2\msvc2019_64
  - set PATH=%PATH%;%QT_DIR%;%QT_DIR%\bin
  - echo %PATH%
  - if %platform%==x64 (cmake .. -DBUILD_NUMBER=%APPVEYOR_BUILD_NUMBER% -DCI_PROVIDER=AppVeyor -G "Visual Studio 16 2019 Win64")
