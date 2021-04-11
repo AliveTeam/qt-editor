@@ -5,6 +5,9 @@
 #include <QCloseEvent>
 #include <QGraphicsScene>
 #include <QUndoStack>
+#include <QPainter>
+#include <QTreeWidget>
+#include <QApplication>
 #include <memory>
 #include "model.hpp"
 
@@ -25,6 +28,8 @@ public:
     void ZoomOut();
     void ResetZoom();
     Model& GetModel() const { return *mModel; }
+    void ClearPropertyEditor();
+    void PopulatePropertyEditor(QGraphicsItem* pItem);
 private:
     Ui::EditorTab* ui = nullptr;
     float iZoomLevel = 1.0f;

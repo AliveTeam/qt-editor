@@ -8,6 +8,7 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QOpenGLWidget>
 #include <QUndoCommand>
+#include <QSpinBox>
 #include "resizeablearrowitem.hpp"
 #include "resizeablerectitem.hpp"
 #include "CameraGraphicsItem.hpp"
@@ -21,8 +22,9 @@ const float KMaxZoomInLevels = 14.0f;
 class SetSelectionCommand : public QUndoCommand
 {
 public:
-    SetSelectionCommand(QGraphicsScene* pScene, QList<QGraphicsItem*>& oldSelection, QList<QGraphicsItem*>& newSelection) 
-      : mScene(pScene),
+    SetSelectionCommand(EditorTab* pTab, QGraphicsScene* pScene, QList<QGraphicsItem*>& oldSelection, QList<QGraphicsItem*>& newSelection) 
+      : mTab(pTab),
+        mScene(pScene),
         mOldSelection(oldSelection),
         mNewSelection(newSelection)
     {
@@ -49,6 +51,7 @@ public:
             mScene->update();
         }
         mFirst = false;
+        SyncPropertyEditor();
     }
 
     void undo() override
@@ -59,9 +62,24 @@ public:
             item->setSelected(true);
         }
         mScene->update();
+        SyncPropertyEditor();
+    }
+
+    void SyncPropertyEditor()
+    {
+        auto selected = mScene->selectedItems();
+        if (selected.count() == 1)
+        {
+            mTab->PopulatePropertyEditor(selected[0]);
+        }
+        else
+        {
+            mTab->ClearPropertyEditor();
+        }
     }
 
 private:
+    EditorTab* mTab = nullptr;
     QGraphicsScene* mScene = nullptr;
     QList<QGraphicsItem*> mOldSelection;
     QList<QGraphicsItem*> mNewSelection;
@@ -169,7 +187,7 @@ EditorTab::EditorTab(QWidget* aParent, UP_Model model)
 
     connect(mScene.get(), &EditorGraphicsScene::SelectionChanged, this, [&](QList<QGraphicsItem*> oldSelection, QList<QGraphicsItem*> newSelection)
         {
-            mUndoStack.push(new SetSelectionCommand(mScene.get(), oldSelection, newSelection));
+            mUndoStack.push(new SetSelectionCommand(this, mScene.get(), oldSelection, newSelection));
         });
 
     connect(mScene.get(), &EditorGraphicsScene::ItemsMoved, this, [&](ItemPositionData oldPositions, ItemPositionData newPositions)
@@ -227,24 +245,47 @@ EditorTab::EditorTab(QWidget* aParent, UP_Model model)
     ui->graphicsView->setScene(mScene.get());
 
     ui->undoView->setStack(&mUndoStack);
+
+    QTreeWidget* pTree = ui->treeWidget;
+    // Two columns, property and value
+    pTree->setColumnCount(2);
+
+    // Set the header text
+    QStringList headerStrings;
+    headerStrings.append("Property");
+    headerStrings.append("Value");
+    pTree->setHeaderLabels(headerStrings);
+
+    pTree->setAlternatingRowColors(true);
+    pTree->setStyleSheet("QTreeView::item { height:23px; font:6px; padding:0px; margin:0px; }");
+    pTree->setUniformRowHeights(true);
+
+    pTree->setRootIsDecorated(false);
+    //pTree->setIndentation(2);
+
+
 }
 
 void EditorTab::ZoomIn()
 {
+    /*
     if (iZoomLevel < 1.0f + (KZoomFactor*KMaxZoomInLevels))
     {
         iZoomLevel += KZoomFactor;
         ui->graphicsView->scale(iZoomLevel, iZoomLevel);
     }
+    */
 }
 
 void EditorTab::ZoomOut()
 {
+    /*
     if (iZoomLevel > 1.0f - (KZoomFactor*KMaxZoomOutLevels))
     {
         iZoomLevel -= KZoomFactor;
         ui->graphicsView->scale(iZoomLevel, iZoomLevel);
     }
+    */
 }
 
 void EditorTab::ResetZoom()
@@ -256,4 +297,47 @@ void EditorTab::ResetZoom()
 EditorTab::~EditorTab()
 {
     delete ui;
+}
+
+void EditorTab::ClearPropertyEditor()
+{
+    ui->treeWidget->clear();
+}
+
+void EditorTab::PopulatePropertyEditor(QGraphicsItem* pItem)
+{
+    ClearPropertyEditor();
+
+    QTreeWidget* pTree = ui->treeWidget;
+
+    QList<QTreeWidgetItem*> items;
+    for (int i = 0; i < 10; i++)
+    {
+        QStringList strings;
+        strings.append(QString("    item: %1").arg(i));
+        strings.append(QString("lol"));
+
+        QTreeWidgetItem* parent = nullptr;
+        auto item = new QTreeWidgetItem(parent, strings);
+
+        if ((i % 2) == 0)
+        {
+            item->setBackground(0, QColor(255, 255, 191));
+            item->setBackground(1, QColor(255, 255, 191));
+        }
+        else
+        {
+            item->setBackground(0, QColor(255, 255, 222));
+            item->setBackground(1, QColor(255, 255, 222));
+        }
+
+        items.append(item);
+    }
+    pTree->insertTopLevelItems(0, items);
+
+    auto spin = new QSpinBox();
+    pTree->setItemWidget(items[2], 1, spin);
+
+ 
+   // pTree->setIndentation(0);
 }

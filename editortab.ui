@@ -53,7 +53,18 @@
        <number>0</number>
       </property>
       <item>
-       <widget class="QListView" name="listView"/>
+       <widget class="QTreeWidget" name="treeWidget">
+        <column>
+         <property name="text">
+          <string>Property</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Value</string>
+         </property>
+        </column>
+       </widget>
       </item>
      </layout>
     </widget>
