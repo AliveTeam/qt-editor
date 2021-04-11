@@ -11,10 +11,14 @@ configuration:
 
 clone_folder: c:\editor
 
+environment:
+  QTDIR: C:\Qt\6.0.1\msvc2019_64
+  QTDIR: PATH=%PATH%;%QT_DIR%\bin
+
 install:
+ - dir C:\Qt\6.0.1\msvc2019_64
  - git submodule update --init --recursive
- - set QT_DIR=C:\Qt\6.0.1\msvc2019_64
- - set PATH=%PATH%;%QT_DIR%\bin
+
 
 build_script:
  - mkdir build
