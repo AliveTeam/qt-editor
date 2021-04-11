@@ -33,6 +33,7 @@ add_subdirectory(3rdParty/libmodplug)
 
 include_directories(3rdParty/libmodplug/src)
 include_directories(3rdParty/jsonxx)
+include_directories(Source)
 
 add_library(jsonxx 3rdParty/jsonxx/jsonxx.cc)
 target_include_directories(jsonxx PUBLIC
@@ -42,31 +43,31 @@ export(TARGETS jsonxx FILE jsonxx.cmake)
 set_property(TARGET jsonxx PROPERTY FOLDER "3rdParty")
 
 set(PROJECT_SOURCES
-        main.cpp
-        aboutdialog.ui
-        editormainwindow.ui
-        editortab.ui
-        editormainwindow.cpp
-        editormainwindow.hpp
-        editortab.cpp
-        editortab.hpp
-        firewidget.cpp
-        firewidget.hpp
-        aboutdialog.cpp
-        aboutdialog.hpp
-        modthread.cpp
-        modthread.hpp
-        model.cpp
-        model.hpp
-        resizeablearrowitem.cpp
-        resizeablearrowitem.hpp
-        resizeablerectitem.cpp
-        resizeablerectitem.hpp
-        CameraGraphicsItem.cpp
-        CameraGraphicsItem.hpp
-        EditorGraphicsScene.cpp
-        EditorGraphicsScene.hpp
-        resources.qrc
+        Source/main.cpp
+        Source/aboutdialog.ui
+        Source/editormainwindow.ui
+        Source/editortab.ui
+        Source/editormainwindow.cpp
+        Source/editormainwindow.hpp
+        Source/editortab.cpp
+        Source/editortab.hpp
+        Source/firewidget.cpp
+        Source/firewidget.hpp
+        Source/aboutdialog.cpp
+        Source/aboutdialog.hpp
+        Source/modthread.cpp
+        Source/modthread.hpp
+        Source/model.cpp
+        Source/model.hpp
+        Source/resizeablearrowitem.cpp
+        Source/resizeablearrowitem.hpp
+        Source/resizeablerectitem.cpp
+        Source/resizeablerectitem.hpp
+        Source/CameraGraphicsItem.cpp
+        Source/CameraGraphicsItem.hpp
+        Source/EditorGraphicsScene.cpp
+        Source/EditorGraphicsScene.hpp
+        Source/resources.qrc
         ${TS_FILES}
 )
 
