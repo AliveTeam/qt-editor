@@ -219,6 +219,9 @@
    <property name="shortcut">
     <string>Ctrl+Q</string>
    </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
    <property name="iconVisibleInMenu">
     <bool>true</bool>
    </property>
@@ -242,6 +245,9 @@
    </property>
    <property name="shortcutContext">
     <enum>Qt::WindowShortcut</enum>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
    </property>
    <property name="iconVisibleInMenu">
     <bool>true</bool>
@@ -279,7 +285,7 @@
     <bool>false</bool>
    </property>
    <property name="enabled">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
    <property name="icon">
     <iconset>
@@ -287,6 +293,9 @@
    </property>
    <property name="text">
     <string>Toggle grid</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
    </property>
    <property name="iconVisibleInMenu">
     <bool>true</bool>
@@ -384,7 +393,7 @@
   </action>
   <action name="action_zoom_reset">
    <property name="enabled">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
    <property name="icon">
     <iconset>
@@ -396,13 +405,16 @@
    <property name="shortcut">
     <string>=</string>
    </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
    <property name="iconVisibleInMenu">
     <bool>true</bool>
    </property>
   </action>
   <action name="action_zoom_in">
    <property name="enabled">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
    <property name="icon">
     <iconset>
@@ -414,13 +426,16 @@
    <property name="shortcut">
     <string>+</string>
    </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
    <property name="iconVisibleInMenu">
     <bool>true</bool>
    </property>
   </action>
   <action name="action_zoom_out">
    <property name="enabled">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
    <property name="icon">
     <iconset>
@@ -432,13 +447,16 @@
    <property name="shortcut">
     <string>-</string>
    </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
    <property name="iconVisibleInMenu">
     <bool>true</bool>
    </property>
   </action>
   <action name="action_add_new_collision_item">
    <property name="enabled">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
    <property name="icon">
     <iconset>
@@ -451,7 +469,7 @@
     <string>Ctrl+M</string>
    </property>
    <property name="visible">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
    <property name="iconVisibleInMenu">
     <bool>true</bool>
@@ -459,7 +477,7 @@
   </action>
   <action name="action_add_new_map_object">
    <property name="enabled">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
    <property name="icon">
     <iconset>
@@ -471,13 +489,16 @@
    <property name="shortcut">
     <string>Ctrl+N</string>
    </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
    <property name="iconVisibleInMenu">
     <bool>true</bool>
    </property>
   </action>
   <action name="action_save_path_as">
    <property name="enabled">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
    <property name="icon">
     <iconset>
@@ -489,13 +510,16 @@
    <property name="shortcut">
     <string>Ctrl+A</string>
    </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
    <property name="iconVisibleInMenu">
     <bool>true</bool>
    </property>
   </action>
   <action name="action_delete_selected_items">
    <property name="enabled">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
    <property name="icon">
     <iconset>
@@ -509,6 +533,9 @@
    </property>
    <property name="shortcut">
     <string>Del</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
    </property>
    <property name="iconVisibleInMenu">
     <bool>true</bool>
@@ -543,6 +570,9 @@
    <property name="shortcut">
     <string>Ctrl+C</string>
    </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
    <property name="iconVisibleInMenu">
     <bool>true</bool>
    </property>
@@ -558,6 +588,9 @@
    <property name="shortcut">
     <string>Ctrl+V</string>
    </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
    <property name="iconVisibleInMenu">
     <bool>true</bool>
    </property>
@@ -566,12 +599,18 @@
    <property name="checkable">
     <bool>false</bool>
    </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="icon">
     <iconset>
      <normaloff>:/images/snap.png</normaloff>:/images/snap.png</iconset>
    </property>
    <property name="text">
     <string>Toggle snap collision objects on X</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
    </property>
    <property name="iconVisibleInMenu">
     <bool>true</bool>
@@ -587,6 +626,9 @@
    </property>
    <property name="text">
     <string>Toggle snap map objects on X</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
    </property>
    <property name="iconVisibleInMenu">
     <bool>true</bool>
@@ -632,6 +674,9 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+X</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
    </property>
    <property name="iconVisibleInMenu">
     <bool>true</bool>
@@ -693,6 +738,9 @@
    <property name="text">
     <string>Toggle snap collision objects on Y</string>
    </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
    <property name="iconVisibleInMenu">
     <bool>true</bool>
    </property>
@@ -705,6 +753,9 @@
    <property name="text">
     <string>Toggle snap map objects on Y</string>
    </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
    <property name="iconVisibleInMenu">
     <bool>true</bool>
    </property>
@@ -716,6 +767,9 @@
    </property>
    <property name="text">
     <string>Toggle bring selection to front</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
    </property>
    <property name="iconVisibleInMenu">
     <bool>true</bool>

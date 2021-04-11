@@ -44,6 +44,11 @@ EditorMainWindow::EditorMainWindow(QWidget* aParent)
 
     // Disable context menu on the QToolBar
     m_ui->toolBar->setContextMenuPolicy(Qt::PreventContextMenu);
+
+    // Not implemented so remove for now
+
+    delete m_ui->menuSnapping;
+    delete m_ui->menuOptions;
 }
 
 EditorMainWindow::~EditorMainWindow()
