@@ -11,13 +11,17 @@ configuration:
 
 clone_folder: c:\editor
 
+install:
+  - set QTDIR=C:\Qt\6.0.1\msvc2019_64
+  - set PATH=%PATH%;%QTDIR%\bin
+
 build_script:
  - mkdir build
  - cd build
  - echo %platform%
  - echo %APPVEYOR_BUILD_NUMBER%
- - if %platform%==x64 (cmake .. -DSDL2_DIR=c:\relive\SDL2-2.0.9 -DBUILD_NUMBER=%APPVEYOR_BUILD_NUMBER% -DCI_PROVIDER=AppVeyor -G "Visual Studio 15 2017 Win64")
- - if %platform%==x86 (cmake .. -DSDL2_DIR=c:\relive\SDL2-2.0.9 -DBUILD_NUMBER=%APPVEYOR_BUILD_NUMBER% -DCI_PROVIDER=AppVeyor -G "Visual Studio 15 2017")
+ - if %platform%==x64 (cmake .. -DBUILD_NUMBER=%APPVEYOR_BUILD_NUMBER% -DCI_PROVIDER=AppVeyor -G "Visual Studio 15 2017 Win64")
+ - if %platform%==x86 (cmake .. -DBUILD_NUMBER=%APPVEYOR_BUILD_NUMBER% -DCI_PROVIDER=AppVeyor -G "Visual Studio 15 2017")
  - cmake --build . --config %configuration% -- /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 
 install:
