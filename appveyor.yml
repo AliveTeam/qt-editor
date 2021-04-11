@@ -23,30 +23,30 @@ build_script:
  - set PATH=%PATH%;%QT_DIR%;%QT_DIR%\bin
  - echo %PATH%
  - if %platform%==x64 (cmake .. -DBUILD_NUMBER=%APPVEYOR_BUILD_NUMBER% -DCI_PROVIDER=AppVeyor -G "Visual Studio 16 2019")
- - if %platform%==x86 (cmake .. -DBUILD_NUMBER=%APPVEYOR_BUILD_NUMBER% -DCI_PROVIDER=AppVeyor -G "Visual Studio 16 2019 -A Win32")
+ - if %platform%==x86 (cmake .. -DBUILD_NUMBER=%APPVEYOR_BUILD_NUMBER% -DCI_PROVIDER=AppVeyor -G "Visual Studio 16 2019" -A Win32)
  - cmake --build . --config %configuration% -- /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 
 after_build:
- - mkdir C:\editor\staging
- - copy C:\editor\build\%CONFIGURATION%\qt-editor.exe C:\editor\staging\qt-editor.exe
+ - mkdir C:\editor\Editor_%APPVEYOR_BUILD_NUMBER%
+ - copy C:\editor\build\%CONFIGURATION%\qt-editor.exe C:\editor\Editor_%APPVEYOR_BUILD_NUMBER%\qt-editor.exe
 
- - copy %QT_DIR%\bin\Qt5Multimedia.dll C:\editor\staging\Qt5Multimedia.dll
- - copy %QT_DIR%\bin\Qt5Widgets.dll C:\editor\staging\Qt5Widgets.dll
- - copy %QT_DIR%\bin\Qt5Gui.dll C:\editor\staging\Qt5Gui.dll
- - copy %QT_DIR%\bin\Qt5Core.dll C:\editor\staging\Qt5Core.dll
- - copy %QT_DIR%\bin\Qt5Network.dll C:\editor\staging\Qt5Network.dll
+ - copy %QT_DIR%\bin\Qt5Multimedia.dll C:\editor\Editor_%APPVEYOR_BUILD_NUMBER%\Qt5Multimedia.dll
+ - copy %QT_DIR%\bin\Qt5Widgets.dll C:\editor\Editor_%APPVEYOR_BUILD_NUMBER%\Qt5Widgets.dll
+ - copy %QT_DIR%\bin\Qt5Gui.dll C:\editor\Editor_%APPVEYOR_BUILD_NUMBER%\Qt5Gui.dll
+ - copy %QT_DIR%\bin\Qt5Core.dll C:\editor\Editor_%APPVEYOR_BUILD_NUMBER%\Qt5Core.dll
+ - copy %QT_DIR%\bin\Qt5Network.dll C:\editor\Editor_%APPVEYOR_BUILD_NUMBER%\Qt5Network.dll
 
- - mkdir C:\editor\staging\plugins\audio
- - copy %QT_DIR%\plugins\audio\qtaudio_wasapi.dll C:\editor\staging\plugins\audio\qtaudio_wasapi.dll
- - copy %QT_DIR%\plugins\audio\qtaudio_windows.dll C:\editor\staging\plugins\audio\qtaudio_windows.dll
+ - mkdir C:\editor\Editor_%APPVEYOR_BUILD_NUMBER%\plugins\audio
+ - copy %QT_DIR%\plugins\audio\qtaudio_wasapi.dll C:\editor\Editor_%APPVEYOR_BUILD_NUMBER%\plugins\audio\qtaudio_wasapi.dll
+ - copy %QT_DIR%\plugins\audio\qtaudio_windows.dll C:\editor\Editor_%APPVEYOR_BUILD_NUMBER%\plugins\audio\qtaudio_windows.dll
 
- - mkdir C:\editor\staging\plugins\platforms
- - copy %QT_DIR%\plugins\platforms\qwindows.dll C:\editor\staging\plugins\platforms\qwindows.dll
+ - mkdir C:\editor\Editor_%APPVEYOR_BUILD_NUMBER%\plugins\platforms
+ - copy %QT_DIR%\plugins\platforms\qwindows.dll C:\editor\Editor_%APPVEYOR_BUILD_NUMBER%\plugins\platforms\qwindows.dll
 
- - mkdir C:\editor\staging\plugins\styles
- - copy %QT_DIR%\plugins\styles\qwindowsvistastyle.dll C:\editor\staging\plugins\styles\qwindowsvistastyle.dll
+ - mkdir C:\editor\Editor_%APPVEYOR_BUILD_NUMBER%\plugins\styles
+ - copy %QT_DIR%\plugins\styles\qwindowsvistastyle.dll C:\editor\Editor_%APPVEYOR_BUILD_NUMBER%\plugins\styles\qwindowsvistastyle.dll
 
- - 7z a Editor_%CONFIGURATION%_%PLATFORM%_%APPVEYOR_BUILD_NUMBER%.zip C:\editor\staging
+ - 7z a Editor_%CONFIGURATION%_%PLATFORM%_%APPVEYOR_BUILD_NUMBER%.zip C:\editor\Editor_%APPVEYOR_BUILD_NUMBER%
 
 artifacts:
  - path: build\Editor*.zip
