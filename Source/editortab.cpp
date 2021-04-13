@@ -401,14 +401,14 @@ void EditorTab::PopulatePropertyEditor(QGraphicsItem* pItem)
 
         // TODO: Add AO/AE specific line props polymorphically
     }
-
+#ifdef _WIN32
     for (int i = 0; i < items.count(); i++)
     {
         const int b = (i % 2) == 0 ? 191 : 222;
         items[i]->setBackground(0, QColor(255, 255, b));
         items[i]->setBackground(1, QColor(255, 255, b));
     }
-
+#endif
     pTree->insertTopLevelItems(0, items);
 
     /*
