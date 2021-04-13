@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QGraphicsLineItem>
+#include <QGraphicsView>
 
 class ICollision;
 
