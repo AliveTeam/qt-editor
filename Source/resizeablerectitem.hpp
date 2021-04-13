@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QGraphicsRectItem>
+#include <QGraphicsView>
 
 struct MapObject;
 
