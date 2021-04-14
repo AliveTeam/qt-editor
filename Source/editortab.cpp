@@ -13,6 +13,7 @@
 #include "resizeablerectitem.hpp"
 #include "CameraGraphicsItem.hpp"
 #include "EditorGraphicsScene.hpp"
+#include "bigspinbox.hpp"
 
 // Zoom by 10% each time.
 const float KZoomFactor = 0.10f;
@@ -307,6 +308,23 @@ EditorTab::EditorTab(QWidget* aParent, UP_Model model)
     ui->propertyDockWidget->setMinimumWidth(310);
 
     setContextMenuPolicy(Qt::PreventContextMenu);
+
+    connect(pTree, &QTreeWidget::currentItemChanged, this, [&](QTreeWidgetItem* current, QTreeWidgetItem* prev)
+        {
+            if (prev)
+            {
+                ui->treeWidget->setItemWidget(prev, 1, nullptr);
+            }
+        });
+
+    connect(pTree, &QTreeWidget::itemClicked, this, [&](QTreeWidgetItem* item, int column)
+        {
+            if (column == 1)
+            {
+                auto spin = new BigSpinBox(ui->treeWidget);
+                ui->treeWidget->setItemWidget(item, column, spin);
+            }
+        });
 }
 
 void EditorTab::ZoomIn()
@@ -401,20 +419,18 @@ void EditorTab::PopulatePropertyEditor(QGraphicsItem* pItem)
 
         // TODO: Add AO/AE specific line props polymorphically
     }
+
 #ifdef _WIN32
     for (int i = 0; i < items.count(); i++)
     {
         const int b = (i % 2) == 0 ? 191 : 222;
         items[i]->setBackground(0, QColor(255, 255, b));
         items[i]->setBackground(1, QColor(255, 255, b));
+
     }
 #endif
-    pTree->insertTopLevelItems(0, items);
 
-    /*
-    auto spin = new QSpinBox();
-    pTree->setItemWidget(items[2], 1, spin);
-    */
+    pTree->insertTopLevelItems(0, items);
 }
 
 void EditorTab::Undo()
