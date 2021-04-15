@@ -129,6 +129,7 @@
     <addaction name="action_cut"/>
     <addaction name="action_copy"/>
     <addaction name="action_paste"/>
+    <addaction name="separator"/>
     <addaction name="action_zoom_in"/>
     <addaction name="action_zoom_out"/>
     <addaction name="action_zoom_reset"/>
@@ -181,7 +182,7 @@
   <action name="action_open_path">
    <property name="icon">
     <iconset>
-     <normaloff>:/images/door_open.png</normaloff>:/images/door_open.png</iconset>
+     <normaloff>:/icons/rsc/icons/open.png</normaloff>:/icons/rsc/icons/open.png</iconset>
    </property>
    <property name="text">
     <string>Open path</string>
@@ -361,7 +362,7 @@
    </property>
    <property name="icon">
     <iconset>
-     <normaloff>:/images/arrow_undo.png</normaloff>:/images/arrow_undo.png</iconset>
+     <normaloff>:/icons/rsc/icons/arrow_undo.png</normaloff>:/icons/rsc/icons/arrow_undo.png</iconset>
    </property>
    <property name="text">
     <string>Undo</string>
@@ -379,7 +380,7 @@
    </property>
    <property name="icon">
     <iconset>
-     <normaloff>:/images/arrow_redo.png</normaloff>:/images/arrow_redo.png</iconset>
+     <normaloff>:/icons/rsc/icons/arrow_redo.png</normaloff>:/icons/rsc/icons/arrow_redo.png</iconset>
    </property>
    <property name="text">
     <string>Redo</string>
@@ -393,20 +394,20 @@
   </action>
   <action name="action_zoom_reset">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="icon">
     <iconset>
-     <normaloff>:/images/zoom.png</normaloff>:/images/zoom.png</iconset>
+     <normaloff>:/icons/rsc/icons/zoom_reset.png</normaloff>:/icons/rsc/icons/zoom_reset.png</iconset>
    </property>
    <property name="text">
     <string>Reset zoom</string>
    </property>
    <property name="shortcut">
-    <string>=</string>
+    <string>/</string>
    </property>
    <property name="visible">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="iconVisibleInMenu">
     <bool>true</bool>
@@ -414,11 +415,11 @@
   </action>
   <action name="action_zoom_in">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="icon">
     <iconset>
-     <normaloff>:/images/zoom_in.png</normaloff>:/images/zoom_in.png</iconset>
+     <normaloff>:/icons/rsc/icons/zoom_in.png</normaloff>:/icons/rsc/icons/zoom_in.png</iconset>
    </property>
    <property name="text">
     <string>Zoom in</string>
@@ -427,7 +428,7 @@
     <string>+</string>
    </property>
    <property name="visible">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="iconVisibleInMenu">
     <bool>true</bool>
@@ -435,11 +436,11 @@
   </action>
   <action name="action_zoom_out">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="icon">
     <iconset>
-     <normaloff>:/images/zoom_out.png</normaloff>:/images/zoom_out.png</iconset>
+     <normaloff>:/icons/rsc/icons/zoom_out.png</normaloff>:/icons/rsc/icons/zoom_out.png</iconset>
    </property>
    <property name="text">
     <string>Zoom out</string>
@@ -448,7 +449,7 @@
     <string>-</string>
    </property>
    <property name="visible">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="iconVisibleInMenu">
     <bool>true</bool>

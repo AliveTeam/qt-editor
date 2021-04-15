@@ -32,6 +32,7 @@ public:
     void PopulatePropertyEditor(QGraphicsItem* pItem);
     void Undo();
     void Redo();
+    void wheelEvent(QWheelEvent* pEvent) override;
 private:
     Ui::EditorTab* ui = nullptr;
     float iZoomLevel = 1.0f;

@@ -228,8 +228,10 @@ EditorTab::EditorTab(QWidget* aParent, UP_Model model)
     pView->setRenderHint(QPainter::HighQualityAntialiasing);
     pView->setRenderHint(QPainter::Antialiasing);
     pView->setRenderHint(QPainter::TextAntialiasing);
-    pView->setViewport(new QOpenGLWidget()); // Becomes owned by the view
 
+    // turn off for now because of performance issues when a lot of
+    // objects are onscreen
+    //pView->setViewport(new QOpenGLWidget()); // Becomes owned by the view
 
     mScene = std::make_unique<EditorGraphicsScene>();
 
@@ -338,31 +340,48 @@ EditorTab::EditorTab(QWidget* aParent, UP_Model model)
         });
 }
 
+void EditorTab::wheelEvent(QWheelEvent* pEvent)
+{
+    /*if (pEvent->modifiers() == Qt::Modifier::CTRL)
+    {
+        if (pEvent->delta() > 0)
+        {
+            ZoomIn();
+        }
+        else
+        {
+            ZoomOut();
+        }
+    }*/
+    QWidget::wheelEvent(pEvent);
+}
+
+// TODO: zoom doesn't work properly without ui->graphicsView->resetTransform().
+// figure out why and if there's a better way.
 void EditorTab::ZoomIn()
 {
-    /*
     if (iZoomLevel < 1.0f + (KZoomFactor*KMaxZoomInLevels))
     {
         iZoomLevel += KZoomFactor;
+        ui->graphicsView->resetTransform();
         ui->graphicsView->scale(iZoomLevel, iZoomLevel);
     }
-    */
 }
 
 void EditorTab::ZoomOut()
 {
-    /*
     if (iZoomLevel > 1.0f - (KZoomFactor*KMaxZoomOutLevels))
     {
         iZoomLevel -= KZoomFactor;
+        ui->graphicsView->resetTransform();
         ui->graphicsView->scale(iZoomLevel, iZoomLevel);
     }
-    */
 }
 
 void EditorTab::ResetZoom()
 {
     iZoomLevel = 1.0f;
+    ui->graphicsView->resetTransform();
     ui->graphicsView->scale(iZoomLevel, iZoomLevel);
 }
 
