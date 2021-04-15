@@ -195,8 +195,9 @@ void ResizeableRectItem::Init()
 
     if ( !QPixmapCache::find( mMapObject->mObjectStructureType.c_str(), m_Pixmap ) )
     {
-        m_Pixmap = QPixmap(mMapObject->mObjectStructureType.c_str());
-        QPixmapCache::insert( mMapObject->mObjectStructureType.c_str(), m_Pixmap );
+        QString images_path = ":/object_images/rsc/object_images/";
+        m_Pixmap = QPixmap(images_path + mMapObject->mObjectStructureType.c_str() + ".bmp");
+        QPixmapCache::insert(images_path + mMapObject->mObjectStructureType.c_str() + ".bmp", m_Pixmap );
     }
 
      this->setOpacity( 0.7 );

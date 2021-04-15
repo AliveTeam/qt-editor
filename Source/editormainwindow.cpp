@@ -31,7 +31,9 @@ EditorMainWindow::EditorMainWindow(QWidget* aParent)
 
     QPixmapCache::setCacheLimit(1024 * 50);
 
-    //onOpenPath();
+    onOpenPath("C:/GitHub/qt-editor/build/Debug/level/OutputAE_ba.lvl_4.json");
+    onOpenPath("C:/GitHub/qt-editor/build/Debug/level/OutputAO_f1.lvl_2.json");
+
     onOpenPath("C:\\Users\\paul\\Documents\\qt-editor\\OutputAE_mi.lvl_4.json");
     onOpenPath("C:\\Users\\paul\\Documents\\qt-editor\\OutputAO_r2.lvl_4.json");
 
@@ -40,7 +42,7 @@ EditorMainWindow::EditorMainWindow(QWidget* aParent)
     int val = m_Settings.value("test").toInt();
 
     // Use full screen
-    //showMaximized();
+    showMaximized();
 
     // Disable context menu on the QToolBar
     m_ui->toolBar->setContextMenuPolicy(Qt::PreventContextMenu);
@@ -126,7 +128,7 @@ void EditorMainWindow::on_action_about_triggered()
 
 void EditorMainWindow::on_action_open_path_triggered()
 {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open level"), "", tr("Level files (*.lvl);;All Files (*)"));
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open level"), "", tr("Json files (*.json);;Level files (*.lvl);;All Files (*)"));
     if (!fileName.isEmpty())
     {
         onOpenPath(fileName);

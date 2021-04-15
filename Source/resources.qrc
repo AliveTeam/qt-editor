@@ -3,4 +3,50 @@
         <file>rsc/about/site.png</file>
         <file>rsc/about/tune.xm</file>
     </qresource>
+
+    <qresource prefix="/object_images">
+        <!-- AE graphics -->
+        <file>rsc/object_images/LiftPoint.bmp</file>
+        <file>rsc/object_images/Door.bmp</file>
+        <file>rsc/object_images/SlamDoor.bmp</file>
+        <file>rsc/object_images/Slog.bmp</file>
+        <file>rsc/object_images/Slig.bmp</file>
+        <file>rsc/object_images/Mine.bmp</file>
+        <file>rsc/object_images/Grinder.bmp</file>
+        <file>rsc/object_images/LCDStatusBoard.bmp</file>
+        <file>rsc/object_images/Switch.bmp</file>
+        <file>rsc/object_images/BirdPortal.bmp</file>
+        <file>rsc/object_images/Mudokon.bmp</file>
+        <file>rsc/object_images/Hoist.bmp</file>
+        <file>rsc/object_images/WorkWheel.bmp</file>
+        <file>rsc/object_images/LCDScreen.bmp</file>
+        <file>rsc/object_images/GasEmitter.bmp</file>
+        <file>rsc/object_images/SligPersist.bmp</file>
+        <file>rsc/object_images/SligLeftBound.bmp</file>
+        <file>rsc/object_images/SligRightBound.bmp</file>
+        <file>rsc/object_images/LaughingGas.bmp</file>
+        <file>rsc/object_images/UXB.bmp</file>
+        <file>rsc/object_images/Edge.bmp</file>
+        <file>rsc/object_images/SecurityOrb.bmp</file>
+        <file>rsc/object_images/StatusLight.bmp</file>
+        <file>rsc/object_images/ElectricWall.bmp</file>
+        <file>rsc/object_images/FootSwitch.bmp</file>
+        <file>rsc/object_images/SligGetPants.bmp</file>
+        <file>rsc/object_images/SligGetWings.bmp</file>
+        
+        <!-- AO graphics -->
+        <file>rsc/object_images/MusicTrigger.bmp</file>
+        <file>rsc/object_images/DeathDrop.bmp</file>
+        <file>rsc/object_images/ContinuePoint.bmp</file>
+        <file>rsc/object_images/ContinueZone.bmp</file>
+        <file>rsc/object_images/Preloader.bmp</file>
+        <file>rsc/object_images/LightEffect.bmp</file>
+        <file>rsc/object_images/Preloader.bmp</file>
+        <file>rsc/object_images/MeatSaw.bmp</file>
+        <file>rsc/object_images/TrapDoor.bmp</file>
+        <file>rsc/object_images/PathTransition.bmp</file>
+        <file>rsc/object_images/AbeStart.bmp</file>
+        <file>rsc/object_images/LiftMudokon.bmp</file>
+        <file>rsc/object_images/RingMudokon.bmp</file>
+     </qresource>
 </RCC>
