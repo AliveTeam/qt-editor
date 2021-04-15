@@ -14,6 +14,10 @@
 #include "CameraGraphicsItem.hpp"
 #include "EditorGraphicsScene.hpp"
 #include "bigspinbox.hpp"
+#include <QLineEdit>
+#include "PropertyTreeItemBase.hpp"
+#include "StringProperty.hpp"
+#include "PropertyTreeWidget.hpp"
 
 // Zoom by 10% each time.
 const float KZoomFactor = 0.10f;
@@ -199,17 +203,6 @@ public:
     }
 };
 
-class PropertyTreeItem : public QTreeWidgetItem
-{
-public:
-    PropertyTreeItem(QTreeWidgetItem* pParent, QStringList strings) : QTreeWidgetItem(pParent, strings) { }
-
-    QWidget* CreateEditorWidget(QTreeWidget* pParent)
-    {
-        auto spin = new BigSpinBox(pParent);
-        return spin;
-    }
-};
 
 EditorTab::EditorTab(QWidget* aParent, UP_Model model)
     : QMainWindow(aParent),
@@ -294,7 +287,13 @@ EditorTab::EditorTab(QWidget* aParent, UP_Model model)
     mUndoStack.setUndoLimit(100);
     ui->undoView->setStack(&mUndoStack);
 
+    // TODO: Temp hack
     QTreeWidget* pTree = ui->treeWidget;
+    delete ui->treeWidget;
+    ui->treeWidget = new PropertyTreeWidget(ui->dockWidgetContents_2);
+    ui->verticalLayout_5->addWidget(ui->treeWidget);
+
+    pTree = ui->treeWidget;
 
     // Two columns, property and value
     pTree->setColumnCount(2);
@@ -335,7 +334,7 @@ EditorTab::EditorTab(QWidget* aParent, UP_Model model)
         {
             if (column == 1)
             {
-                ui->treeWidget->setItemWidget(item, column, static_cast<PropertyTreeItem*>(item)->CreateEditorWidget(ui->treeWidget));
+                ui->treeWidget->setItemWidget(item, column, static_cast<PropertyTreeItemBase*>(item)->CreateEditorWidget(static_cast<PropertyTreeWidget*>(ui->treeWidget)));
             }
         });
 }
@@ -399,7 +398,7 @@ void EditorTab::PopulatePropertyEditor(QGraphicsItem* pItem)
 {
     ClearPropertyEditor();
 
-    QTreeWidget* pTree = ui->treeWidget;
+    auto pTree = static_cast<PropertyTreeWidget*>(ui->treeWidget);
 
     auto pLine = qgraphicsitem_cast<ResizeableArrowItem*>(pItem);
     auto pRect = qgraphicsitem_cast<ResizeableRectItem*>(pItem);
@@ -410,13 +409,14 @@ void EditorTab::PopulatePropertyEditor(QGraphicsItem* pItem)
     if (pRect)
     {
         MapObject* pMapObject = pRect->GetMapObject();
+        pTree->SetMapObject(pMapObject);
 
-        items.append(new PropertyTreeItem(parent, QStringList({ kIndent + "Name", pMapObject->mName.c_str() })));
+        items.append(new StringProperty(pMapObject, mUndoStack, parent, kIndent + "Name", &pMapObject->mName));
 
-        items.append(new PropertyTreeItem(parent, QStringList({ kIndent + "XPos", QString::number(pMapObject->mXPos) })));
-        items.append(new PropertyTreeItem(parent, QStringList({ kIndent + "YPos", QString::number(pMapObject->mYPos) })));
-        items.append(new PropertyTreeItem(parent, QStringList({ kIndent + "Width", QString::number(pMapObject->mWidth) })));
-        items.append(new PropertyTreeItem(parent, QStringList({ kIndent + "Height", QString::number(pMapObject->mHeight) })));
+        items.append(new PropertyTreeItemBase(parent, QStringList({ kIndent + "XPos", QString::number(pMapObject->mXPos) })));
+        items.append(new PropertyTreeItemBase(parent, QStringList({ kIndent + "YPos", QString::number(pMapObject->mYPos) })));
+        items.append(new PropertyTreeItemBase(parent, QStringList({ kIndent + "Width", QString::number(pMapObject->mWidth) })));
+        items.append(new PropertyTreeItemBase(parent, QStringList({ kIndent + "Height", QString::number(pMapObject->mHeight) })));
 
         for (UP_MapObjectProperty& property : pMapObject->mProperties)
         {
@@ -434,18 +434,19 @@ void EditorTab::PopulatePropertyEditor(QGraphicsItem* pItem)
                 {
                     strings.append(property->mEnumValue.c_str());
                 }
-                items.append(new PropertyTreeItem(parent, strings));
+                items.append(new PropertyTreeItemBase(parent, strings));
             }
         }
     }
     else if (pLine)
     {
         ICollision* pCollisionItem = pLine->GetCollisionItem();
+        pTree->SetCollisionObject(pCollisionItem);
 
-        items.append(new PropertyTreeItem(parent, QStringList({ kIndent + "X1", QString::number(pCollisionItem->mPos.mX1) })));
-        items.append(new PropertyTreeItem(parent, QStringList({ kIndent + "Y1", QString::number(pCollisionItem->mPos.mY1) })));
-        items.append(new PropertyTreeItem(parent, QStringList({ kIndent + "X2", QString::number(pCollisionItem->mPos.mX2) })));
-        items.append(new PropertyTreeItem(parent, QStringList({ kIndent + "Y2", QString::number(pCollisionItem->mPos.mY2) })));
+        items.append(new PropertyTreeItemBase(parent, QStringList({ kIndent + "X1", QString::number(pCollisionItem->mPos.mX1) })));
+        items.append(new PropertyTreeItemBase(parent, QStringList({ kIndent + "Y1", QString::number(pCollisionItem->mPos.mY1) })));
+        items.append(new PropertyTreeItemBase(parent, QStringList({ kIndent + "X2", QString::number(pCollisionItem->mPos.mX2) })));
+        items.append(new PropertyTreeItemBase(parent, QStringList({ kIndent + "Y2", QString::number(pCollisionItem->mPos.mY2) })));
 
         // TODO: Add AO/AE specific line props polymorphically
     }
