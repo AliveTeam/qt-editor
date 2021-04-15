@@ -36,11 +36,20 @@ EditorMainWindow::EditorMainWindow(QWidget* aParent)
 
     QPixmapCache::setCacheLimit(1024 * 50);
 
-    onOpenPath("C:/GitHub/qt-editor/build/Debug/level/OutputAE_ba.lvl_4.json");
-    onOpenPath("C:/GitHub/qt-editor/build/Debug/level/OutputAO_f1.lvl_2.json");
+    QStringList files;
+    files.append("C:/GitHub/qt-editor/build/Debug/level/OutputAE_ba.lvl_4.json");
+    files.append("C:/GitHub/qt-editor/build/Debug/level/OutputAO_f1.lvl_2.json");
+    files.append("C:\\Users\\paul\\Documents\\qt-editor\\OutputAE_mi.lvl_4.json");
+    files.append("C:\\Users\\paul\\Documents\\qt-editor\\OutputAO_r2.lvl_4.json");
 
-    onOpenPath("C:\\Users\\paul\\Documents\\qt-editor\\OutputAE_mi.lvl_4.json");
-    onOpenPath("C:\\Users\\paul\\Documents\\qt-editor\\OutputAO_r2.lvl_4.json");
+    for (const auto& file : files)
+    {
+        QFile f(file);
+        if (f.exists())
+        {
+            onOpenPath(file);
+        }
+    }
 
     m_Settings.setValue("test", 1234);
 
