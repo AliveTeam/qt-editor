@@ -4,6 +4,15 @@
         <file>rsc/about/tune.xm</file>
     </qresource>
 
+    <qresource prefix="/icons">
+        <file>rsc/icons/zoom_in.png</file>
+        <file>rsc/icons/zoom_out.png</file>
+        <file>rsc/icons/zoom_reset.png</file>
+        <file>rsc/icons/open.png</file>
+        <file>rsc/icons/arrow_undo.png</file>
+        <file>rsc/icons/arrow_redo.png</file>
+    </qresource>
+
     <qresource prefix="/object_images">
         <!-- AE graphics -->
         <file>rsc/object_images/LiftPoint.bmp</file>

@@ -23,6 +23,11 @@ EditorMainWindow::EditorMainWindow(QWidget* aParent)
 
     // Add short cuts to the tool bar.
     m_ui->toolBar->addAction(m_ui->action_open_path);
+    m_ui->toolBar->addAction(m_ui->action_undo);
+    m_ui->toolBar->addAction(m_ui->action_redo);
+    m_ui->toolBar->addAction(m_ui->action_zoom_reset);
+    m_ui->toolBar->addAction(m_ui->action_zoom_in);
+    m_ui->toolBar->addAction(m_ui->action_zoom_out);
 
     //connect( m_ui->action_open_path, &QAction::triggered, this, &EditorMainWindow::onOpenPath );
     connect(m_ui->tabWidget, &QTabWidget::tabCloseRequested, this, &EditorMainWindow::onCloseTab);

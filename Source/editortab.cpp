@@ -228,8 +228,10 @@ EditorTab::EditorTab(QWidget* aParent, UP_Model model)
     pView->setRenderHint(QPainter::HighQualityAntialiasing);
     pView->setRenderHint(QPainter::Antialiasing);
     pView->setRenderHint(QPainter::TextAntialiasing);
-    pView->setViewport(new QOpenGLWidget()); // Becomes owned by the view
 
+    // turn off for now because of performance issues when a lot of
+    // objects are onscreen
+    //pView->setViewport(new QOpenGLWidget()); // Becomes owned by the view
 
     mScene = std::make_unique<EditorGraphicsScene>();
 
@@ -338,22 +340,6 @@ EditorTab::EditorTab(QWidget* aParent, UP_Model model)
         });
 }
 
-void EditorTab::keyPressEvent(QKeyEvent* pEvent)
-{
-    switch (pEvent->key())
-    {
-    case Qt::Key::Key_Plus:
-        ZoomIn();
-        break;
-    case Qt::Key::Key_Minus:
-        ZoomOut();
-        break;
-    case Qt::Key::Key_Slash:
-        ResetZoom();
-        break;
-    }
-}
-
 void EditorTab::wheelEvent(QWheelEvent* pEvent)
 {
     /*if (pEvent->modifiers() == Qt::Modifier::CTRL)
@@ -367,6 +353,7 @@ void EditorTab::wheelEvent(QWheelEvent* pEvent)
             ZoomOut();
         }
     }*/
+    QWidget::wheelEvent(pEvent);
 }
 
 // TODO: zoom doesn't work properly without ui->graphicsView->resetTransform().

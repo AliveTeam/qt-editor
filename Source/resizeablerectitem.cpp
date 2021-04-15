@@ -194,7 +194,7 @@ void ResizeableRectItem::Init()
     setFlags( ItemSendsScenePositionChanges |  ItemSendsGeometryChanges | ItemIsMovable | ItemIsSelectable );
 
     QString images_path = ":/object_images/rsc/object_images/";
-    if ( !QPixmapCache::find(images_path + mMapObject->mObjectStructureType.c_str() + ".bmp", m_Pixmap ) )
+    if ( !QPixmapCache::find(images_path + mMapObject->mObjectStructureType.c_str() + ".bmp", &m_Pixmap ) )
     {
         m_Pixmap = QPixmap(images_path + mMapObject->mObjectStructureType.c_str() + ".bmp");
         QPixmapCache::insert(images_path + mMapObject->mObjectStructureType.c_str() + ".bmp", m_Pixmap );
