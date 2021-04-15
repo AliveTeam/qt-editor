@@ -16,8 +16,12 @@ QWidget* StringProperty::CreateEditorWidget(PropertyTreeWidget* pParent)
         {
             if (mPrevValue != edit->text())
             {
-                mUndoStack.push(new ChangeStringPropertyCommand(pParent, mProperty, text(0), mPrevValue, edit->text()));
-                mPrevValue = mProperty->c_str();
+                if (!edit->text().isEmpty() && edit->text().length() < 20)
+                {
+                    mUndoStack.push(new ChangeStringPropertyCommand(pParent, mProperty, text(0), mPrevValue, edit->text()));
+                    mPrevValue = mProperty->c_str();
+                    pParent->setItemWidget(this, 1, nullptr);
+                }
             }
         });
 
