@@ -338,31 +338,63 @@ EditorTab::EditorTab(QWidget* aParent, UP_Model model)
         });
 }
 
+void EditorTab::keyPressEvent(QKeyEvent* pEvent)
+{
+    switch (pEvent->key())
+    {
+    case Qt::Key::Key_Plus:
+        ZoomIn();
+        break;
+    case Qt::Key::Key_Minus:
+        ZoomOut();
+        break;
+    case Qt::Key::Key_Slash:
+        ResetZoom();
+        break;
+    }
+}
+
+void EditorTab::wheelEvent(QWheelEvent* pEvent)
+{
+    /*if (pEvent->modifiers() == Qt::Modifier::CTRL)
+    {
+        if (pEvent->delta() > 0)
+        {
+            ZoomIn();
+        }
+        else
+        {
+            ZoomOut();
+        }
+    }*/
+}
+
+// TODO: zoom doesn't work properly without ui->graphicsView->resetTransform().
+// figure out why and if there's a better way.
 void EditorTab::ZoomIn()
 {
-    /*
     if (iZoomLevel < 1.0f + (KZoomFactor*KMaxZoomInLevels))
     {
         iZoomLevel += KZoomFactor;
+        ui->graphicsView->resetTransform();
         ui->graphicsView->scale(iZoomLevel, iZoomLevel);
     }
-    */
 }
 
 void EditorTab::ZoomOut()
 {
-    /*
     if (iZoomLevel > 1.0f - (KZoomFactor*KMaxZoomOutLevels))
     {
         iZoomLevel -= KZoomFactor;
+        ui->graphicsView->resetTransform();
         ui->graphicsView->scale(iZoomLevel, iZoomLevel);
     }
-    */
 }
 
 void EditorTab::ResetZoom()
 {
     iZoomLevel = 1.0f;
+    ui->graphicsView->resetTransform();
     ui->graphicsView->scale(iZoomLevel, iZoomLevel);
 }
 
