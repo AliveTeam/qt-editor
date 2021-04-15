@@ -69,6 +69,11 @@ set(PROJECT_SOURCES
         Source/EditorGraphicsScene.hpp
         Source/bigspinbox.cpp
         Source/bigspinbox.hpp
+        Source/PropertyTreeItemBase.hpp
+        Source/StringProperty.hpp
+        Source/StringProperty.cpp
+        Source/PropertyTreeWidget.cpp
+        Source/PropertyTreeWidget.hpp
         Source/resources.qrc
         ${TS_FILES}
 )
