@@ -67,6 +67,8 @@ set(PROJECT_SOURCES
         Source/CameraGraphicsItem.hpp
         Source/EditorGraphicsScene.cpp
         Source/EditorGraphicsScene.hpp
+        Source/bigspinbox.cpp
+        Source/bigspinbox.hpp
         Source/resources.qrc
         ${TS_FILES}
 )

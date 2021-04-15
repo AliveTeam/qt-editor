@@ -193,18 +193,11 @@ void ResizeableRectItem::Init()
     // Allow select and move.
     setFlags( ItemSendsScenePositionChanges |  ItemSendsGeometryChanges | ItemIsMovable | ItemIsSelectable );
 
-    // Test image - TODO: Memory for these should be managed better, don't load same pixamp N times
-    /*
-    if ( !QPixmapCache::find( "019_Security_eye.bmp", m_Pixmap ) )
+    if ( !QPixmapCache::find( mMapObject->mObjectStructureType.c_str(), m_Pixmap ) )
     {
-
-        QPixmapCache::insert( "019_Security_eye.bmp", m_Pixmap );
+        m_Pixmap = QPixmap(mMapObject->mObjectStructureType.c_str());
+        QPixmapCache::insert( mMapObject->mObjectStructureType.c_str(), m_Pixmap );
     }
-    */
-     //m_Pixmap = QPixmap("019_Security_eye.bmp");
-
-     // TODO: Use QPixmapCache instead
-   //  setCacheMode( ItemCoordinateCache );
 
      this->setOpacity( 0.7 );
 }
