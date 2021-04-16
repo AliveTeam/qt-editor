@@ -11,12 +11,13 @@ QWidget* StringProperty::CreateEditorWidget(PropertyTreeWidget* pParent)
 {
     auto edit = new QLineEdit(pParent);
     edit->setText(mProperty->c_str());
+    edit->setMaxLength(20);
 
     connect(edit, &QLineEdit::editingFinished, this, [this, edit, pParent]() 
         {
             if (mPrevValue != edit->text())
             {
-                if (!edit->text().isEmpty() && edit->text().length() < 20)
+                if (!edit->text().isEmpty())
                 {
                     mUndoStack.push(new ChangeStringPropertyCommand(pParent, mProperty, text(0), mPrevValue, edit->text()));
                     mPrevValue = mProperty->c_str();
