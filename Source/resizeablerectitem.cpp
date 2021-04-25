@@ -14,7 +14,7 @@
 const quint32 ResizeableRectItem::kMinRectSize = 10;
 
 ResizeableRectItem::ResizeableRectItem(QGraphicsView* pView, MapObject* pMapObject)
-      : QGraphicsRectItem( pMapObject->mXPos, pMapObject->mYPos, pMapObject->mWidth, pMapObject->mHeight, nullptr ), mView(pView), mMapObject(pMapObject)
+      : QGraphicsRectItem( pMapObject->XPos(), pMapObject->YPos(), pMapObject->Width(), pMapObject->Height(), nullptr ), mView(pView), mMapObject(pMapObject)
 {
     Init();
     setZValue(3.0 + CalcZPos());

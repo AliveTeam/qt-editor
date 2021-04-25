@@ -3,17 +3,17 @@
 #include <QGraphicsLineItem>
 #include <QGraphicsView>
 
-class ICollision;
+class CollisionObject;
 
 class ResizeableArrowItem final : public QGraphicsLineItem
 {
 public:
-    ResizeableArrowItem(QGraphicsView* pView, ICollision* pLine);
+    ResizeableArrowItem(QGraphicsView* pView, CollisionObject* pLine);
     enum { Type = UserType + 2 };
     int type() const override { return Type; }
     QLineF SaveLine() const;
     void RestoreLine(const QLineF& line);
-    ICollision* GetCollisionItem() const { return mLine; }
+    CollisionObject* GetCollisionItem() const { return mLine; }
 protected:
     void hoverLeaveEvent( QGraphicsSceneHoverEvent* aEvent ) override;
     void hoverMoveEvent( QGraphicsSceneHoverEvent* aEvent ) override;
@@ -39,5 +39,5 @@ private:
     QPointF m_AnchorPoint;
     bool m_MouseIsDown = false;
     QGraphicsView* mView = nullptr;
-    ICollision* mLine = nullptr;
+    CollisionObject* mLine = nullptr;
 };

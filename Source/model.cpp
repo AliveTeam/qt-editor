@@ -1,5 +1,4 @@
 #include "model.hpp"
-#include <jsonxx.h>
 #include <optional>
 #include <fstream>
 
@@ -65,6 +64,63 @@ static bool ReadBool(jsonxx::Object& o, const std::string& key)
     return o.get<jsonxx::Boolean>(key);
 }
 
+static std::vector<EnumOrBasicTypeProperty> ReadObjectStructureProperties(jsonxx::Array& enumAndBasicTypes)
+{
+    std::vector<EnumOrBasicTypeProperty> properties;
+    for (size_t j = 0; j < enumAndBasicTypes.size(); j++)
+    {
+        jsonxx::Object enumOrBasicType = enumAndBasicTypes.get<jsonxx::Object>(j);
+        EnumOrBasicTypeProperty tmpEnumOrBasicTypeProperty;
+        tmpEnumOrBasicTypeProperty.mName = ReadString(enumOrBasicType, "name");
+        tmpEnumOrBasicTypeProperty.mType = ReadString(enumOrBasicType, "Type");
+        tmpEnumOrBasicTypeProperty.mVisible = ReadBool(enumOrBasicType, "Visible");
+        properties.push_back(tmpEnumOrBasicTypeProperty);
+    }
+    return properties;
+}
+
+static UP_ObjectStructure ReadObjectStructure(jsonxx::Object& objectStructure)
+{
+    auto tmpObjectStructure = std::make_unique<ObjectStructure>();
+    tmpObjectStructure->mName = ReadString(objectStructure, "name");
+
+    jsonxx::Array enumAndBasicTypes = ReadArray(objectStructure, "enum_and_basic_type_properties");
+    tmpObjectStructure->mEnumAndBasicTypeProperties = ReadObjectStructureProperties(enumAndBasicTypes);
+
+    return tmpObjectStructure;
+}
+
+std::vector<UP_ObjectProperty> Model::ReadProperties(const ObjectStructure* pObjStructure, jsonxx::Object& properties)
+{
+    std::vector<UP_ObjectProperty> tmpProperties;
+    for (const EnumOrBasicTypeProperty& property : pObjStructure->mEnumAndBasicTypeProperties)
+    {
+        const FoundType foundTypes = FindType(property.mType);
+        if (!foundTypes.mEnum && !foundTypes.mBasicType)
+        {
+            // corrupted schema type name has no definition
+            throw ObjectPropertyTypeNotFoundException(property.mName, property.mType);
+        }
+
+        auto tmpProperty = std::make_unique<ObjectProperty>();
+        tmpProperty->mName = property.mName;
+        tmpProperty->mTypeName = property.mType;
+        tmpProperty->mVisible = property.mVisible;
+        if (foundTypes.mBasicType)
+        {
+            tmpProperty->mBasicTypeValue = ReadNumber(properties, property.mName);
+        }
+        else
+        {
+            tmpProperty->mEnumValue = ReadString(properties, property.mName);
+        }
+
+        tmpProperties.push_back(std::move(tmpProperty));
+    }
+    return tmpProperties;
+}
+
+
 void Model::LoadJson(const std::string& jsonFile)
 {
     std::optional<std::string> jsonString = LoadFileToString(jsonFile);
@@ -90,44 +146,6 @@ void Model::LoadJson(const std::string& jsonFile)
     mMapInfo.mXSize = ReadNumber(map, "x_size");
     mMapInfo.mYGridSize = ReadNumber(map, "y_grid_size");
     mMapInfo.mYSize = ReadNumber(map, "y_size");
-
-    jsonxx::Array collisions = ReadArray(map, "collisions");
-    for (size_t i = 0; i < collisions.size(); i++)
-    {
-        jsonxx::Object collision = collisions.get<jsonxx::Object>(i);
-
-        if (mMapInfo.mGame == "AO")
-        {
-            auto tmpCollision = std::make_unique<CollisionAO>();
-            tmpCollision->mNext = ReadNumber(collision, "next");
-            tmpCollision->mPrevious = ReadNumber(collision, "previous");
-            tmpCollision->mType = ReadNumber(collision, "type");
-            tmpCollision->mPos.mX1 = ReadNumber(collision, "x1");
-            tmpCollision->mPos.mX2 = ReadNumber(collision, "x2");
-            tmpCollision->mPos.mY1 = ReadNumber(collision, "y1");
-            tmpCollision->mPos.mY2 = ReadNumber(collision, "y2");
-            mCollisions.push_back(std::move(tmpCollision));
-        }
-        else if (mMapInfo.mGame == "AE")
-        {
-            auto tmpCollision = std::make_unique<CollisionAE>();
-            tmpCollision->mLength = ReadNumber(collision, "length");
-            tmpCollision->mNext1 = ReadNumber(collision, "next");
-            tmpCollision->mNext2 = ReadNumber(collision, "next2");
-            tmpCollision->mPrevious1 = ReadNumber(collision, "previous");
-            tmpCollision->mPrevious2 = ReadNumber(collision, "previous2");
-            tmpCollision->mType = ReadNumber(collision, "type");
-            tmpCollision->mPos.mX1 = ReadNumber(collision, "x1");
-            tmpCollision->mPos.mX2 = ReadNumber(collision, "x2");
-            tmpCollision->mPos.mY1 = ReadNumber(collision, "y1");
-            tmpCollision->mPos.mY2 = ReadNumber(collision, "y2");
-            mCollisions.push_back(std::move(tmpCollision));
-        }
-        else
-        {
-            throw InvalidGameException(mMapInfo.mGame);
-        }
-    }
 
     jsonxx::Object schema = ReadObject(root, "schema");
 
@@ -161,19 +179,7 @@ void Model::LoadJson(const std::string& jsonFile)
     for (size_t i = 0; i < objectStructures.size(); i++)
     {
         jsonxx::Object objectStructure = objectStructures.get<jsonxx::Object>(i);
-        auto tmpObjectStructure = std::make_unique<ObjectStructure>();
-        tmpObjectStructure->mName = ReadString(objectStructure, "name");
-
-        jsonxx::Array enumAndBasicTypes = ReadArray(objectStructure, "enum_and_basic_type_properties");
-        for (size_t j = 0; j < enumAndBasicTypes.size(); j++)
-        {
-            jsonxx::Object enumOrBasicType = enumAndBasicTypes.get<jsonxx::Object>(j);
-            EnumOrBasicTypeProperty tmpEnumOrBasicTypeProperty;
-            tmpEnumOrBasicTypeProperty.mName = ReadString(enumOrBasicType, "name");
-            tmpEnumOrBasicTypeProperty.mType = ReadString(enumOrBasicType, "Type");
-            tmpEnumOrBasicTypeProperty.mVisible = ReadBool(enumOrBasicType, "Visible");
-            tmpObjectStructure->mEnumAndBasicTypeProperties.push_back(tmpEnumOrBasicTypeProperty);
-        }
+        auto tmpObjectStructure = ReadObjectStructure(objectStructure);
         mObjectStructures.push_back(std::move(tmpObjectStructure));
     }
 
@@ -197,10 +203,6 @@ void Model::LoadJson(const std::string& jsonFile)
                 jsonxx::Object mapObject = mapObjects.get<jsonxx::Object>(j);
                 auto tmpMapObject = std::make_unique<MapObject>();
                 tmpMapObject->mName = ReadString(mapObject, "name");
-                tmpMapObject->mWidth = ReadNumber(mapObject, "width");
-                tmpMapObject->mHeight = ReadNumber(mapObject, "height");
-                tmpMapObject->mXPos = ReadNumber(mapObject, "xpos");
-                tmpMapObject->mYPos = ReadNumber(mapObject, "ypos");
                 tmpMapObject->mObjectStructureType = ReadString(mapObject, "object_structures_type");
 
                 if (mapObject.has<jsonxx::Object>("properties"))
@@ -221,30 +223,7 @@ void Model::LoadJson(const std::string& jsonFile)
                     }
 
                     jsonxx::Object properties = ReadObject(mapObject, "properties");
-                    for (const EnumOrBasicTypeProperty& property : pObjStructure->mEnumAndBasicTypeProperties)
-                    {
-                        const FoundType foundTypes = FindType(property.mType);
-                        if (!foundTypes.mEnum && !foundTypes.mBasicType)
-                        {
-                            // corrupted schema type name has no definition
-                            throw ObjectPropertyTypeNotFoundException(property.mName, property.mType);
-                        }
-                        
-                        auto tmpProperty = std::make_unique<MapObjectProperty>();
-                        tmpProperty->mName = property.mName;
-                        tmpProperty->mTypeName = property.mType;
-                        tmpProperty->mVisible = property.mVisible;
-                        if (foundTypes.mBasicType)
-                        {
-                            tmpProperty->mBasicTypeValue = ReadNumber(properties, property.mName);
-                        }
-                        else
-                        {
-                            tmpProperty->mEnumValue = ReadString(properties, property.mName);
-                        }
-
-                        tmpMapObject->mProperties.push_back(std::move(tmpProperty));
-                    }
+                    tmpMapObject->mProperties = ReadProperties(pObjStructure, properties);
                 }
 
                 tmpCamera->mMapObjects.push_back(std::move(tmpMapObject));
@@ -252,4 +231,23 @@ void Model::LoadJson(const std::string& jsonFile)
         }
         mCameras.push_back(std::move(tmpCamera));
     }
+
+
+    jsonxx::Object collisionObject = ReadObject(map, "collisions");
+    jsonxx::Array collisionsArray = ReadArray(collisionObject, "items");
+    jsonxx::Array collisionStructure = ReadArray(collisionObject, "structure");
+
+    mCollisionStructure= std::make_unique<ObjectStructure>();
+    mCollisionStructure->mName = "Collision";
+    mCollisionStructure->mEnumAndBasicTypeProperties = ReadObjectStructureProperties(collisionStructure);
+
+    for (size_t i = 0; i < collisionsArray.size(); i++)
+    {
+        jsonxx::Object collision = collisionsArray.get<jsonxx::Object>(i);
+
+        auto tmpCollision = std::make_unique<CollisionObject>();
+        tmpCollision->mProperties = ReadProperties(mCollisionStructure.get(), collision);
+        mCollisions.push_back(std::move(tmpCollision));
+    }
+
 }
