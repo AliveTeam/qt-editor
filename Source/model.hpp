@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <jsonxx.h>
 
 class ModelException
 {
@@ -61,8 +62,7 @@ private:
     std::string mKey;
 };
 
-
-struct MapObjectProperty final
+struct ObjectProperty final
 {
     std::string mName;
     std::string mTypeName;
@@ -70,17 +70,45 @@ struct MapObjectProperty final
     std::string mEnumValue;
     bool mVisible = true;
 };
-using UP_MapObjectProperty = std::unique_ptr<MapObjectProperty>;
+using UP_ObjectProperty = std::unique_ptr<ObjectProperty>;
+
+inline const ObjectProperty* PropertyByName(const std::string& name, const std::vector<UP_ObjectProperty>& props)
+{
+    for (const auto& prop : props)
+    {
+        if (prop->mName == name)
+        {
+            return prop.get();
+        }
+    }
+    return nullptr;
+}
 
 struct MapObject final
 {
     std::string mName;
     std::string mObjectStructureType;
-    int mHeight = 0;
-    int mWidth = 0;
-    int mXPos = 0;
-    int mYPos = 0;
-    std::vector<UP_MapObjectProperty> mProperties;
+    std::vector<UP_ObjectProperty> mProperties;
+
+    int XPos() const 
+    {
+        return PropertyByName("xpos", mProperties)->mBasicTypeValue;
+    }
+
+    int YPos() const
+    {
+        return PropertyByName("ypos", mProperties)->mBasicTypeValue;
+    }
+
+    int Width() const
+    {
+        return PropertyByName("width", mProperties)->mBasicTypeValue;
+    }
+
+    int Height() const
+    {
+        return PropertyByName("height", mProperties)->mBasicTypeValue;
+    }
 };
 using UP_MapObject = std::unique_ptr<MapObject>;
 
@@ -94,38 +122,32 @@ struct Camera final
 };
 using UP_Camera = std::unique_ptr<Camera>;
 
-struct CollisionPos final
-{
-    int mX1 = 0;
-    int mX2 = 0;
-    int mY1 = 0;
-    int mY2 = 0;
-};
-
-class ICollision
+class CollisionObject final
 {
 public:
-    virtual ~ICollision() {}
-    CollisionPos mPos;
-};
-using UP_ICollision = std::unique_ptr<ICollision>;
+    std::vector<UP_ObjectProperty> mProperties;
 
-struct CollisionAE final : public ICollision
-{
-    int mLength = 0;
-    int mNext1 = 0;
-    int mNext2 = 0;
-    int mPrevious1 = 0;
-    int mPrevious2 = 0;
-    int mType = 0;
-};
+    int X1() const
+    {
+        return PropertyByName("x1", mProperties)->mBasicTypeValue;
+    }
 
-struct CollisionAO final : public ICollision
-{
-    int mNext = 0;
-    int mPrevious = 0;
-    int mType = 0;
+    int Y1() const
+    {
+        return PropertyByName("y1", mProperties)->mBasicTypeValue;
+    }
+
+    int X2() const
+    {
+        return PropertyByName("x2", mProperties)->mBasicTypeValue;
+    }
+
+    int Y2() const
+    {
+        return PropertyByName("y2", mProperties)->mBasicTypeValue;
+    }
 };
+using UP_CollisionObject = std::unique_ptr<CollisionObject>;
 
 struct Enum final
 {
@@ -186,7 +208,7 @@ public:
         return nullptr;
     }
 
-    std::vector<UP_ICollision>& CollisionItems()
+    std::vector<UP_CollisionObject>& CollisionItems()
     {
         return mCollisions;
     }
@@ -219,9 +241,12 @@ public:
     }
 
 private:
+    std::vector<UP_ObjectProperty> ReadProperties(const ObjectStructure* pObjStructure, jsonxx::Object& properties);
+
     MapInfo mMapInfo;
     std::vector<UP_Camera> mCameras;
-    std::vector<UP_ICollision> mCollisions;
+    std::vector<UP_CollisionObject> mCollisions;
+    UP_ObjectStructure mCollisionStructure;
 
     std::vector<UP_Enum> mEnums;
     std::vector<UP_ObjectStructure> mObjectStructures;

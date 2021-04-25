@@ -413,12 +413,7 @@ void EditorTab::PopulatePropertyEditor(QGraphicsItem* pItem)
 
         items.append(new StringProperty(pMapObject, mUndoStack, parent, kIndent + "Name", &pMapObject->mName));
 
-        items.append(new PropertyTreeItemBase(parent, QStringList({ kIndent + "XPos", QString::number(pMapObject->mXPos) })));
-        items.append(new PropertyTreeItemBase(parent, QStringList({ kIndent + "YPos", QString::number(pMapObject->mYPos) })));
-        items.append(new PropertyTreeItemBase(parent, QStringList({ kIndent + "Width", QString::number(pMapObject->mWidth) })));
-        items.append(new PropertyTreeItemBase(parent, QStringList({ kIndent + "Height", QString::number(pMapObject->mHeight) })));
-
-        for (UP_MapObjectProperty& property : pMapObject->mProperties)
+        for (UP_ObjectProperty& property : pMapObject->mProperties)
         {
             if (property->mVisible)
             {
@@ -440,15 +435,29 @@ void EditorTab::PopulatePropertyEditor(QGraphicsItem* pItem)
     }
     else if (pLine)
     {
-        ICollision* pCollisionItem = pLine->GetCollisionItem();
+        CollisionObject* pCollisionItem = pLine->GetCollisionItem();
         pTree->SetCollisionObject(pCollisionItem);
 
-        items.append(new PropertyTreeItemBase(parent, QStringList({ kIndent + "X1", QString::number(pCollisionItem->mPos.mX1) })));
-        items.append(new PropertyTreeItemBase(parent, QStringList({ kIndent + "Y1", QString::number(pCollisionItem->mPos.mY1) })));
-        items.append(new PropertyTreeItemBase(parent, QStringList({ kIndent + "X2", QString::number(pCollisionItem->mPos.mX2) })));
-        items.append(new PropertyTreeItemBase(parent, QStringList({ kIndent + "Y2", QString::number(pCollisionItem->mPos.mY2) })));
+        // TODO: Copy paste of above
+        for (UP_ObjectProperty& property : pCollisionItem->mProperties)
+        {
+            if (property->mVisible)
+            {
+                QStringList strings;
+                strings.append(kIndent + property->mName.c_str());
 
-        // TODO: Add AO/AE specific line props polymorphically
+                const Model::FoundType foundType = mModel->FindType(property->mTypeName);
+                if (foundType.mBasicType)
+                {
+                    strings.append(QString::number(property->mBasicTypeValue));
+                }
+                else if (foundType.mEnum)
+                {
+                    strings.append(property->mEnumValue.c_str());
+                }
+                items.append(new PropertyTreeItemBase(parent, strings));
+            }
+        }
     }
 
 #ifdef _WIN32

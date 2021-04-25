@@ -6,8 +6,8 @@
 #include <QGraphicsView>
 #include "model.hpp"
 
-ResizeableArrowItem::ResizeableArrowItem(QGraphicsView* pView, ICollision* pLine) 
-    : QGraphicsLineItem(pLine->mPos.mX1, pLine->mPos.mY1, pLine->mPos.mX2, pLine->mPos.mY2), mView(pView), mLine(pLine)
+ResizeableArrowItem::ResizeableArrowItem(QGraphicsView* pView, CollisionObject* pLine) 
+    : QGraphicsLineItem(pLine->X1(), pLine->Y1(), pLine->X2(), pLine->Y2()), mView(pView), mLine(pLine)
 {
     Init();
     setZValue(2.0);

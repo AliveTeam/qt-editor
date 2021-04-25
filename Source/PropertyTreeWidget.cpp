@@ -33,7 +33,7 @@ void PropertyTreeWidget::SetMapObject(MapObject* pMapObject)
     mCollision = nullptr;
 }
 
-void PropertyTreeWidget::SetCollisionObject(ICollision* pCollision)
+void PropertyTreeWidget::SetCollisionObject(CollisionObject* pCollision)
 {
     mMapObject = nullptr;
     mCollision = pCollision;

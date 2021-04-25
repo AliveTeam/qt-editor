@@ -4,7 +4,7 @@
 
 class PropertyTreeItemBase;
 struct MapObject;
-class ICollision;
+class CollisionObject;
 
 class PropertyTreeWidget : public QTreeWidget
 {
@@ -15,9 +15,9 @@ public:
 
     void SetMapObject( MapObject* pMapObject );
 
-    void SetCollisionObject(ICollision* pCollision);
+    void SetCollisionObject(CollisionObject* pCollision);
 
 private:
     MapObject* mMapObject = nullptr;
-    ICollision* mCollision = nullptr;
+    CollisionObject* mCollision = nullptr;
 };
