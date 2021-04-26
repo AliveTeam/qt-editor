@@ -402,19 +402,17 @@ void EditorTab::AddProperties(QTreeWidgetItem* parent, QList<QTreeWidgetItem*>& 
     {
         if (property->mVisible)
         {
-            QStringList strings;
-            strings.append(kIndent + property->mName.c_str());
-
             const Model::FoundType foundType = mModel->FindType(property->mTypeName);
             if (foundType.mBasicType)
             {
-                strings.append(QString::number(property->mBasicTypeValue));
+                BasicType* pBasicType = mModel->FindBasicType(property->mTypeName);
+                items.append(new BasicTypeProperty(mUndoStack, parent, kIndent + property->mName.c_str(), property->mBasicTypeValue, pBasicType));
             }
             else if (foundType.mEnum)
             {
-                strings.append(property->mEnumValue.c_str());
+                Enum* pEnum = mModel->FindEnum(property->mTypeName);
+                items.append(new EnumProperty(mUndoStack, parent, kIndent + property->mName.c_str(), property->mEnumValue.c_str(), pEnum));
             }
-            items.append(new PropertyTreeItemBase(parent, strings));
         }
     }
 }

@@ -1,5 +1,6 @@
 #include "StringProperty.hpp"
-
+#include <QComboBox>
+#include "model.hpp"
 
 StringProperty::StringProperty(MapObject* pMapObject, QUndoStack& undoStack, QTreeWidgetItem* pParent, QString propertyName, std::string* pProperty) 
     : PropertyTreeItemBase(pParent, QStringList{ propertyName, pProperty->c_str() }), mMapObject(pMapObject), mUndoStack(undoStack), mProperty(pProperty)
@@ -50,4 +51,44 @@ void ChangeStringPropertyCommand::redo()
 {
     *mProperty = mNewValue.toStdString();
     mTreeWidget->FindStringProperty(mProperty)->Refresh();
+}
+
+EnumProperty::EnumProperty(QUndoStack& undoStack, QTreeWidgetItem* pParent, QString propertyName, QString propertyValue, Enum* pEnum) : PropertyTreeItemBase(pParent, QStringList{ propertyName, propertyValue }), mUndoStack(undoStack), mEnum(pEnum)
+{
+    mValue = propertyValue;
+}
+
+QWidget* EnumProperty::CreateEditorWidget(PropertyTreeWidget* pParent)
+{
+    auto combo = new QComboBox(pParent);
+    int i = 0;
+    int idx = -1;
+    for (auto& item : mEnum->mValues)
+    {
+        if (mValue == item.c_str())
+        {
+            idx = i;
+        }
+        combo->addItem(item.c_str());
+        i++;
+    }
+    if (idx != -1)
+    {
+        combo->setCurrentIndex(idx);
+    }
+    return combo;
+}
+
+BasicTypeProperty::BasicTypeProperty(QUndoStack& undoStack, QTreeWidgetItem* pParent, QString propertyName, int propertyValue, BasicType* pBasicType) : PropertyTreeItemBase(pParent, QStringList{ propertyName, QString::number(propertyValue) }), mUndoStack(undoStack), mBasicType(pBasicType)
+{
+    mValue = propertyValue;
+}
+
+QWidget* BasicTypeProperty::CreateEditorWidget(PropertyTreeWidget* pParent)
+{
+    auto spin = new BigSpinBox(pParent);
+    spin->setMax(mBasicType->mMaxValue);
+    spin->setMin(mBasicType->mMinValue);
+    spin->setValue(mValue);
+    return spin;
 }
