@@ -219,22 +219,42 @@ public:
         BasicType* mBasicType = nullptr;
     };
 
-    FoundType FindType(const std::string& toFind)
+    Enum* FindEnum(const std::string& toFind)
     {
         for (const auto& enumType : mEnums)
         {
             if (enumType->mName == toFind)
             {
-                return { enumType.get(), nullptr };
+                return enumType.get();
             }
         }
+        return nullptr;
+    }
 
+    BasicType* FindBasicType(const std::string& toFind)
+    {
         for (const auto& basicType : mBasicTypes)
         {
             if (basicType->mName == toFind)
             {
-               return { nullptr, basicType.get() };
+                return basicType.get();
             }
+        }
+        return nullptr;
+    }
+
+    FoundType FindType(const std::string& toFind)
+    {
+        Enum* enumType = FindEnum(toFind);
+        if (enumType)
+        {
+            return { enumType, nullptr };
+        }
+
+        BasicType* basicType = FindBasicType(toFind);
+        if (basicType)
+        {
+            return { nullptr, basicType };
         }
 
         return { nullptr, nullptr };

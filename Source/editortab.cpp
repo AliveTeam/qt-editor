@@ -394,6 +394,29 @@ void EditorTab::ClearPropertyEditor()
     ui->treeWidget->clear();
 }
 
+static const QString kIndent("    ");
+
+void EditorTab::AddProperties(QTreeWidgetItem* parent, QList<QTreeWidgetItem*>& items, std::vector<UP_ObjectProperty>& props)
+{
+    for (UP_ObjectProperty& property : props)
+    {
+        if (property->mVisible)
+        {
+            const Model::FoundType foundType = mModel->FindType(property->mTypeName);
+            if (foundType.mBasicType)
+            {
+                BasicType* pBasicType = mModel->FindBasicType(property->mTypeName);
+                items.append(new BasicTypeProperty(mUndoStack, parent, kIndent + property->mName.c_str(), property->mBasicTypeValue, pBasicType));
+            }
+            else if (foundType.mEnum)
+            {
+                Enum* pEnum = mModel->FindEnum(property->mTypeName);
+                items.append(new EnumProperty(mUndoStack, parent, kIndent + property->mName.c_str(), property->mEnumValue.c_str(), pEnum));
+            }
+        }
+    }
+}
+
 void EditorTab::PopulatePropertyEditor(QGraphicsItem* pItem)
 {
     ClearPropertyEditor();
@@ -405,59 +428,19 @@ void EditorTab::PopulatePropertyEditor(QGraphicsItem* pItem)
 
     QList<QTreeWidgetItem*> items;
     QTreeWidgetItem* parent = nullptr;
-    const QString kIndent("    ");
     if (pRect)
     {
         MapObject* pMapObject = pRect->GetMapObject();
         pTree->SetMapObject(pMapObject);
 
         items.append(new StringProperty(pMapObject, mUndoStack, parent, kIndent + "Name", &pMapObject->mName));
-
-        for (UP_ObjectProperty& property : pMapObject->mProperties)
-        {
-            if (property->mVisible)
-            {
-                QStringList strings;
-                strings.append(kIndent + property->mName.c_str());
-
-                const Model::FoundType foundType = mModel->FindType(property->mTypeName);
-                if (foundType.mBasicType)
-                {
-                    strings.append(QString::number(property->mBasicTypeValue));
-                }
-                else if (foundType.mEnum)
-                {
-                    strings.append(property->mEnumValue.c_str());
-                }
-                items.append(new PropertyTreeItemBase(parent, strings));
-            }
-        }
+        AddProperties(parent, items, pMapObject->mProperties);
     }
     else if (pLine)
     {
         CollisionObject* pCollisionItem = pLine->GetCollisionItem();
         pTree->SetCollisionObject(pCollisionItem);
-
-        // TODO: Copy paste of above
-        for (UP_ObjectProperty& property : pCollisionItem->mProperties)
-        {
-            if (property->mVisible)
-            {
-                QStringList strings;
-                strings.append(kIndent + property->mName.c_str());
-
-                const Model::FoundType foundType = mModel->FindType(property->mTypeName);
-                if (foundType.mBasicType)
-                {
-                    strings.append(QString::number(property->mBasicTypeValue));
-                }
-                else if (foundType.mEnum)
-                {
-                    strings.append(property->mEnumValue.c_str());
-                }
-                items.append(new PropertyTreeItemBase(parent, strings));
-            }
-        }
+        AddProperties(parent, items, pCollisionItem->mProperties);
     }
 
 #ifdef _WIN32

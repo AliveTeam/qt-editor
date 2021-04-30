@@ -34,6 +34,8 @@ public:
     void Redo();
     void wheelEvent(QWheelEvent* pEvent) override;
 private:
+    void AddProperties(QTreeWidgetItem* parent, QList<QTreeWidgetItem*>& items, std::vector<UP_ObjectProperty>& props);
+
     Ui::EditorTab* ui = nullptr;
     float iZoomLevel = 1.0f;
     UP_Model mModel;

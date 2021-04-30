@@ -9,11 +9,7 @@ class PropertyTreeItemBase : public QTreeWidgetItem
 public:
     using QTreeWidgetItem::QTreeWidgetItem;
 
-    virtual QWidget* CreateEditorWidget(PropertyTreeWidget* pParent)
-    {
-        auto spin = new BigSpinBox(pParent);
-        return spin;
-    }
+    virtual QWidget* CreateEditorWidget(PropertyTreeWidget* pParent) = 0;
 
     virtual void Refresh()
     {
