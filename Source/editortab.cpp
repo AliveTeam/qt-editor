@@ -19,6 +19,8 @@
 #include "StringProperty.hpp"
 #include "PropertyTreeWidget.hpp"
 #include <QFileInfo>
+#include "BasicTypeProperty.hpp"
+#include "EnumProperty.hpp"
 
 // Zoom by 10% each time.
 const float KZoomFactor = 0.10f;
@@ -290,32 +292,11 @@ EditorTab::EditorTab(QWidget* aParent, UP_Model model, QString jsonFileName)
     ui->undoView->setStack(&mUndoStack);
 
     // TODO: Temp hack
-    QTreeWidget* pTree = ui->treeWidget;
     delete ui->treeWidget;
     ui->treeWidget = new PropertyTreeWidget(ui->dockWidgetContents_2);
     ui->verticalLayout_5->addWidget(ui->treeWidget);
 
-    pTree = ui->treeWidget;
-
-    // Two columns, property and value
-    pTree->setColumnCount(2);
-
-    // Set the header text
-    QStringList headerStrings;
-    headerStrings.append("Property");
-    headerStrings.append("Value");
-    pTree->setHeaderLabels(headerStrings);
-
-    pTree->setAlternatingRowColors(true);
-    pTree->setStyleSheet("QTreeView::item { height:23px; font:6px; padding:0px; margin:0px; }");
-    
-    pTree->header()->resizeSection(0, 200);
-    pTree->header()->resizeSection(1, 90);
-
-    pTree->setUniformRowHeights(true);
-
-    pTree->setRootIsDecorated(false);
-
+    static_cast<PropertyTreeWidget*>(ui->treeWidget)->Init();
 
     addDockWidget(Qt::RightDockWidgetArea, ui->propertyDockWidget);
     addDockWidget(Qt::RightDockWidgetArea, ui->undoHistoryDockWidget);
@@ -324,21 +305,6 @@ EditorTab::EditorTab(QWidget* aParent, UP_Model model, QString jsonFileName)
 
     setContextMenuPolicy(Qt::PreventContextMenu);
 
-    connect(pTree, &QTreeWidget::currentItemChanged, this, [&](QTreeWidgetItem* current, QTreeWidgetItem* prev)
-        {
-            if (prev)
-            {
-                ui->treeWidget->setItemWidget(prev, 1, nullptr);
-            }
-        });
-
-    connect(pTree, &QTreeWidget::itemClicked, this, [&](QTreeWidgetItem* item, int column)
-        {
-            if (column == 1)
-            {
-                ui->treeWidget->setItemWidget(item, column, static_cast<PropertyTreeItemBase*>(item)->CreateEditorWidget(static_cast<PropertyTreeWidget*>(ui->treeWidget)));
-            }
-        });
 }
 
 void EditorTab::wheelEvent(QWheelEvent* pEvent)
@@ -396,66 +362,12 @@ void EditorTab::ClearPropertyEditor()
     ui->treeWidget->clear();
 }
 
-static const QString kIndent("    ");
-
-void EditorTab::AddProperties(QTreeWidgetItem* parent, QList<QTreeWidgetItem*>& items, std::vector<UP_ObjectProperty>& props)
-{
-    for (UP_ObjectProperty& property : props)
-    {
-        if (property->mVisible)
-        {
-            const Model::FoundType foundType = mModel->FindType(property->mTypeName);
-            if (foundType.mBasicType)
-            {
-                BasicType* pBasicType = mModel->FindBasicType(property->mTypeName);
-                items.append(new BasicTypeProperty(mUndoStack, parent, kIndent + property->mName.c_str(), property->mBasicTypeValue, pBasicType));
-            }
-            else if (foundType.mEnum)
-            {
-                Enum* pEnum = mModel->FindEnum(property->mTypeName);
-                items.append(new EnumProperty(mUndoStack, parent, kIndent + property->mName.c_str(), property->mEnumValue.c_str(), pEnum));
-            }
-        }
-    }
-}
-
 void EditorTab::PopulatePropertyEditor(QGraphicsItem* pItem)
 {
     ClearPropertyEditor();
 
     auto pTree = static_cast<PropertyTreeWidget*>(ui->treeWidget);
-
-    auto pLine = qgraphicsitem_cast<ResizeableArrowItem*>(pItem);
-    auto pRect = qgraphicsitem_cast<ResizeableRectItem*>(pItem);
-
-    QList<QTreeWidgetItem*> items;
-    QTreeWidgetItem* parent = nullptr;
-    if (pRect)
-    {
-        MapObject* pMapObject = pRect->GetMapObject();
-        pTree->SetMapObject(pMapObject);
-
-        items.append(new StringProperty(pMapObject, mUndoStack, parent, kIndent + "Name", &pMapObject->mName));
-        AddProperties(parent, items, pMapObject->mProperties);
-    }
-    else if (pLine)
-    {
-        CollisionObject* pCollisionItem = pLine->GetCollisionItem();
-        pTree->SetCollisionObject(pCollisionItem);
-        AddProperties(parent, items, pCollisionItem->mProperties);
-    }
-
-#ifdef _WIN32
-    for (int i = 0; i < items.count(); i++)
-    {
-        const int b = (i % 2) == 0 ? 191 : 222;
-        items[i]->setBackground(0, QColor(255, 255, b));
-        items[i]->setBackground(1, QColor(255, 255, b));
-
-    }
-#endif
-
-    pTree->insertTopLevelItems(0, items);
+    pTree->Populate(*mModel, mUndoStack, pItem);
 }
 
 void EditorTab::Undo()

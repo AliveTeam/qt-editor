@@ -16,8 +16,5 @@ public:
 
     }
 
-    virtual MapObject* GetMapObject()
-    {
-        return nullptr;
-    }
+    virtual const void* GetPropertyLookUpKey() const = 0;
 };
