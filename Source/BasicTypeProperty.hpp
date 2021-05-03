@@ -8,12 +8,17 @@ class QUndoStack;
 class BasicTypeProperty final : public PropertyTreeItemBase
 {
 public:
-    BasicTypeProperty(QUndoStack& undoStack, QTreeWidgetItem* pParent, QString propertyName, int propertyValue, BasicType* pBasicType);
+    BasicTypeProperty(QUndoStack& undoStack, QTreeWidgetItem* pParent, QString propertyName, ObjectProperty* pProperty, BasicType* pBasicType);
 
     QWidget* CreateEditorWidget(PropertyTreeWidget* pParent) override;
 
+    const void* GetPropertyLookUpKey() const override
+    {
+        return mProperty;
+    }
+
 private:
-    int mValue = 0;
     QUndoStack& mUndoStack;
+    ObjectProperty* mProperty = nullptr;
     BasicType* mBasicType = nullptr;
 };

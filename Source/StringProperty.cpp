@@ -2,8 +2,8 @@
 #include <QComboBox>
 #include "model.hpp"
 
-StringProperty::StringProperty(MapObject* pMapObject, QUndoStack& undoStack, QTreeWidgetItem* pParent, QString propertyName, std::string* pProperty) 
-    : PropertyTreeItemBase(pParent, QStringList{ propertyName, pProperty->c_str() }), mMapObject(pMapObject), mUndoStack(undoStack), mProperty(pProperty)
+StringProperty::StringProperty(QUndoStack& undoStack, QTreeWidgetItem* pParent, QString propertyName, std::string* pProperty) 
+    : PropertyTreeItemBase(pParent, QStringList{ propertyName, pProperty->c_str() }), mUndoStack(undoStack), mProperty(pProperty)
 {
     mPrevValue = mProperty->c_str();
 }
@@ -44,11 +44,11 @@ ChangeStringPropertyCommand::ChangeStringPropertyCommand(PropertyTreeWidget* pTr
 void ChangeStringPropertyCommand::undo()
 {
     *mProperty = mOldValue.toStdString();
-    mTreeWidget->FindStringProperty(mProperty)->Refresh();
+    mTreeWidget->FindObjectPropertyByKey(mProperty)->Refresh();
 }
 
 void ChangeStringPropertyCommand::redo()
 {
     *mProperty = mNewValue.toStdString();
-    mTreeWidget->FindStringProperty(mProperty)->Refresh();
+    mTreeWidget->FindObjectPropertyByKey(mProperty)->Refresh();
 }

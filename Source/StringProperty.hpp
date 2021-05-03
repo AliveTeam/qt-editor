@@ -27,19 +27,18 @@ class StringProperty : public QObject, public PropertyTreeItemBase
 {
     Q_OBJECT
 public:
-    StringProperty(MapObject* pMapObject, QUndoStack& undoStack, QTreeWidgetItem* pParent, QString propertyName, std::string* pProperty);
+    StringProperty(QUndoStack& undoStack, QTreeWidgetItem* pParent, QString propertyName, std::string* pProperty);
 
     virtual QWidget* CreateEditorWidget(PropertyTreeWidget* pParent) override;
 
     virtual void Refresh() override;
 
-    virtual MapObject* GetMapObject() override
+    const void* GetPropertyLookUpKey() const override
     {
-        return mMapObject;
+        return mProperty;
     }
 
 private:
-    MapObject* mMapObject = nullptr;
     std::string* mProperty = nullptr;
     QString mPrevValue;
     QUndoStack& mUndoStack;

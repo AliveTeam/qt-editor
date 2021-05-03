@@ -14,11 +14,7 @@ class PropertyTreeWidget : public QTreeWidget
 public:
     using QTreeWidget::QTreeWidget;
 
-    PropertyTreeItemBase* FindStringProperty(std::string* pPropToFind);
-
-    void SetMapObject( MapObject* pMapObject );
-
-    void SetCollisionObject(CollisionObject* pCollision);
+    PropertyTreeItemBase* FindObjectPropertyByKey(const void* pKey);
 
     void Populate(Model& model, QUndoStack& undoStack, QGraphicsItem* pItem);
 
@@ -27,6 +23,4 @@ public:
 private:
     void AddProperties(Model& model, QUndoStack& undoStack, QList<QTreeWidgetItem*>& items, std::vector<UP_ObjectProperty>& props);
 
-    MapObject* mMapObject = nullptr;
-    CollisionObject* mCollision = nullptr;
 };
