@@ -109,13 +109,10 @@ void PropertyTreeWidget::Init()
             {
                 setItemWidget(prev, 1, nullptr);
             }
-        });
 
-    connect(this, &QTreeWidget::itemClicked, this, [&](QTreeWidgetItem* item, int column)
-        {
-            if (column == 1)
+            if (current)
             {
-                setItemWidget(item, column, static_cast<PropertyTreeItemBase*>(item)->CreateEditorWidget(this));
+                setItemWidget(current, 1, static_cast<PropertyTreeItemBase*>(current)->CreateEditorWidget(this));
             }
         });
 }
@@ -127,15 +124,21 @@ void PropertyTreeWidget::AddProperties(Model& model, QUndoStack& undoStack, QLis
     {
         if (property->mVisible)
         {
-            if (property->mType == ObjectProperty::Type::BasicType)
+            switch (property->mType)
+            {
+            case ObjectProperty::Type::BasicType:
             {
                 BasicType* pBasicType = model.FindBasicType(property->mTypeName);
                 items.append(new BasicTypeProperty(undoStack, parent, kIndent + property->mName.c_str(), property->mBasicTypeValue, pBasicType));
             }
-            else
+                break;
+
+            case ObjectProperty::Type::Enumeration:
             {
                 Enum* pEnum = model.FindEnum(property->mTypeName);
                 items.append(new EnumProperty(undoStack, parent, kIndent + property->mName.c_str(), property->mEnumValue.c_str(), pEnum));
+            }
+                break;
             }
         }
     }
