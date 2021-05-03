@@ -44,34 +44,3 @@ private:
     QString mPrevValue;
     QUndoStack& mUndoStack;
 };
-
-
-struct Enum;
-
-class EnumProperty final : public PropertyTreeItemBase
-{
-public:
-    EnumProperty(QUndoStack& undoStack, QTreeWidgetItem* pParent, QString propertyName, QString propertyValue, Enum* pEnum);
-
-    QWidget* CreateEditorWidget(PropertyTreeWidget* pParent) override;
-
-private:
-    QString mValue;
-    QUndoStack& mUndoStack;
-    Enum* mEnum = nullptr;
-};
-
-struct BasicType;
-
-class BasicTypeProperty final : public PropertyTreeItemBase
-{
-public:
-    BasicTypeProperty(QUndoStack& undoStack, QTreeWidgetItem* pParent, QString propertyName, int propertyValue, BasicType* pBasicType);
-
-    QWidget* CreateEditorWidget(PropertyTreeWidget* pParent) override;
-
-private:
-    int mValue = 0;
-    QUndoStack& mUndoStack;
-    BasicType* mBasicType = nullptr;
-};

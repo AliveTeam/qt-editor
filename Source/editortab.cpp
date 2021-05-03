@@ -19,6 +19,8 @@
 #include "StringProperty.hpp"
 #include "PropertyTreeWidget.hpp"
 #include <QFileInfo>
+#include "BasicTypeProperty.hpp"
+#include "EnumProperty.hpp"
 
 // Zoom by 10% each time.
 const float KZoomFactor = 0.10f;
