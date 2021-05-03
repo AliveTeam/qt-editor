@@ -74,6 +74,12 @@ set(PROJECT_SOURCES
         Source/StringProperty.cpp
         Source/PropertyTreeWidget.cpp
         Source/PropertyTreeWidget.hpp
+        Source/BasicTypeProperty.hpp
+        Source/BasicTypeProperty.cpp
+        Source/BasicTypeProperty.hpp
+        Source/BasicTypeProperty.cpp
+        Source/EnumProperty.cpp
+        Source/EnumProperty.hpp
         Source/resources.qrc
         ${TS_FILES}
 )
