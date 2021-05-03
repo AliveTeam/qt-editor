@@ -35,6 +35,8 @@ private slots:
 
     void on_action_redo_triggered();
 
+    void on_action_save_path_triggered();
+
 private:
     void onOpenPath(QString fileName);
 

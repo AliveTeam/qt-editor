@@ -18,6 +18,7 @@
 #include "PropertyTreeItemBase.hpp"
 #include "StringProperty.hpp"
 #include "PropertyTreeWidget.hpp"
+#include <QFileInfo>
 
 // Zoom by 10% each time.
 const float KZoomFactor = 0.10f;
@@ -204,10 +205,11 @@ public:
 };
 
 
-EditorTab::EditorTab(QWidget* aParent, UP_Model model)
+EditorTab::EditorTab(QWidget* aParent, UP_Model model, QString jsonFileName)
     : QMainWindow(aParent),
     ui(new Ui::EditorTab),
-    mModel(std::move(model))
+    mModel(std::move(model)),
+    mJsonFileName(jsonFileName)
 {
     ui->setupUi(this);
 
@@ -464,4 +466,18 @@ void EditorTab::Undo()
 void EditorTab::Redo()
 {
     mUndoStack.redo();
+}
+
+void EditorTab::Save()
+{
+    QFileInfo info(mJsonFileName);
+    std::string json = mModel->ToJson();
+    QString fullPath = info.path() + "/save_test.json";
+    qDebug() << fullPath;
+    QFile f(fullPath);
+    if (f.open(QIODevice::WriteOnly))
+    {
+        QTextStream stream(&f);
+        stream << json.c_str();
+    }
 }

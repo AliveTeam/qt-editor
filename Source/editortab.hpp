@@ -22,11 +22,12 @@ class EditorTab final : public QMainWindow
 {
     Q_OBJECT
 public:
-    explicit EditorTab(QWidget* aParent, UP_Model model);
+    explicit EditorTab(QWidget* aParent, UP_Model model, QString jsonFileName);
     ~EditorTab();
     void ZoomIn();
     void ZoomOut();
     void ResetZoom();
+    void Save();
     Model& GetModel() const { return *mModel; }
     void ClearPropertyEditor();
     void PopulatePropertyEditor(QGraphicsItem* pItem);
@@ -41,4 +42,5 @@ private:
     UP_Model mModel;
     QUndoStack mUndoStack;
     std::unique_ptr<EditorGraphicsScene> mScene;
+    QString mJsonFileName;
 };
