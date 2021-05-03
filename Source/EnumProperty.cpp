@@ -28,20 +28,20 @@ EnumProperty::EnumProperty(QUndoStack& undoStack, QTreeWidgetItem* pParent, QStr
 
 QWidget* EnumProperty::CreateEditorWidget(PropertyTreeWidget* pParent)
 {
-    auto combo = new QComboBox(pParent);
+    mCombo = new QComboBox(pParent);
     for (auto& item : mEnum->mValues)
     {
-        combo->addItem(item.c_str());
+        mCombo->addItem(item.c_str());
     }
     GetPropertyIndex();
     Refresh();
 
     if (mOldIdx != -1)
     {
-        combo->setCurrentIndex(mOldIdx);
+        mCombo->setCurrentIndex(mOldIdx);
     }
 
-    connect(combo, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [pParent, this](int index)
+    connect(mCombo, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [pParent, this](int index)
         {
             if (index != -1 && mOldIdx != index)
             {
@@ -50,13 +50,26 @@ QWidget* EnumProperty::CreateEditorWidget(PropertyTreeWidget* pParent)
             mOldIdx = index;
         });
 
-    return combo;
+    connect(mCombo, &QComboBox::destroyed, this, [this](QObject*)
+        {
+            this->mCombo = nullptr;
+        });
+    return mCombo;
 }
 
 void EnumProperty::Refresh()
 {
+    // Update the idx based on the enum value
+    GetPropertyIndex();
+
+    // Update the text to match the enum value via its index
     setText(1, mEnum->mValues[mOldIdx].c_str());
-    // TODO: Handle if the combo is open
+
+    if (mCombo)
+    {
+        // If the combo is open then set the correct item in the drop down
+        mCombo->setCurrentIndex(mOldIdx);
+    }
 }
 
 void EnumProperty::GetPropertyIndex()

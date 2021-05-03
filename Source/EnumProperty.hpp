@@ -2,6 +2,7 @@
 
 #include "PropertyTreeItemBase.hpp"
 #include <QUndoCommand>
+#include <QComboBox>
 
 struct Enum;
 class QUndoStack;
@@ -38,6 +39,7 @@ public:
         return mProperty;
     }
 
+
 private:
     void GetPropertyIndex();
 
@@ -45,4 +47,6 @@ private:
     ObjectProperty* mProperty = nullptr;
     Enum* mEnum = nullptr;
     int mOldIdx = -1;
+
+    QComboBox* mCombo = nullptr;
 };
