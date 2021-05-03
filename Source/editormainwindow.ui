@@ -181,7 +181,7 @@
   </widget>
   <action name="action_open_path">
    <property name="icon">
-    <iconset>
+    <iconset resource="resources.qrc">
      <normaloff>:/icons/rsc/icons/open.png</normaloff>:/icons/rsc/icons/open.png</iconset>
    </property>
    <property name="text">
@@ -248,7 +248,7 @@
     <enum>Qt::WindowShortcut</enum>
    </property>
    <property name="visible">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="iconVisibleInMenu">
     <bool>true</bool>
@@ -361,7 +361,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset>
+    <iconset resource="resources.qrc">
      <normaloff>:/icons/rsc/icons/arrow_undo.png</normaloff>:/icons/rsc/icons/arrow_undo.png</iconset>
    </property>
    <property name="text">
@@ -379,7 +379,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset>
+    <iconset resource="resources.qrc">
      <normaloff>:/icons/rsc/icons/arrow_redo.png</normaloff>:/icons/rsc/icons/arrow_redo.png</iconset>
    </property>
    <property name="text">
@@ -397,7 +397,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset>
+    <iconset resource="resources.qrc">
      <normaloff>:/icons/rsc/icons/zoom_reset.png</normaloff>:/icons/rsc/icons/zoom_reset.png</iconset>
    </property>
    <property name="text">
@@ -418,7 +418,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset>
+    <iconset resource="resources.qrc">
      <normaloff>:/icons/rsc/icons/zoom_in.png</normaloff>:/icons/rsc/icons/zoom_in.png</iconset>
    </property>
    <property name="text">
@@ -439,7 +439,7 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset>
+    <iconset resource="resources.qrc">
      <normaloff>:/icons/rsc/icons/zoom_out.png</normaloff>:/icons/rsc/icons/zoom_out.png</iconset>
    </property>
    <property name="text">
@@ -789,6 +789,8 @@
    </property>
   </action>
  </widget>
- <resources/>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
  <connections/>
 </ui>

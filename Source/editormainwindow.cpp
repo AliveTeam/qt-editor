@@ -80,9 +80,9 @@ void EditorMainWindow::onOpenPath(QString fileName)
         auto model = std::make_unique<Model>();
         model->LoadJson(fileName.toStdString());
 
-       QFileInfo fileInfo(fileName);
+        QFileInfo fileInfo(fileName);
 
-        EditorTab* view = new EditorTab(m_ui->tabWidget, std::move(model));
+        EditorTab* view = new EditorTab(m_ui->tabWidget, std::move(model), fileName);
 
         view->setToolTip(fileName);
         const int tabIdx = m_ui->tabWidget->addTab(view, fileInfo.fileName());
@@ -206,5 +206,14 @@ void EditorMainWindow::on_action_redo_triggered()
     if (pTab)
     {
         pTab->Redo();
+    }
+}
+
+void EditorMainWindow::on_action_save_path_triggered()
+{
+    EditorTab* pTab = getActiveTab(m_ui->tabWidget);
+    if (pTab)
+    {
+        pTab->Save();
     }
 }

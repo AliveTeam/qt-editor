@@ -69,6 +69,12 @@ struct ObjectProperty final
     int mBasicTypeValue = 0;
     std::string mEnumValue;
     bool mVisible = true;
+    enum class Type
+    {
+        Enumeration,
+        BasicType,
+    };
+    Type mType = {};
 };
 using UP_ObjectProperty = std::unique_ptr<ObjectProperty>;
 
@@ -260,6 +266,8 @@ public:
         return { nullptr, nullptr };
     }
 
+    std::string ToJson() const;
+
 private:
     std::vector<UP_ObjectProperty> ReadProperties(const ObjectStructure* pObjStructure, jsonxx::Object& properties);
 
@@ -271,5 +279,9 @@ private:
     std::vector<UP_Enum> mEnums;
     std::vector<UP_ObjectStructure> mObjectStructures;
     std::vector<UP_BasicType> mBasicTypes;
+
+    // Keep a copy of this so we can save it back out
+    jsonxx::Object mSchema;
+    jsonxx::Array mCollisionStructureSchema;
 };
 using UP_Model = std::unique_ptr<Model>;

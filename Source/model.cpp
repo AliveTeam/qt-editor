@@ -108,10 +108,12 @@ std::vector<UP_ObjectProperty> Model::ReadProperties(const ObjectStructure* pObj
         tmpProperty->mVisible = property.mVisible;
         if (foundTypes.mBasicType)
         {
+            tmpProperty->mType = ObjectProperty::Type::BasicType;
             tmpProperty->mBasicTypeValue = ReadNumber(properties, property.mName);
         }
         else
         {
+            tmpProperty->mType = ObjectProperty::Type::Enumeration;
             tmpProperty->mEnumValue = ReadString(properties, property.mName);
         }
 
@@ -147,9 +149,9 @@ void Model::LoadJson(const std::string& jsonFile)
     mMapInfo.mYGridSize = ReadNumber(map, "y_grid_size");
     mMapInfo.mYSize = ReadNumber(map, "y_size");
 
-    jsonxx::Object schema = ReadObject(root, "schema");
+    mSchema = ReadObject(root, "schema");
 
-    jsonxx::Array basicTypes = ReadArray(schema, "object_structure_property_basic_types");
+    jsonxx::Array basicTypes = ReadArray(mSchema, "object_structure_property_basic_types");
     for (size_t i = 0; i < basicTypes.size(); i++)
     {
         jsonxx::Object basicType = basicTypes.get<jsonxx::Object>(i);
@@ -160,7 +162,7 @@ void Model::LoadJson(const std::string& jsonFile)
         mBasicTypes.push_back(std::move(tmpBasicType));
     }
 
-    jsonxx::Array enums = ReadArray(schema, "object_structure_property_enums");
+    jsonxx::Array enums = ReadArray(mSchema, "object_structure_property_enums");
     for (size_t i = 0; i < enums.size(); i++)
     {
         jsonxx::Object enumObject = enums.get<jsonxx::Object>(i);
@@ -175,7 +177,7 @@ void Model::LoadJson(const std::string& jsonFile)
         mEnums.push_back(std::move(tmpEnum));
     }
 
-    jsonxx::Array objectStructures = ReadArray(schema, "object_structures");
+    jsonxx::Array objectStructures = ReadArray(mSchema, "object_structures");
     for (size_t i = 0; i < objectStructures.size(); i++)
     {
         jsonxx::Object objectStructure = objectStructures.get<jsonxx::Object>(i);
@@ -235,11 +237,11 @@ void Model::LoadJson(const std::string& jsonFile)
 
     jsonxx::Object collisionObject = ReadObject(map, "collisions");
     jsonxx::Array collisionsArray = ReadArray(collisionObject, "items");
-    jsonxx::Array collisionStructure = ReadArray(collisionObject, "structure");
+    mCollisionStructureSchema = ReadArray(collisionObject, "structure");
 
     mCollisionStructure= std::make_unique<ObjectStructure>();
     mCollisionStructure->mName = "Collision";
-    mCollisionStructure->mEnumAndBasicTypeProperties = ReadObjectStructureProperties(collisionStructure);
+    mCollisionStructure->mEnumAndBasicTypeProperties = ReadObjectStructureProperties(mCollisionStructureSchema);
 
     for (size_t i = 0; i < collisionsArray.size(); i++)
     {
@@ -250,4 +252,89 @@ void Model::LoadJson(const std::string& jsonFile)
         mCollisions.push_back(std::move(tmpCollision));
     }
 
+}
+
+std::string Model::ToJson() const
+{
+    jsonxx::Object root;
+
+    root << "api_version" << mMapInfo.mApiVersion;
+    root << "game" << mMapInfo.mGame;
+
+    jsonxx::Object map;
+    map << "path_bnd" << mMapInfo.mPathBnd;
+    map << "path_id" << mMapInfo.mPathId;
+    map << "x_grid_size" << mMapInfo.mXGridSize;
+    map << "x_size" << mMapInfo.mXSize;
+    map << "y_grid_size" << mMapInfo.mYGridSize;
+    map << "y_size" << mMapInfo.mYSize;
+
+    jsonxx::Array cameras;
+    for (auto& camera : mCameras)
+    {
+        jsonxx::Object camObj;
+        camObj << "id" << camera->mId;
+        camObj << "name" << camera->mName;
+        camObj << "x" << camera->mX;
+        camObj << "y" << camera->mY;
+
+        jsonxx::Array mapObjects;
+        for (auto& mapObject : camera->mMapObjects)
+        {
+            jsonxx::Object mapObj;
+            mapObj << "name" << mapObject->mName;
+            mapObj << "object_structures_type" << mapObject->mObjectStructureType;
+            jsonxx::Object propertiesObject;
+            for (auto& property : mapObject->mProperties)
+            {
+                switch (property->mType)
+                {
+                case ObjectProperty::Type::BasicType:
+                    propertiesObject << property->mName << property->mBasicTypeValue;
+                    break;
+
+                case ObjectProperty::Type::Enumeration:
+                    propertiesObject << property->mName << property->mEnumValue;
+                    break;
+                }
+            }
+            mapObj << "properties" << propertiesObject;
+            mapObjects << mapObj;
+        }
+        camObj << "map_objects" << mapObjects;
+
+        cameras << camObj;
+    }
+
+    jsonxx::Object collisionsObject;
+    jsonxx::Array collisionItems;
+    for (auto& collision : mCollisions)
+    {
+        jsonxx::Object collisionObj;
+        for (auto& property : collision->mProperties)
+        {
+            switch (property->mType)
+            {
+            case ObjectProperty::Type::BasicType:
+                collisionObj << property->mName << property->mBasicTypeValue;
+                break;
+
+            case ObjectProperty::Type::Enumeration:
+                collisionObj << property->mName << property->mEnumValue;
+                break;
+            }
+        }
+        collisionItems << collisionObj;
+    }
+
+    collisionsObject << "items" << collisionItems;
+    collisionsObject << "structure" << mCollisionStructureSchema;
+    map << "collisions" << collisionsObject;
+
+    map << "cameras" << cameras;
+    root << "map" << map;
+
+    root << "schema" << mSchema;
+
+    return root.json();
 }
