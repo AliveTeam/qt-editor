@@ -16,12 +16,22 @@ public:
 
     void redo() override;
 
+    int id() const override
+    {
+        return 1;
+    }
+
+    bool mergeWith(const QUndoCommand* command) override;
+
 private:
+    void UpdateText();
+
     PropertyTreeWidget* mTreeWidget = nullptr;
     ObjectProperty* mProperty = nullptr;
     BasicType* mBasicType = nullptr;
     int mOldValue = 0;
     int mNewValue = 0;
+    qint64 mTimeStamp = 0;
 };
 
 class BasicTypeProperty final : public QObject, public PropertyTreeItemBase

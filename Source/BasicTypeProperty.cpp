@@ -1,9 +1,11 @@
 #include "BasicTypeProperty.hpp"
 #include "model.hpp"
+#include <QDateTime>
 
 ChangeBasicTypePropertyCommand::ChangeBasicTypePropertyCommand(PropertyTreeWidget* pTreeWidget, ObjectProperty* pProperty, BasicType* pBasicType, int oldValue, int newValue) : mTreeWidget(pTreeWidget), mProperty(pProperty), mBasicType(pBasicType), mOldValue(oldValue), mNewValue(newValue)
 {
-    setText(QString("Change property %1 from %2 to %3").arg(mProperty->mName.c_str(), QString::number(mOldValue), QString::number(mNewValue)));
+    UpdateText();
+    mTimeStamp = QDateTime::currentMSecsSinceEpoch();
 }
 
 void ChangeBasicTypePropertyCommand::undo()
@@ -18,6 +20,30 @@ void ChangeBasicTypePropertyCommand::redo()
     mTreeWidget->FindObjectPropertyByKey(mProperty)->Refresh();
 }
 
+bool ChangeBasicTypePropertyCommand::mergeWith(const QUndoCommand* command)
+{
+    if (command->id() == id())
+    {
+        auto pOther = static_cast<const ChangeBasicTypePropertyCommand*>(command);
+        if (mProperty == pOther->mProperty)
+        {
+            // Compare time stamps and only merge if dt <= 1 second
+            if (abs(mTimeStamp - pOther->mTimeStamp) <= 1000)
+            {
+                mNewValue = pOther->mNewValue;
+                mTimeStamp = QDateTime::currentMSecsSinceEpoch();
+                UpdateText();
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+void ChangeBasicTypePropertyCommand::UpdateText()
+{
+    setText(QString("Change property %1 from %2 to %3").arg(mProperty->mName.c_str(), QString::number(mOldValue), QString::number(mNewValue)));
+}
 
 BasicTypeProperty::BasicTypeProperty(QUndoStack& undoStack, QTreeWidgetItem* pParent, QString propertyName, ObjectProperty* pProperty, BasicType* pBasicType) : PropertyTreeItemBase(pParent, QStringList{ propertyName, QString::number(pProperty->mBasicTypeValue) }), mUndoStack(undoStack), mProperty(pProperty), mBasicType(pBasicType)
 {
