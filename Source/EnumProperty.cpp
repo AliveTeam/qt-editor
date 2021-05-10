@@ -6,7 +6,7 @@
 ChangeEnumPropertyCommand::ChangeEnumPropertyCommand(PropertyTreeWidget* pTreeWidget, ObjectProperty* pProperty, Enum* pEnum, int oldIdx, int newIdx)
     : mTreeWidget(pTreeWidget), mProperty(pProperty), mEnum(pEnum), mOldIdx(oldIdx), mNewIdx(newIdx)
 {
-    setText(QString("Change property %1 from %2 to %3").arg(mEnum->mName.c_str(), mEnum->mValues[mOldIdx].c_str(), mEnum->mValues[mNewIdx].c_str()));
+    setText(QString("Change property %1 from %2 to %3").arg(mProperty->mName.c_str(), mEnum->mValues[mOldIdx].c_str(), mEnum->mValues[mNewIdx].c_str()));
 }
 
 void ChangeEnumPropertyCommand::undo()
