@@ -11,10 +11,7 @@ public:
 
     virtual QWidget* CreateEditorWidget(PropertyTreeWidget* pParent) = 0;
 
-    virtual void Refresh()
-    {
-
-    }
+    virtual void Refresh() = 0;
 
     virtual const void* GetPropertyLookUpKey() const = 0;
 };
