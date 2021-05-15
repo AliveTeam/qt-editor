@@ -9,6 +9,9 @@ class CollisionObject;
 class QGraphicsItem;
 class QUndoStack;
 
+
+inline const QString kIndent("    ");
+
 class PropertyTreeWidget : public QTreeWidget
 {
 public:
@@ -21,6 +24,6 @@ public:
     void Init();
 
 private:
-    void AddProperties(Model& model, QUndoStack& undoStack, QList<QTreeWidgetItem*>& items, std::vector<UP_ObjectProperty>& props);
+    void AddProperties(Model& model, QUndoStack& undoStack, QList<QTreeWidgetItem*>& items, std::vector<UP_ObjectProperty>& props, QGraphicsItem* pGraphicsItem);
 
 };

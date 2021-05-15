@@ -4,6 +4,18 @@
 #include "PropertyTreeWidget.hpp"
 #include "bigspinbox.hpp"
 
+struct LinkedProperty
+{
+    LinkedProperty(PropertyTreeWidget* pTreeWidget, ObjectProperty* pProperty, QGraphicsItem* pGraphicsItem)
+        : mTreeWidget(pTreeWidget), mProperty(pProperty), mGraphicsItem(pGraphicsItem)
+    {
+
+    }
+    PropertyTreeWidget* mTreeWidget = nullptr;
+    ObjectProperty* mProperty = nullptr;
+    QGraphicsItem* mGraphicsItem = nullptr;
+};
+
 class PropertyTreeItemBase : public QTreeWidgetItem
 {
 public:
