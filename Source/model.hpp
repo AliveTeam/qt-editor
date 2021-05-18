@@ -78,6 +78,18 @@ struct ObjectProperty final
 };
 using UP_ObjectProperty = std::unique_ptr<ObjectProperty>;
 
+inline ObjectProperty* PropertyByName(const std::string& name, std::vector<UP_ObjectProperty>& props)
+{
+    for (const auto& prop : props)
+    {
+        if (prop->mName == name)
+        {
+            return prop.get();
+        }
+    }
+    return nullptr;
+}
+
 inline const ObjectProperty* PropertyByName(const std::string& name, const std::vector<UP_ObjectProperty>& props)
 {
     for (const auto& prop : props)
@@ -101,9 +113,19 @@ struct MapObject final
         return PropertyByName("xpos", mProperties)->mBasicTypeValue;
     }
 
+    void SetXPos(int xpos)
+    {
+        PropertyByName("xpos", mProperties)->mBasicTypeValue = xpos;
+    }
+
     int YPos() const
     {
         return PropertyByName("ypos", mProperties)->mBasicTypeValue;
+    }
+
+    void SetYPos(int ypos)
+    {
+        PropertyByName("ypos", mProperties)->mBasicTypeValue = ypos;
     }
 
     int Width() const
@@ -111,9 +133,19 @@ struct MapObject final
         return PropertyByName("width", mProperties)->mBasicTypeValue;
     }
 
+    void SetWidth(int width)
+    {
+        PropertyByName("width", mProperties)->mBasicTypeValue = width;
+    }
+
     int Height() const
     {
         return PropertyByName("height", mProperties)->mBasicTypeValue;
+    }
+
+    void SetHeight(int height)
+    {
+        PropertyByName("height", mProperties)->mBasicTypeValue = height;
     }
 };
 using UP_MapObject = std::unique_ptr<MapObject>;
@@ -138,9 +170,19 @@ public:
         return PropertyByName("x1", mProperties)->mBasicTypeValue;
     }
 
+    void SetX1(int x1)
+    {
+        PropertyByName("x1", mProperties)->mBasicTypeValue = x1;
+    }
+
     int Y1() const
     {
         return PropertyByName("y1", mProperties)->mBasicTypeValue;
+    }
+
+    void SetY1(int y1)
+    {
+        PropertyByName("y1", mProperties)->mBasicTypeValue = y1;
     }
 
     int X2() const
@@ -148,9 +190,19 @@ public:
         return PropertyByName("x2", mProperties)->mBasicTypeValue;
     }
 
+    void SetX2(int x2)
+    {
+        PropertyByName("x2", mProperties)->mBasicTypeValue = x2;
+    }
+
     int Y2() const
     {
         return PropertyByName("y2", mProperties)->mBasicTypeValue;
+    }
+
+    void SetY2(int y2)
+    {
+        PropertyByName("y2", mProperties)->mBasicTypeValue = y2;
     }
 };
 using UP_CollisionObject = std::unique_ptr<CollisionObject>;

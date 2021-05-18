@@ -1,5 +1,6 @@
 #include "BasicTypeProperty.hpp"
 #include "model.hpp"
+#include "IGraphicsItem.hpp"
 #include <QDateTime>
 
 ChangeBasicTypePropertyCommand::ChangeBasicTypePropertyCommand(LinkedProperty& linkedProperty, BasicTypePropertyChangeData& propertyData) : mLinkedProperty(linkedProperty), mPropertyData(propertyData)
@@ -12,12 +13,14 @@ void ChangeBasicTypePropertyCommand::undo()
 {
     mLinkedProperty.mProperty->mBasicTypeValue = mPropertyData.mOldValue;
     mLinkedProperty.mTreeWidget->FindObjectPropertyByKey(mLinkedProperty.mProperty)->Refresh();
+    mLinkedProperty.mGraphicsItem->SyncInternalObject();
 }
 
 void ChangeBasicTypePropertyCommand::redo()
 {
     mLinkedProperty.mProperty->mBasicTypeValue = mPropertyData.mNewValue;
     mLinkedProperty.mTreeWidget->FindObjectPropertyByKey(mLinkedProperty.mProperty)->Refresh();
+    mLinkedProperty.mGraphicsItem->SyncInternalObject();
 }
 
 bool ChangeBasicTypePropertyCommand::mergeWith(const QUndoCommand* command)
@@ -45,7 +48,7 @@ void ChangeBasicTypePropertyCommand::UpdateText()
     setText(QString("Change property %1 from %2 to %3").arg(mLinkedProperty.mProperty->mName.c_str(), QString::number(mPropertyData.mOldValue), QString::number(mPropertyData.mNewValue)));
 }
 
-BasicTypeProperty::BasicTypeProperty(QUndoStack& undoStack, QTreeWidgetItem* pParent, QString propertyName, ObjectProperty* pProperty, QGraphicsItem* pGraphicsItem, BasicType* pBasicType) : PropertyTreeItemBase(pParent, QStringList{ propertyName, QString::number(pProperty->mBasicTypeValue) }), mUndoStack(undoStack), mProperty(pProperty), mBasicType(pBasicType)
+BasicTypeProperty::BasicTypeProperty(QUndoStack& undoStack, QTreeWidgetItem* pParent, QString propertyName, ObjectProperty* pProperty, IGraphicsItem* pGraphicsItem, BasicType* pBasicType) : PropertyTreeItemBase(pParent, QStringList{ propertyName, QString::number(pProperty->mBasicTypeValue) }), mUndoStack(undoStack), mProperty(pProperty), mBasicType(pBasicType), mGraphicsItem(pGraphicsItem)
 {
 
 }

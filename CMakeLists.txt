@@ -43,6 +43,7 @@ export(TARGETS jsonxx FILE jsonxx.cmake)
 set_property(TARGET jsonxx PROPERTY FOLDER "3rdParty")
 
 set(PROJECT_SOURCES
+        Source/IGraphicsItem.hpp
         Source/main.cpp
         Source/aboutdialog.ui
         Source/editormainwindow.ui

@@ -46,7 +46,7 @@ class BasicTypeProperty final : public QObject, public PropertyTreeItemBase
 {
     Q_OBJECT
 public:
-    BasicTypeProperty(QUndoStack& undoStack, QTreeWidgetItem* pParent, QString propertyName, ObjectProperty* pProperty, QGraphicsItem* pGraphicsItem, BasicType* pBasicType);
+    BasicTypeProperty(QUndoStack& undoStack, QTreeWidgetItem* pParent, QString propertyName, ObjectProperty* pProperty, IGraphicsItem* pGraphicsItem, BasicType* pBasicType);
 
     QWidget* CreateEditorWidget(PropertyTreeWidget* pParent) override;
 
@@ -60,7 +60,7 @@ public:
 private:
     QUndoStack& mUndoStack;
     ObjectProperty* mProperty = nullptr;
-    QGraphicsItem* mGraphicsItem = nullptr;
+    IGraphicsItem* mGraphicsItem = nullptr;
     BasicType* mBasicType = nullptr;
     int mOldValue = 0;
     BigSpinBox* mSpinBox = nullptr;

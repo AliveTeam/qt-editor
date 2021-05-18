@@ -5,16 +5,19 @@
 #include <QTimer>
 #include <QPointF>
 #include <QCursor>
+#include <QDebug>
 #include <QStyleOptionGraphicsItem>
 #include <QGraphicsScene>
 #include <QGraphicsView>
 #include <QPixmapCache>
 #include "model.hpp"
+#include "PropertyTreeWidget.hpp"
 
 const quint32 ResizeableRectItem::kMinRectSize = 10;
 
-ResizeableRectItem::ResizeableRectItem(QGraphicsView* pView, MapObject* pMapObject)
-      : QGraphicsRectItem( pMapObject->XPos(), pMapObject->YPos(), pMapObject->Width(), pMapObject->Height(), nullptr ), mView(pView), mMapObject(pMapObject)
+
+ResizeableRectItem::ResizeableRectItem(QGraphicsView* pView, MapObject* pMapObject, ISyncPropertiesToTree& propSyncer)
+      : QGraphicsRectItem( pMapObject->XPos(), pMapObject->YPos(), pMapObject->Width(), pMapObject->Height(), nullptr ), mView(pView), mMapObject(pMapObject), mPropSyncer(propSyncer)
 {
     Init();
     setZValue(3.0 + CalcZPos());
@@ -65,10 +68,6 @@ void ResizeableRectItem::mouseReleaseEvent( QGraphicsSceneMouseEvent* aEvent )
     if ( aEvent->button() == Qt::LeftButton )
     {
         m_ResizeMode = eResize_None;
-
-        // TODO: Calc new parent if moved
-
-
     }
     QGraphicsRectItem::mouseReleaseEvent( aEvent );
 }
@@ -171,9 +170,15 @@ void ResizeableRectItem::hoverLeaveEvent( QGraphicsSceneHoverEvent* aEvent )
 
 QVariant ResizeableRectItem::itemChange( GraphicsItemChange aChange, const QVariant& aValue )
 {
+    if (aChange == ItemPositionChange)
+    {
+        //QPointF newPos = aValue.toPointF();
+        // TODO: Change rect instead
+        //return QVariant();
+    }
     if ( aChange == ItemPositionHasChanged )
     {
-        // TODO: Calc new parent if mouse not down?
+        PosOrRectChanged();
     }
     return QGraphicsRectItem::itemChange( aChange, aValue );
 }
@@ -328,6 +333,7 @@ void ResizeableRectItem::onResize( QPointF aPos )
 
     prepareGeometryChange();
     setRect( curRect );
+    PosOrRectChanged();
 }
 
 void ResizeableRectItem::SetViewCursor(Qt::CursorShape cursor)
@@ -342,5 +348,26 @@ QRectF ResizeableRectItem::SaveRect() const
 
 void ResizeableRectItem::RestoreRect(const QRectF& rect)
 {
+    prepareGeometryChange();
     setRect(rect);
+    PosOrRectChanged();
+}
+
+void ResizeableRectItem::SyncToMapObject()
+{
+    setRect(mMapObject->XPos(), mMapObject->YPos(), mMapObject->Width(), mMapObject->Height());
+}
+
+void ResizeableRectItem::PosOrRectChanged()
+{
+    QRectF curRect = rect();
+
+    // Sync the model to the graphics item
+    mMapObject->SetXPos(static_cast<int>(pos().x() + curRect.x()));
+    mMapObject->SetYPos(static_cast<int>(pos().y() + curRect.y()));
+    mMapObject->SetWidth(static_cast<int>(curRect.width()));
+    mMapObject->SetHeight(static_cast<int>(curRect.height()));
+
+    // Update the property tree view
+    mPropSyncer.Sync(this);
 }

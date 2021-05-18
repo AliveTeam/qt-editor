@@ -5,9 +5,10 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsView>
 #include "model.hpp"
+#include "PropertyTreeWidget.hpp"
 
-ResizeableArrowItem::ResizeableArrowItem(QGraphicsView* pView, CollisionObject* pLine) 
-    : QGraphicsLineItem(pLine->X1(), pLine->Y1(), pLine->X2(), pLine->Y2()), mView(pView), mLine(pLine)
+ResizeableArrowItem::ResizeableArrowItem(QGraphicsView* pView, CollisionObject* pLine, ISyncPropertiesToTree& propSyncer)
+    : QGraphicsLineItem(pLine->X1(), pLine->Y1(), pLine->X2(), pLine->Y2()), mView(pView), mLine(pLine), mPropSyncer(propSyncer)
 {
     Init();
     setZValue(2.0);
@@ -72,6 +73,7 @@ void ResizeableArrowItem::mouseMoveEvent( QGraphicsSceneMouseEvent* aEvent )
         }
     }
     setLine( newLine );
+    PosOrLineChanged();
 }
 
 void ResizeableArrowItem::mouseReleaseEvent( QGraphicsSceneMouseEvent* aEvent )
@@ -160,6 +162,15 @@ QRectF ResizeableArrowItem::boundingRect() const
     return adjusted;
 }
 
+QVariant ResizeableArrowItem::itemChange(GraphicsItemChange aChange, const QVariant& aValue)
+{
+    if (aChange == ItemPositionHasChanged)
+    {
+        PosOrLineChanged();
+    }
+    return QGraphicsLineItem::itemChange(aChange, aValue);
+}
+
 void ResizeableArrowItem::Init()
 {
     setToolTip("Click and drag an edge of the line to resize it, or hold shift and click and drag to move the line");
@@ -228,4 +239,24 @@ QLineF ResizeableArrowItem::SaveLine() const
 void ResizeableArrowItem::RestoreLine(const QLineF& line)
 {
     setLine(line);
+    PosOrLineChanged();
+}
+
+void ResizeableArrowItem::SyncToCollisionItem()
+{
+    setLine(mLine->X1(), mLine->Y1(), mLine->X2(), mLine->Y2());
+}
+
+void ResizeableArrowItem::PosOrLineChanged()
+{
+    QLineF curLine = line();
+
+    // Sync the model to the graphics item
+    mLine->SetX1(static_cast<int>(pos().x() + curLine.x1()));
+    mLine->SetY1(static_cast<int>(pos().y() + curLine.y1()));
+    mLine->SetX2(static_cast<int>(pos().x() + curLine.x2()));
+    mLine->SetY2(static_cast<int>(pos().y() + curLine.y2()));
+
+    // Update the property tree view
+    mPropSyncer.Sync(this);
 }

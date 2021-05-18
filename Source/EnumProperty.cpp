@@ -1,5 +1,6 @@
 #include "EnumProperty.hpp"
 #include "model.hpp"
+#include "IGraphicsItem.hpp"
 #include <QComboBox>
 
 ChangeEnumPropertyCommand::ChangeEnumPropertyCommand(LinkedProperty& linkedProperty, EnumPropertyChangeData& propertyData)
@@ -12,15 +13,17 @@ void ChangeEnumPropertyCommand::undo()
 {
     mLinkedProperty.mProperty->mEnumValue = mPropertyData.mEnum->mValues[mPropertyData.mOldIdx];
     mLinkedProperty.mTreeWidget->FindObjectPropertyByKey(mLinkedProperty.mProperty)->Refresh();
+    mLinkedProperty.mGraphicsItem->SyncInternalObject();
 }
 
 void ChangeEnumPropertyCommand::redo()
 {
     mLinkedProperty.mProperty->mEnumValue = mPropertyData.mEnum->mValues[mPropertyData.mNewIdx];
     mLinkedProperty.mTreeWidget->FindObjectPropertyByKey(mLinkedProperty.mProperty)->Refresh();
+    mLinkedProperty.mGraphicsItem->SyncInternalObject();
 }
 
-EnumProperty::EnumProperty(QUndoStack& undoStack, QTreeWidgetItem* pParent, ObjectProperty* pProperty, QGraphicsItem* pGraphicsItem, Enum* pEnum) : PropertyTreeItemBase(pParent, QStringList{ kIndent + pProperty->mName.c_str(), pProperty->mEnumValue.c_str() }), mUndoStack(undoStack), mProperty(pProperty), mGraphicsItem(pGraphicsItem), mEnum(pEnum)
+EnumProperty::EnumProperty(QUndoStack& undoStack, QTreeWidgetItem* pParent, ObjectProperty* pProperty, IGraphicsItem* pGraphicsItem, Enum* pEnum) : PropertyTreeItemBase(pParent, QStringList{ kIndent + pProperty->mName.c_str(), pProperty->mEnumValue.c_str() }), mUndoStack(undoStack), mProperty(pProperty), mGraphicsItem(pGraphicsItem), mEnum(pEnum)
 {
 
 }

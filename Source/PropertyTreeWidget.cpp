@@ -34,12 +34,12 @@ void PropertyTreeWidget::Populate(Model& model, QUndoStack& undoStack, QGraphics
         MapObject* pMapObject = pRect->GetMapObject();
 
         items.append(new StringProperty(undoStack, parent, kIndent + "Name", &pMapObject->mName));
-        AddProperties(model, undoStack, items, pMapObject->mProperties, pItem);
+        AddProperties(model, undoStack, items, pMapObject->mProperties, pRect);
     }
     else if (pLine)
     {
         CollisionObject* pCollisionItem = pLine->GetCollisionItem();
-        AddProperties(model, undoStack, items, pCollisionItem->mProperties, pItem);
+        AddProperties(model, undoStack, items, pCollisionItem->mProperties, pLine);
     }
 
 #ifdef _WIN32
@@ -53,6 +53,11 @@ void PropertyTreeWidget::Populate(Model& model, QUndoStack& undoStack, QGraphics
 #endif
 
     insertTopLevelItems(0, items);
+}
+
+void PropertyTreeWidget::DePopulate()
+{
+    clear();
 }
 
 void PropertyTreeWidget::Init()
@@ -90,7 +95,20 @@ void PropertyTreeWidget::Init()
         });
 }
 
-void PropertyTreeWidget::AddProperties(Model& model, QUndoStack& undoStack, QList<QTreeWidgetItem*>& items, std::vector<UP_ObjectProperty>& props, QGraphicsItem* pGraphicsItem)
+void PropertyTreeWidget::Sync(IGraphicsItem* pItem)
+{
+    auto& props = pItem->GetProperties();
+    for (auto& prop : props)
+    {
+        PropertyTreeItemBase* pTreeItem = FindObjectPropertyByKey(prop.get());
+        if (pTreeItem)
+        {
+            pTreeItem->Refresh();
+        }
+    }
+}
+
+void PropertyTreeWidget::AddProperties(Model& model, QUndoStack& undoStack, QList<QTreeWidgetItem*>& items, std::vector<UP_ObjectProperty>& props, IGraphicsItem* pGraphicsItem)
 {
     QTreeWidgetItem* parent = nullptr;
     for (UP_ObjectProperty& property : props)
