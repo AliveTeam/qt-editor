@@ -250,6 +250,11 @@ EditorTab::EditorTab(QWidget* aParent, UP_Model model, QString jsonFileName)
 
     setCentralWidget(ui->graphicsView);
 
+    // TODO: Temp hack
+    delete ui->treeWidget;
+    ui->treeWidget = new PropertyTreeWidget(ui->dockWidgetContents_2);
+    ui->verticalLayout_5->addWidget(ui->treeWidget);
+
     // Disable "already disabled" context menus on the QDockWidgets
     ui->propertyDockWidget->setContextMenuPolicy(Qt::PreventContextMenu);
     ui->undoHistoryDockWidget->setContextMenuPolicy(Qt::PreventContextMenu);
@@ -268,7 +273,7 @@ EditorTab::EditorTab(QWidget* aParent, UP_Model model, QString jsonFileName)
             {
                 for (auto& mapObj : pCam->mMapObjects)
                 {
-                    auto pMapObject = new ResizeableRectItem(pView, mapObj.get());
+                    auto pMapObject = new ResizeableRectItem(pView, mapObj.get(), *static_cast<PropertyTreeWidget*>(ui->treeWidget));
                     mScene->addItem(pMapObject);
                 }
             }
@@ -277,7 +282,7 @@ EditorTab::EditorTab(QWidget* aParent, UP_Model model, QString jsonFileName)
 
     for (auto& collision : mModel->CollisionItems())
     {
-        auto pLine = new ResizeableArrowItem(pView, collision.get());
+        auto pLine = new ResizeableArrowItem(pView, collision.get(), *static_cast<PropertyTreeWidget*>(ui->treeWidget));
         mScene->addItem(pLine);
     }
 
@@ -290,11 +295,6 @@ EditorTab::EditorTab(QWidget* aParent, UP_Model model, QString jsonFileName)
 
     mUndoStack.setUndoLimit(100);
     ui->undoView->setStack(&mUndoStack);
-
-    // TODO: Temp hack
-    delete ui->treeWidget;
-    ui->treeWidget = new PropertyTreeWidget(ui->dockWidgetContents_2);
-    ui->verticalLayout_5->addWidget(ui->treeWidget);
 
     static_cast<PropertyTreeWidget*>(ui->treeWidget)->Init();
 
@@ -359,7 +359,8 @@ EditorTab::~EditorTab()
 
 void EditorTab::ClearPropertyEditor()
 {
-    ui->treeWidget->clear();
+    auto pTree = static_cast<PropertyTreeWidget*>(ui->treeWidget);
+    pTree->DePopulate();
 }
 
 void EditorTab::PopulatePropertyEditor(QGraphicsItem* pItem)

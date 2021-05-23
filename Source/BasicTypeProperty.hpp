@@ -7,10 +7,22 @@ struct BasicType;
 class QUndoStack;
 class BigSpinBox;
 
-class ChangeBasicTypePropertyCommand : public QUndoCommand
+struct BasicTypePropertyChangeData
+{
+    BasicTypePropertyChangeData(BasicType* pBasicType, int oldValue, int newValue)
+        : mBasicType(pBasicType), mOldValue(oldValue), mNewValue(newValue)
+    {
+
+    }
+    BasicType* mBasicType = nullptr;
+    int mOldValue = 0;
+    int mNewValue = 0;
+};
+
+class ChangeBasicTypePropertyCommand final : public QUndoCommand
 {
 public:
-    ChangeBasicTypePropertyCommand(PropertyTreeWidget* pTreeWidget, ObjectProperty* pProperty, BasicType* pBasicType, int oldValue, int newValue);
+    ChangeBasicTypePropertyCommand(LinkedProperty& linkedProperty, BasicTypePropertyChangeData& propertyData);
 
     void undo() override;
 
@@ -25,12 +37,8 @@ public:
 
 private:
     void UpdateText();
-
-    PropertyTreeWidget* mTreeWidget = nullptr;
-    ObjectProperty* mProperty = nullptr;
-    BasicType* mBasicType = nullptr;
-    int mOldValue = 0;
-    int mNewValue = 0;
+    LinkedProperty mLinkedProperty;
+    BasicTypePropertyChangeData mPropertyData;
     qint64 mTimeStamp = 0;
 };
 
@@ -38,7 +46,7 @@ class BasicTypeProperty final : public QObject, public PropertyTreeItemBase
 {
     Q_OBJECT
 public:
-    BasicTypeProperty(QUndoStack& undoStack, QTreeWidgetItem* pParent, QString propertyName, ObjectProperty* pProperty, BasicType* pBasicType);
+    BasicTypeProperty(QUndoStack& undoStack, QTreeWidgetItem* pParent, QString propertyName, ObjectProperty* pProperty, IGraphicsItem* pGraphicsItem, BasicType* pBasicType);
 
     QWidget* CreateEditorWidget(PropertyTreeWidget* pParent) override;
 
@@ -52,6 +60,7 @@ public:
 private:
     QUndoStack& mUndoStack;
     ObjectProperty* mProperty = nullptr;
+    IGraphicsItem* mGraphicsItem = nullptr;
     BasicType* mBasicType = nullptr;
     int mOldValue = 0;
     BigSpinBox* mSpinBox = nullptr;

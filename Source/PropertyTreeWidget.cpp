@@ -22,8 +22,6 @@ PropertyTreeItemBase* PropertyTreeWidget::FindObjectPropertyByKey(const void* pK
     return nullptr;
 }
 
-static const QString kIndent("    ");
-
 void PropertyTreeWidget::Populate(Model& model, QUndoStack& undoStack, QGraphicsItem* pItem)
 {
     auto pLine = qgraphicsitem_cast<ResizeableArrowItem*>(pItem);
@@ -36,12 +34,12 @@ void PropertyTreeWidget::Populate(Model& model, QUndoStack& undoStack, QGraphics
         MapObject* pMapObject = pRect->GetMapObject();
 
         items.append(new StringProperty(undoStack, parent, kIndent + "Name", &pMapObject->mName));
-        AddProperties(model, undoStack, items, pMapObject->mProperties);
+        AddProperties(model, undoStack, items, pMapObject->mProperties, pRect);
     }
     else if (pLine)
     {
         CollisionObject* pCollisionItem = pLine->GetCollisionItem();
-        AddProperties(model, undoStack, items, pCollisionItem->mProperties);
+        AddProperties(model, undoStack, items, pCollisionItem->mProperties, pLine);
     }
 
 #ifdef _WIN32
@@ -55,6 +53,11 @@ void PropertyTreeWidget::Populate(Model& model, QUndoStack& undoStack, QGraphics
 #endif
 
     insertTopLevelItems(0, items);
+}
+
+void PropertyTreeWidget::DePopulate()
+{
+    clear();
 }
 
 void PropertyTreeWidget::Init()
@@ -92,7 +95,20 @@ void PropertyTreeWidget::Init()
         });
 }
 
-void PropertyTreeWidget::AddProperties(Model& model, QUndoStack& undoStack, QList<QTreeWidgetItem*>& items, std::vector<UP_ObjectProperty>& props)
+void PropertyTreeWidget::Sync(IGraphicsItem* pItem)
+{
+    auto& props = pItem->GetProperties();
+    for (auto& prop : props)
+    {
+        PropertyTreeItemBase* pTreeItem = FindObjectPropertyByKey(prop.get());
+        if (pTreeItem)
+        {
+            pTreeItem->Refresh();
+        }
+    }
+}
+
+void PropertyTreeWidget::AddProperties(Model& model, QUndoStack& undoStack, QList<QTreeWidgetItem*>& items, std::vector<UP_ObjectProperty>& props, IGraphicsItem* pGraphicsItem)
 {
     QTreeWidgetItem* parent = nullptr;
     for (UP_ObjectProperty& property : props)
@@ -104,14 +120,14 @@ void PropertyTreeWidget::AddProperties(Model& model, QUndoStack& undoStack, QLis
             case ObjectProperty::Type::BasicType:
             {
                 BasicType* pBasicType = model.FindBasicType(property->mTypeName);
-                items.append(new BasicTypeProperty(undoStack, parent, kIndent + property->mName.c_str(), property.get(), pBasicType));
+                items.append(new BasicTypeProperty(undoStack, parent, kIndent + property->mName.c_str(), property.get(), pGraphicsItem, pBasicType));
             }
                 break;
 
             case ObjectProperty::Type::Enumeration:
             {
                 Enum* pEnum = model.FindEnum(property->mTypeName);
-                items.append(new EnumProperty(undoStack, parent, kIndent + property->mName.c_str(), property.get(), pEnum));
+                items.append(new EnumProperty(undoStack, parent, property.get(), pGraphicsItem, pEnum));
             }
                 break;
             }
