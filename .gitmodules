@@ -4,3 +4,6 @@
 [submodule "3rdParty/jsonxx"]
 	path = 3rdParty/jsonxx
 	url = https://github.com/hjiang/jsonxx.git
+[submodule "3rdParty/alive_reversing"]
+	path = 3rdParty/alive_reversing
+	url = https://github.com/AliveTeam/alive_reversing.git

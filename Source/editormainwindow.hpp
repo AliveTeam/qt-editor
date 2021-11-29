@@ -37,6 +37,8 @@ private slots:
 
     void on_action_save_path_triggered();
 
+    void on_actionExport_to_lvl_triggered();
+
 private:
     void onOpenPath(QString fileName);
 

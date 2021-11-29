@@ -3,6 +3,7 @@
 #include "firewidget.hpp"
 #include <QLayout>
 #include <QTimer>
+#include "relive_api.hpp"
 
 AboutDialog::AboutDialog(QWidget *parent) :
     QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint),
@@ -19,6 +20,8 @@ AboutDialog::AboutDialog(QWidget *parent) :
 
     this->setMaximumSize( this->size() );
     this->setMinimumSize( this->size() );
+
+    setWindowTitle(windowTitle() + QString::fromStdString(" (Relive API v" + std::to_string(ReliveAPI::GetApiVersion()) + ")"));
 }
 
 AboutDialog::~AboutDialog()

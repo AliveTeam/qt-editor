@@ -102,6 +102,7 @@
     <addaction name="action_save_path_as"/>
     <addaction name="action_run_level"/>
     <addaction name="action_exit_application"/>
+    <addaction name="actionExport_to_lvl"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -786,6 +787,11 @@
    </property>
    <property name="iconVisibleInMenu">
     <bool>false</bool>
+   </property>
+  </action>
+  <action name="actionExport_to_lvl">
+   <property name="text">
+    <string>Export to lvl</string>
    </property>
   </action>
  </widget>
