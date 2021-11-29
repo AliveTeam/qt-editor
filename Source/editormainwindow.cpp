@@ -6,7 +6,11 @@
 #include "aboutdialog.hpp"
 #include <QTabBar>
 #include <QFileDialog>
+#include <QTemporaryFile>
 #include "model.hpp"
+#include "pathselectiondialog.hpp"
+#include "exportpathdialog.hpp"
+#include "relive_api.hpp"
 
 EditorMainWindow::EditorMainWindow(QWidget* aParent)
     : QMainWindow(aParent),
@@ -73,45 +77,65 @@ EditorMainWindow::~EditorMainWindow()
     delete m_ui;
 }
 
-void EditorMainWindow::onOpenPath(QString fileName)
+void EditorMainWindow::onOpenPath(QString fullFileName)
 {
     try
     {
+        if (fullFileName.endsWith(".lvl", Qt::CaseInsensitive))
+        {
+            // Get the paths in the LVL
+            ReliveAPI::EnumeratePathsResult ret = ReliveAPI::EnumeratePaths(fullFileName.toStdString());
+
+            // Ask the user to pick one
+            auto pathSelection = new PathSelectionDialog(this, ret);
+            // Get rid of "?"
+            pathSelection->setWindowFlags(pathSelection->windowFlags() & ~Qt::WindowContextHelpButtonHint);
+            pathSelection->exec();
+
+            std::optional<int> selectedPath = pathSelection->SelectedPath();
+            if (!selectedPath)
+            {
+                // They didn't pick one
+                return;
+            }
+
+            // They picked one, now ask for the .json to save this path as
+            QString jsonSaveFileName = QFileDialog::getSaveFileName(this, tr("Save path json"), "", tr("Json files (*.json);;All Files (*)"));
+            if (jsonSaveFileName.isEmpty())
+            {
+                // They didn't want to save it
+                return;
+            }
+
+            // Convert the binary lvl path to json
+            ReliveAPI::ExportPathBinaryToJson(jsonSaveFileName.toStdString(), fullFileName.toStdString(), selectedPath.value());
+
+            // And continue to load the newly saved json file
+            fullFileName = jsonSaveFileName;
+        }
+    }
+    catch (const ReliveAPI::Exception& e)
+    {
+        QMessageBox::critical(this, "Error", e.what().c_str());
+        return;
+    }
+
+    try
+    {
+        // Load the json file into the editors object model
         auto model = std::make_unique<Model>();
-        model->LoadJson(fileName.toStdString());
+        model->LoadJson(fullFileName.toStdString());
 
-        QFileInfo fileInfo(fileName);
+        EditorTab* view = new EditorTab(m_ui->tabWidget, std::move(model), fullFileName);
 
-        EditorTab* view = new EditorTab(m_ui->tabWidget, std::move(model), fileName);
-
-        view->setToolTip(fileName);
+        view->setToolTip(fullFileName);
+        QFileInfo fileInfo(fullFileName);
         const int tabIdx = m_ui->tabWidget->addTab(view, fileInfo.fileName());
-        m_ui->tabWidget->setTabToolTip(tabIdx, fileName);
+        m_ui->tabWidget->setTabToolTip(tabIdx, fullFileName);
         m_ui->tabWidget->setTabIcon(tabIdx, m_ui->action_open_path->icon());
 
         m_ui->stackedWidget->setCurrentIndex(1);
     }
-    /*
-    catch (const IOReadException&)
-    {
-
-    }
-    catch (const InvalidJsonException&)
-    {
-
-    }
-    catch (const InvalidGameException&)
-    {
-
-    }
-    catch (const ObjectPropertyTypeNotFoundException&)
-    {
-
-    }
-    catch (const JsonKeyNotFoundException&)
-    {
-
-    }*/
     catch (const ModelException&)
     {
         QMessageBox::critical(this, "Error", "Failed to load json");
@@ -217,3 +241,20 @@ void EditorMainWindow::on_action_save_path_triggered()
         pTab->Save();
     }
 }
+
+void EditorMainWindow::on_actionExport_to_lvl_triggered()
+{
+    EditorTab* pTab = getActiveTab(m_ui->tabWidget);
+    if (pTab)
+    {
+        pTab->Export();
+    }
+    else
+    {
+        auto exportDialog = new ExportPathDialog(this);
+        // Get rid of "?"
+        exportDialog->setWindowFlags(exportDialog->windowFlags() & ~Qt::WindowContextHelpButtonHint);
+        exportDialog->exec();
+    }
+}
+

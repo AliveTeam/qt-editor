@@ -21,11 +21,15 @@
 #include <QFileInfo>
 #include "BasicTypeProperty.hpp"
 #include "EnumProperty.hpp"
+#include "exportpathdialog.hpp"
+#include "easylogging++.h"
 
 // Zoom by 10% each time.
 const float KZoomFactor = 0.10f;
 const float KMaxZoomOutLevels = 5.0f;
 const float KMaxZoomInLevels = 14.0f;
+
+INITIALIZE_EASYLOGGINGPP
 
 class SetSelectionCommand : public QUndoCommand
 {
@@ -383,14 +387,45 @@ void EditorTab::Redo()
 
 void EditorTab::Save()
 {
-    QFileInfo info(mJsonFileName);
     std::string json = mModel->ToJson();
-    QString fullPath = info.path() + "/save_test.json";
-    qDebug() << fullPath;
-    QFile f(fullPath);
+    QFile f(mJsonFileName);
     if (f.open(QIODevice::WriteOnly))
     {
         QTextStream stream(&f);
         stream << json.c_str();
+    }
+    else
+    {
+        // TODO: error
+    }
+}
+
+void EditorTab::Export()
+{
+    auto exportDialog = new ExportPathDialog(this);
+    // Get rid of "?"
+    exportDialog->setWindowFlags(exportDialog->windowFlags() & ~Qt::WindowContextHelpButtonHint);
+    exportDialog->setJsonPath(mJsonFileName);
+
+    if (mExportedPathLvlName.isEmpty())
+    {
+        // will be XXPATH.BND, extract XX
+        QString lvlName = QString::fromStdString(mModel->GetMapInfo().mPathBnd);
+        if (lvlName.length() > 2)
+        {
+            lvlName = lvlName.left(2) + ".lvl";
+        }
+        exportDialog->setLvlName(lvlName);
+    }
+    else
+    {
+        exportDialog->setLvlName(mExportedPathLvlName);
+    }
+
+    exportDialog->exec();
+
+    if (!exportDialog->getLvlName().isEmpty())
+    {
+        mExportedPathLvlName = exportDialog->getLvlName();
     }
 }

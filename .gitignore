@@ -73,3 +73,6 @@ Thumbs.db
 
 build
 *.user
+/build_vs2017
+/vs2019
+/todo.txt

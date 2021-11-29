@@ -28,6 +28,7 @@ public:
     void ZoomOut();
     void ResetZoom();
     void Save();
+    void Export();
     Model& GetModel() const { return *mModel; }
     void ClearPropertyEditor();
     void PopulatePropertyEditor(QGraphicsItem* pItem);
@@ -42,4 +43,6 @@ private:
     QUndoStack mUndoStack;
     std::unique_ptr<EditorGraphicsScene> mScene;
     QString mJsonFileName;
+
+    QString mExportedPathLvlName;
 };

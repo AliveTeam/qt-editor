@@ -30,6 +30,7 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets Multimedia LinguistTools R
 #set(TS_FILES qt-editor_en_GB.ts)
 
 add_subdirectory(3rdParty/libmodplug)
+add_subdirectory(3rdParty/alive_reversing/Source/Tools/relive_api)
 
 include_directories(3rdParty/libmodplug/src)
 include_directories(3rdParty/jsonxx)
@@ -43,6 +44,12 @@ export(TARGETS jsonxx FILE jsonxx.cmake)
 set_property(TARGET jsonxx PROPERTY FOLDER "3rdParty")
 
 set(PROJECT_SOURCES
+        Source/exportpathdialog.hpp
+        Source/exportpathdialog.cpp
+        Source/exportpathdialog.ui
+        Source/pathselectiondialog.hpp
+        Source/pathselectiondialog.cpp
+        Source/pathselectiondialog.ui
         Source/IGraphicsItem.hpp
         Source/main.cpp
         Source/aboutdialog.ui
@@ -105,4 +112,4 @@ else()
     qt5_create_translation(QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES})
 endif()
 
-target_link_libraries(qt-editor PUBLIC Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Multimedia modplug jsonxx)
+target_link_libraries(qt-editor PUBLIC relive_api Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Multimedia modplug jsonxx)
