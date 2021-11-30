@@ -218,6 +218,28 @@ public:
         }
         QGraphicsView::wheelEvent(pEvent);
     }
+
+    void keyPressEvent(QKeyEvent* pEvent) override
+    {
+        if (pEvent->key() == Qt::Key::Key_Shift)
+        {
+            setDragMode(DragMode::ScrollHandDrag);
+            pEvent->ignore();
+            return;
+        }
+        QGraphicsView::keyPressEvent(pEvent);
+    }
+
+    void keyReleaseEvent(QKeyEvent* pEvent) override
+    {
+        if (pEvent->key() == Qt::Key::Key_Shift)
+        {
+            setDragMode(DragMode::RubberBandDrag);
+            pEvent->ignore();
+            return;
+        }
+        QGraphicsView::keyPressEvent(pEvent);
+    }
 };
 
 
