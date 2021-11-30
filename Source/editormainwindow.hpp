@@ -39,9 +39,13 @@ private slots:
 
     void on_actionExport_to_lvl_triggered();
 
-private:
-    void onOpenPath(QString fileName);
+    void on_tabWidget_currentChanged(int index);
 
+private:
+    bool onOpenPath(QString fileName);
+    void UpdateWindowTitle(bool clean);
+    void DisconnectTabSignals();
+    void closeEvent(QCloseEvent* pEvent) override;
 private:
     Ui::EditorMainWindow* m_ui;
     QSettings m_Settings;
