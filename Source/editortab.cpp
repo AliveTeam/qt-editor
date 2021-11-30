@@ -208,6 +208,16 @@ public:
         qDebug() << "view mouse release (left)";
         QGraphicsView::mouseReleaseEvent(pEvent);
     }
+
+    void wheelEvent(QWheelEvent* pEvent) override
+    {
+        if (pEvent->modifiers() == Qt::Modifier::CTRL)
+        {
+            pEvent->ignore();
+            return;
+        }
+        QGraphicsView::wheelEvent(pEvent);
+    }
 };
 
 
@@ -313,7 +323,7 @@ EditorTab::EditorTab(QWidget* aParent, UP_Model model, QString jsonFileName)
 
 void EditorTab::wheelEvent(QWheelEvent* pEvent)
 {
-    /*if (pEvent->modifiers() == Qt::Modifier::CTRL)
+    if (pEvent->modifiers() == Qt::Modifier::CTRL)
     {
         if (pEvent->delta() > 0)
         {
@@ -323,7 +333,7 @@ void EditorTab::wheelEvent(QWheelEvent* pEvent)
         {
             ZoomOut();
         }
-    }*/
+    }
     QWidget::wheelEvent(pEvent);
 }
 
