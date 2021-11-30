@@ -319,6 +319,25 @@ void EditorMainWindow::closeEvent(QCloseEvent* pEvent)
 {
     if (m_ui->tabWidget->count() > 0)
     {
+        bool anyTabsNeedSaving = false;
+        for (int i = 0; i < m_ui->tabWidget->count(); i++)
+        {
+            if (!static_cast<EditorTab*>(m_ui->tabWidget->widget(i))->GetUndoStack().isClean())
+            {
+                anyTabsNeedSaving = true;
+                break;
+            }
+        }
+
+        if (!anyTabsNeedSaving)
+        {
+            DisconnectTabSignals();
+
+            m_ui->tabWidget->clear();
+            pEvent->accept();
+            return;
+        }
+
         QMessageBox msgBox;
         QString strToShow = QString("Some paths have unsaved changes.");
         msgBox.setText(strToShow);
