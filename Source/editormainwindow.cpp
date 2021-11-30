@@ -23,6 +23,8 @@ EditorMainWindow::EditorMainWindow(QWidget* aParent)
     // Construct the UI from the XML
     m_ui->setupUi(this);
 
+    UpdateWindowTitle(true);
+
     m_ui->statusbar->showMessage(tr("Ready"));
 
     // Add short cuts to the tool bar.
@@ -33,7 +35,6 @@ EditorMainWindow::EditorMainWindow(QWidget* aParent)
     m_ui->toolBar->addAction(m_ui->action_zoom_in);
     m_ui->toolBar->addAction(m_ui->action_zoom_out);
 
-    //connect( m_ui->action_open_path, &QAction::triggered, this, &EditorMainWindow::onOpenPath );
     connect(m_ui->tabWidget, &QTabWidget::tabCloseRequested, this, &EditorMainWindow::onCloseTab);
 
     this->m_ui->toolBar->setMovable(false);
@@ -55,10 +56,6 @@ EditorMainWindow::EditorMainWindow(QWidget* aParent)
         }
     }
 
-    m_Settings.setValue("test", 1234);
-
-    int val = m_Settings.value("test").toInt();
-
     // Use full screen
     showMaximized();
 
@@ -77,7 +74,7 @@ EditorMainWindow::~EditorMainWindow()
     delete m_ui;
 }
 
-void EditorMainWindow::onOpenPath(QString fullFileName)
+bool EditorMainWindow::onOpenPath(QString fullFileName)
 {
     try
     {
@@ -93,10 +90,12 @@ void EditorMainWindow::onOpenPath(QString fullFileName)
             pathSelection->exec();
 
             std::optional<int> selectedPath = pathSelection->SelectedPath();
+            delete pathSelection;
+
             if (!selectedPath)
             {
                 // They didn't pick one
-                return;
+                return false;
             }
 
             // They picked one, now ask for the .json to save this path as
@@ -104,7 +103,7 @@ void EditorMainWindow::onOpenPath(QString fullFileName)
             if (jsonSaveFileName.isEmpty())
             {
                 // They didn't want to save it
-                return;
+                return false;
             }
 
             // Convert the binary lvl path to json
@@ -117,7 +116,21 @@ void EditorMainWindow::onOpenPath(QString fullFileName)
     catch (const ReliveAPI::Exception& e)
     {
         QMessageBox::critical(this, "Error", e.what().c_str());
-        return;
+        return false;
+    }
+
+    // First check if we already have this json file open
+    for (int i = 0; i < m_ui->tabWidget->count(); i++)
+    {
+        auto pTab = static_cast<EditorTab*>(m_ui->tabWidget->widget(i));
+        // TODO: Probably need to normalize slashes in here, C:\foo.txt vs C:/foo.txt
+        // could get past this check.
+        if (pTab->GetJsonFileName().compare(fullFileName, Qt::CaseInsensitive) == 0)
+        {
+            // Set focus to the tab
+            m_ui->tabWidget->setCurrentIndex(i);
+            return true;
+        }
     }
 
     try
@@ -128,24 +141,39 @@ void EditorMainWindow::onOpenPath(QString fullFileName)
 
         EditorTab* view = new EditorTab(m_ui->tabWidget, std::move(model), fullFileName);
 
+        connect(
+            &view->GetUndoStack(), &QUndoStack::cleanChanged,
+            this, &EditorMainWindow::UpdateWindowTitle
+        );
+
         view->setToolTip(fullFileName);
         QFileInfo fileInfo(fullFileName);
         const int tabIdx = m_ui->tabWidget->addTab(view, fileInfo.fileName());
         m_ui->tabWidget->setTabToolTip(tabIdx, fullFileName);
         m_ui->tabWidget->setTabIcon(tabIdx, m_ui->action_open_path->icon());
+        m_ui->tabWidget->setCurrentIndex(tabIdx);
 
         m_ui->stackedWidget->setCurrentIndex(1);
+        return true;
     }
     catch (const ModelException&)
     {
         QMessageBox::critical(this, "Error", "Failed to load json");
+        return false;
     }
 }
 
 void EditorMainWindow::onCloseTab(int index)
 {
     auto tab = static_cast<EditorTab*>(m_ui->tabWidget->widget(index));
-    if (QMessageBox::question(this, "Confirm", "Close without saving changes?") == QMessageBox::Yes)
+
+    bool close = true;
+    if (!tab->GetUndoStack().isClean())
+    {
+        close = QMessageBox::question(this, "Confirm", "Close without saving changes?") == QMessageBox::Yes;
+    }
+
+    if (close)
     {
         tab->deleteLater();
         m_ui->tabWidget->removeTab(index);
@@ -171,10 +199,15 @@ void EditorMainWindow::on_action_about_triggered()
 
 void EditorMainWindow::on_action_open_path_triggered()
 {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open level"), "", tr("Json files (*.json);;Level files (*.lvl);;All Files (*)"));
+    QString lastOpenDir = m_Settings.value("last_open_dir").toString();
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open level"), lastOpenDir, tr("Json files (*.json);;Level files (*.lvl);;All Files (*)"));
     if (!fileName.isEmpty())
     {
-        onOpenPath(fileName);
+        if (onOpenPath(fileName))
+        {
+            QFileInfo info(fileName);
+            m_Settings.setValue("last_open_dir", info.dir().path());
+        }
     }
 }
 
@@ -255,6 +288,94 @@ void EditorMainWindow::on_actionExport_to_lvl_triggered()
         // Get rid of "?"
         exportDialog->setWindowFlags(exportDialog->windowFlags() & ~Qt::WindowContextHelpButtonHint);
         exportDialog->exec();
+        delete exportDialog;
     }
 }
 
+
+void EditorMainWindow::on_tabWidget_currentChanged(int index)
+{
+    EditorTab* pTab = getActiveTab(m_ui->tabWidget);
+    UpdateWindowTitle(pTab ? pTab->GetUndoStack().isClean() : true);
+}
+
+void EditorMainWindow::UpdateWindowTitle(bool clean)
+{
+    EditorTab* pTab = getActiveTab(m_ui->tabWidget);
+    QString title = "Oddysee/Exoddus editor by Relive Team [https://aliveteam.github.io]";
+    if (pTab)
+    {
+        title += " (" + pTab->GetJsonFileName();
+        if (!clean)
+        {
+            title += "*";
+        }
+        title += ")";
+    }
+    setWindowTitle(title);
+}
+
+void EditorMainWindow::closeEvent(QCloseEvent* pEvent)
+{
+    if (m_ui->tabWidget->count() > 0)
+    {
+        QMessageBox msgBox;
+        QString strToShow = QString("Some paths have unsaved changes.");
+        msgBox.setText(strToShow);
+        msgBox.setInformativeText("Do you want to save your changes?");
+        msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+        msgBox.setDefaultButton(QMessageBox::Save);
+
+        const int ret = msgBox.exec();
+        switch (ret)
+        {
+        case QMessageBox::Save:
+        {
+            for (int i = 0; i < m_ui->tabWidget->count(); i++)
+            {
+                if (!static_cast<EditorTab*>(m_ui->tabWidget->widget(i))->Save())
+                {
+                    pEvent->ignore();
+                    return;
+                }
+            }
+
+            // disconnect signals that will fire in our dtor and crash at shutdown
+            DisconnectTabSignals();
+
+            m_ui->tabWidget->clear();
+            pEvent->accept();
+            break;
+        }
+        case QMessageBox::Discard:
+        {
+            DisconnectTabSignals();
+
+            m_ui->tabWidget->clear();
+            pEvent->accept();
+            break;
+        }
+        case QMessageBox::Cancel:
+        {
+            pEvent->ignore();
+            break;
+        }
+        }
+    }
+    else
+    {
+        pEvent->accept();
+    }
+}
+
+void EditorMainWindow::DisconnectTabSignals()
+{
+    for (int i = 0; i < m_ui->tabWidget->count(); i++)
+    {
+        auto pTab = static_cast<EditorTab*>(m_ui->tabWidget->widget(i));
+        disconnect(
+            &pTab->GetUndoStack(), &QUndoStack::cleanChanged,
+            this, &EditorMainWindow::UpdateWindowTitle
+        );
+    }
+}

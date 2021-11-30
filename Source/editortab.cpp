@@ -211,11 +211,12 @@ public:
 };
 
 
-EditorTab::EditorTab(QWidget* aParent, UP_Model model, QString jsonFileName)
+EditorTab::EditorTab(QTabWidget* aParent, UP_Model model, QString jsonFileName)
     : QMainWindow(aParent),
     ui(new Ui::EditorTab),
     mModel(std::move(model)),
-    mJsonFileName(jsonFileName)
+    mJsonFileName(jsonFileName),
+    mParent(aParent)
 {
     ui->setupUi(this);
 
@@ -226,7 +227,6 @@ EditorTab::EditorTab(QWidget* aParent, UP_Model model, QString jsonFileName)
     pView->setDragMode(QGraphicsView::RubberBandDrag);
 
     pView->setRenderHint(QPainter::SmoothPixmapTransform);
-    pView->setRenderHint(QPainter::HighQualityAntialiasing);
     pView->setRenderHint(QPainter::Antialiasing);
     pView->setRenderHint(QPainter::TextAntialiasing);
 
@@ -309,6 +309,26 @@ EditorTab::EditorTab(QWidget* aParent, UP_Model model, QString jsonFileName)
 
     setContextMenuPolicy(Qt::PreventContextMenu);
 
+    connect(&mUndoStack , &QUndoStack::cleanChanged, this, &EditorTab::UpdateTabTitle);
+}
+
+void EditorTab::UpdateTabTitle(bool clean)
+{
+    QFileInfo fileInfo(mJsonFileName);
+    QString title = fileInfo.fileName();
+    if (!clean)
+    {
+        title += "*";
+    }
+
+    for (int i = 0; i < mParent->count(); i++)
+    {
+        if (mParent->widget(i) == this)
+        {
+            mParent->setTabText(i, title);
+            break;
+        }
+    }
 }
 
 void EditorTab::wheelEvent(QWheelEvent* pEvent)
@@ -385,7 +405,7 @@ void EditorTab::Redo()
     mUndoStack.redo();
 }
 
-void EditorTab::Save()
+bool EditorTab::Save()
 {
     std::string json = mModel->ToJson();
     QFile f(mJsonFileName);
@@ -393,10 +413,12 @@ void EditorTab::Save()
     {
         QTextStream stream(&f);
         stream << json.c_str();
+        return true;
     }
     else
     {
-        // TODO: error
+        QMessageBox::critical(this, "Error", "Failed to save " + mJsonFileName);
+        return false;
     }
 }
 
