@@ -208,6 +208,38 @@ public:
         qDebug() << "view mouse release (left)";
         QGraphicsView::mouseReleaseEvent(pEvent);
     }
+
+    void wheelEvent(QWheelEvent* pEvent) override
+    {
+        if (pEvent->modifiers() == Qt::Modifier::CTRL)
+        {
+            pEvent->ignore();
+            return;
+        }
+        QGraphicsView::wheelEvent(pEvent);
+    }
+
+    void keyPressEvent(QKeyEvent* pEvent) override
+    {
+        if (pEvent->key() == Qt::Key::Key_Shift)
+        {
+            setDragMode(DragMode::ScrollHandDrag);
+            pEvent->ignore();
+            return;
+        }
+        QGraphicsView::keyPressEvent(pEvent);
+    }
+
+    void keyReleaseEvent(QKeyEvent* pEvent) override
+    {
+        if (pEvent->key() == Qt::Key::Key_Shift)
+        {
+            setDragMode(DragMode::RubberBandDrag);
+            pEvent->ignore();
+            return;
+        }
+        QGraphicsView::keyPressEvent(pEvent);
+    }
 };
 
 
@@ -333,7 +365,7 @@ void EditorTab::UpdateTabTitle(bool clean)
 
 void EditorTab::wheelEvent(QWheelEvent* pEvent)
 {
-    /*if (pEvent->modifiers() == Qt::Modifier::CTRL)
+    if (pEvent->modifiers() == Qt::Modifier::CTRL)
     {
         if (pEvent->delta() > 0)
         {
@@ -343,7 +375,7 @@ void EditorTab::wheelEvent(QWheelEvent* pEvent)
         {
             ZoomOut();
         }
-    }*/
+    }
     QWidget::wheelEvent(pEvent);
 }
 
