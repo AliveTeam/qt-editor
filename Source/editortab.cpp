@@ -413,6 +413,7 @@ bool EditorTab::Save()
     {
         QTextStream stream(&f);
         stream << json.c_str();
+        mUndoStack.setClean();
         return true;
     }
     else
