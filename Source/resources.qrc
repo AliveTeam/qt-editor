@@ -5,6 +5,7 @@
     </qresource>
 
     <qresource prefix="/icons">
+        <file>rsc/icons/icon.png</file>
         <file>rsc/icons/zoom_in.png</file>
         <file>rsc/icons/zoom_out.png</file>
         <file>rsc/icons/zoom_reset.png</file>
@@ -58,4 +59,8 @@
         <file>rsc/object_images/LiftMudokon.bmp</file>
         <file>rsc/object_images/RingMudokon.bmp</file>
      </qresource>
+
+    <qresource prefix="/stylesheets">
+        <file>rsc/stylesheets/dark-stylesheet.qss</file>
+    </qresource>
 </RCC>
