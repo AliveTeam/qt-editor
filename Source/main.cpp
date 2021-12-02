@@ -11,8 +11,8 @@ int main(int argc, char *argv[])
     File.open(QFile::ReadOnly);
     QString styleSheet = QLatin1String(File.readAll());
 
-    w.setStyleSheet(styleSheet);
-    w.setWindowIcon(QIcon(":/icons/rsc/icons/icon.png"));
+    a.setStyleSheet(styleSheet);
+    a.setWindowIcon(QIcon(":/icons/rsc/icons/icon.png"));
 
     w.show();
     return a.exec();
