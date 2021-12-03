@@ -45,9 +45,9 @@ void PropertyTreeWidget::Populate(Model& model, QUndoStack& undoStack, QGraphics
 #ifdef _WIN32
     for (int i = 0; i < items.count(); i++)
     {
-        const int b = (i % 2) == 0 ? 191 : 222;
-        items[i]->setBackground(0, QColor(255, 255, b));
-        items[i]->setBackground(1, QColor(255, 255, b));
+        const int rgb = (i % 2) == 0 ? 50 : 80;
+        items[i]->setBackground(0, QColor(rgb, rgb, rgb));
+        items[i]->setBackground(1, QColor(rgb, rgb, rgb));
 
     }
 #endif

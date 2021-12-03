@@ -17,21 +17,21 @@ void EditorGraphicsScene::CreateBackgroundBrush()
 
     // Paint a single grid background onto a pixmap.
     QImage singleGrid(gridSizeX, gridSizeY, QImage::Format_RGB32);
-    singleGrid.fill(Qt::white);
+    singleGrid.fill(QColor(50,50,50));
     {
         QPainter painter(&singleGrid);
 
         // Lighter background
-        painter.setPen(QPen(QColor(240, 240, 240)));
+        /*painter.setPen(QPen(QColor(140, 140, 140)));
 
         // Draw grid mid lines
         qreal midx = gridSizeX / 2;
         qreal midy = gridSizeY / 2;
         painter.drawLine(0, midy, gridSizeX, midy);
-        painter.drawLine(midx, 0, midx, gridSizeY);
+        painter.drawLine(midx, 0, midx, gridSizeY);*/
 
         // Darker foreground
-        painter.setPen(QPen(QColor(180, 180, 180)));
+        painter.setPen(QPen(QColor(80, 80, 80)));
 
         // Draw main grid lines
         painter.drawRect(0, 0, gridSizeX, gridSizeY);

@@ -7,7 +7,7 @@ CameraGraphicsItem::CameraGraphicsItem(Camera* pCamera, int xpos, int ypos, int 
 {
     QPen pen;
     pen.setWidth(2);
-    pen.setColor(QColor::fromRgb(255, 0, 255));
+    pen.setColor(QColor::fromRgb(120, 120, 120));
     setPen(pen);
 
     setZValue(1.0);

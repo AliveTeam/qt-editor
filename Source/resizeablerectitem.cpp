@@ -100,7 +100,7 @@ void ResizeableRectItem::paint( QPainter* aPainter, const QStyleOptionGraphicsIt
 
     if ( m_Pixmap.isNull() )
     {
-        aPainter->setBrush( Qt::lightGray );
+        aPainter->setBrush( Qt::darkGray );
     }
     else
     {
