@@ -9,6 +9,7 @@ jobs:
   steps:
   - script: |
         sudo apt-get update
+        sudo apt-get install qtdeclarative5-dev
         git submodule update --init
         cmake --version
         mkdir build
