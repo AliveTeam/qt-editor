@@ -1,0 +1,48 @@
+
+trigger:
+- master
+
+jobs:
+- job: Linux
+  pool:
+    vmImage: 'ubuntu-latest'
+  steps:
+  - script: |
+        sudo apt-get update
+        git submodule update --init
+        cmake --version
+        mkdir build
+        cd build
+        cmake -DBUILD_NUMBER=$(Build.BuildId) -G"Unix Makefiles" ..
+        make -j4
+- job: macOS
+  pool:
+    vmImage: 'macOS-latest'
+  steps:
+  - script: |
+        git submodule update --init
+        cmake --version
+        mkdir build
+        cd build
+        cmake -DBUILD_NUMBER=$(Build.BuildId) -G"Unix Makefiles" ..
+        make -j4
+- job: Windows32
+  pool:
+    vmImage: 'windows-latest'
+  steps:
+  - script: |
+        git submodule update --init
+        mkdir build
+        cd build
+        cmake .. -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DBUILD_NUMBER=$(Build.BuildId) -G "Visual Studio 16 2019" -A Win32
+        cmake --build .
+- job: Windows64
+  pool:
+    vmImage: 'windows-latest'
+  steps:
+  - script: |
+        git submodule update --init
+        mkdir build
+        cd build
+        cmake .. -DBUILD_NUMBER=$(Build.BuildId) -G "Visual Studio 16 2019" -A x64
+        cmake --build .
