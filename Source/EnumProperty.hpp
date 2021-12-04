@@ -22,7 +22,7 @@ struct EnumPropertyChangeData
 class ChangeEnumPropertyCommand : public QUndoCommand
 {
 public:
-    ChangeEnumPropertyCommand(LinkedProperty& linkedProperty, EnumPropertyChangeData& propertyData);
+    ChangeEnumPropertyCommand(LinkedProperty linkedProperty, EnumPropertyChangeData& propertyData);
 
     void undo() override;
 
