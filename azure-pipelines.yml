@@ -25,3 +25,25 @@ jobs:
         set path=%path%;$(Build.SourcesDirectory)\Qt\5.15.2\msvc2019
         cmake .. -DQt5_DIR="$(Build.SourcesDirectory)\Qt\5.15.2\msvc2019\lib\cmake\Qt5" -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DBUILD_NUMBER=$(Build.BuildId) -G "Visual Studio 16 2019" -A Win32
         cmake --build .
+        
+- job: Windows64
+  pool:
+    vmImage: 'windows-latest'
+  steps:
+  - script: |
+        git submodule update --init --recursive
+        pip install aqtinstall
+        aqt list-qt windows desktop --arch 5.15.2
+        mkdir Qt
+        cd Qt
+        aqt install-qt windows desktop 5.15.2 win64_msvc2019_64
+        cd ..
+        cd build
+        mkdir build
+        cd build
+        dir $(Build.SourcesDirectory)\Qt\5.15.2\msvc2019_64
+        set QT_DIR=$(Build.SourcesDirectory)\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5
+        dir %QT_DIR$
+        set path=%path%;$(Build.SourcesDirectory)\Qt\5.15.2\msvc2019_64
+        cmake .. -DQt5_DIR="$(Build.SourcesDirectory)\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5" -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DBUILD_NUMBER=$(Build.BuildId) -G "Visual Studio 16 2019" -A x64
+        cmake --build .
