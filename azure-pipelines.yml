@@ -12,10 +12,9 @@ jobs:
         git submodule update --init
         pip install aqtinstall
         aqt list-qt windows desktop --arch 5.15.2
-        aqt list-qt windows desktop --modules 5.15.2
         mkdir Qt
         cd Qt
-        aqt install-qt windows desktop 5.15.2 win64_msvc2019_32 -m qtmultimedia
+        aqt install-qt windows desktop 5.15.2 win32_msvc2019
         cd ..
         cd build
         mkdir build
