@@ -1,6 +1,6 @@
 [submodule "3rdParty/libmodplug"]
 	path = 3rdParty/libmodplug
-	url = https://github.com/Konstanty/libmodplug.git
+	url = https://github.com/AliveTeam/libmodplug.git
 [submodule "3rdParty/jsonxx"]
 	path = 3rdParty/jsonxx
 	url = https://github.com/hjiang/jsonxx.git

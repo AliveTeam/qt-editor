@@ -3,7 +3,8 @@
 #include "IGraphicsItem.hpp"
 #include <QDateTime>
 
-ChangeBasicTypePropertyCommand::ChangeBasicTypePropertyCommand(LinkedProperty& linkedProperty, BasicTypePropertyChangeData& propertyData) : mLinkedProperty(linkedProperty), mPropertyData(propertyData)
+ChangeBasicTypePropertyCommand::ChangeBasicTypePropertyCommand(LinkedProperty linkedProperty, BasicTypePropertyChangeData propertyData) 
+    : mLinkedProperty(linkedProperty), mPropertyData(propertyData)
 {
     UpdateText();
     mTimeStamp = QDateTime::currentMSecsSinceEpoch();
