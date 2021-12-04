@@ -1,16 +1,20 @@
-QScrollBar {
+QScrollBar:horizontal {
 background-color: rgb(120, 120, 120);
+padding-left: 16px;
+padding-right: 16px;
 }
 
-QScrollBar::handle {
+QScrollBar:vertical {
 background-color: rgb(120, 120, 120);
+padding-top: 16px;
+padding-bottom: 16px;
 }
 
-QScrollBar::sub-page {
-background-color: rgb(80, 80, 80);
+QScrollBar::handle:horizontal, QScrollBar::handle:vertical {
+border: none;
 }
 
-QScrollBar::add-page {
+QScrollBar::sub-page, QScrollBar::add-page {
 background-color: rgb(80, 80, 80);
 }
 
@@ -19,65 +23,38 @@ border: none;
 }
 
 QTabBar::tab {
-background-color: rgb(60, 60, 60);
+background-color: rgb(80, 80, 80);
 border-top-left-radius: 4px;
 border-top-right-radius: 4px;
 min-height: 25px;
-padding-left: 5px;
+padding-left: 4px;
 }
 
 QTabBar::tab:hover {
-background-color: rgb(80, 80, 80);
+background-color: rgb(100, 100, 100);
 }
 
 QTabBar::tab:selected {
 background-color: rgb(100, 100, 100);
+border: 1px solid rgb(130, 130, 255);
 }
 
-QMenu {
-background-color: rgb(50, 50, 50);
+QTabBar::tab:!selected {
+margin-top: 3px;
 }
 
-QMenu::item:selected { 
-background-color: rgb(80, 80, 80);
-}
-
-QMenuBar {
+QMenuBar, QStatusBar, QMenuBar::item {
 background-color: rgb(30, 30, 30);
 }
 
-QMenuBar::item:selected {
-background-color: rgb(80, 80, 80);
-}
-
-QToolBar {
-background-color: rgb(50, 50, 50);
-}
-
-QMainWindow { 
-background-color: rgb(50, 50, 50);
-}
-
-QAbstractItemView {
-background-color: rgb(50, 50, 50);
-}
-
-QListView::item:hover {
+QListView::item:hover, QTreeView::item:hover, QMenu::item:selected
+, QMenuBar::item:selected, QPushButton:hover {
 color: white;
 background-color: rgb(80, 80, 80);
-}
-
-QTreeView::item:hover {
-color: white;
-background-color: rgb(80, 80, 80);
-}
-
-QHeaderView::section {
-background-color: rgb(50, 50, 50);
 }
 
 QPushButton {
-background-color: rgb(80, 80, 80);
+background-color: rgb(60, 60, 60);
 border-style: solid;
 border-width: 1px;
 border-radius: 5px;
@@ -86,24 +63,28 @@ min-width: 70px;
 min-height: 20px;
 }
 
-QPushButton:hover {
-background-color: rgb(100, 100, 100);
-}
-
 QPushButton:pressed {
 background-color: rgb(130, 130, 255);
 }
 
 QLineEdit, QSpinBox, QComboBox, QAbstractSpinBox {
-background-color: rgb(80, 80, 80);
+background-color: rgb(100, 100, 100);
 border: 1px solid rgb(130, 130, 255);
 }
 
-QDockWidget {
+QToolBar {
 background-color: rgb(50, 50, 50);
+border: none;
 }
 
-QMessageBox {
+QHeaderView::section {
+background-color: rgb(50, 50, 50);
+border: 1px solid rgb(100, 100, 100);
+padding-left: 4px;
+}
+
+QDockWidget, QDialog, QMessageBox, QAbstractItemView, QMainWindow,
+QMenu {
 background-color: rgb(50, 50, 50);
 }
 
@@ -112,16 +93,8 @@ border: none;
 background-color: rgb(50, 50, 50);
 }
 
-QStatusBar {
-background-color: rgb(30, 30, 30);
-}
-
 QTreeWidget, QUndoView, QListWidget {
 border: 1px solid rgb(80, 80, 80);
-}
-
-QDialog {
-background-color: rgb(50, 50, 50);
 }
 
 QWidget {
