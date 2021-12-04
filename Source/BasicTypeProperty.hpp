@@ -22,7 +22,7 @@ struct BasicTypePropertyChangeData
 class ChangeBasicTypePropertyCommand final : public QUndoCommand
 {
 public:
-    ChangeBasicTypePropertyCommand(LinkedProperty linkedProperty, BasicTypePropertyChangeData& propertyData);
+    ChangeBasicTypePropertyCommand(LinkedProperty linkedProperty, BasicTypePropertyChangeData propertyData);
 
     void undo() override;
 
