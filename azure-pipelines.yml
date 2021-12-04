@@ -13,9 +13,10 @@ jobs:
         export LDFLAGS="-L/usr/local/opt/qt@5/lib"
         export CPPFLAGS="-I/usr/local/opt/qt@5/include"
         export QT_DIR=/usr/local/opt/qt@5
+        echo 'export PATH="/usr/local/opt/qt@5/bin:$PATH"' >> /Users/runner/.bash_profile
         git submodule update --init
         cmake --version
         mkdir build
         cd build
-        cmake -DBUILD_NUMBER=$(Build.BuildId) -G"Unix Makefiles" ..
+        cmake -DCMAKE_PREFIX_PATH=/usr/local/opt/qt@5 -DBUILD_NUMBER=$(Build.BuildId) -G"Unix Makefiles" ..
         make -j4
