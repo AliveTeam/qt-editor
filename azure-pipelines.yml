@@ -10,7 +10,7 @@ jobs:
   steps:
   - script: |
         git submodule update --init
-        python pip install aqtinstall
+        pip install aqtinstall
         python aqt install --outputdir c:\Qt 5.15.2 windows desktop win64_msvc2019_32
         dir c:\Qt
         cd build
