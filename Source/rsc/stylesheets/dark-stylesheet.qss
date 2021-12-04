@@ -116,8 +116,12 @@ QStatusBar {
 background-color: rgb(30, 30, 30);
 }
 
-QTreeWidget, QUndoView {
+QTreeWidget, QUndoView, QListWidget {
 border: 1px solid rgb(80, 80, 80);
+}
+
+QDialog {
+background-color: rgb(50, 50, 50);
 }
 
 QWidget {
