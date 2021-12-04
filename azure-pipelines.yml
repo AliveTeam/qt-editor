@@ -3,46 +3,80 @@ trigger:
 - master
 
 jobs:
+
 - job: Linux
   pool:
     vmImage: 'ubuntu-latest'
   steps:
   - script: |
         sudo apt-get update
-        git submodule update --init
+        sudo apt-get install qtdeclarative5-dev
+        sudo apt-get install qtmultimedia5-dev
+        sudo apt-get install qttools5-dev
+        git submodule update --init --recursive
         cmake --version
         mkdir build
         cd build
         cmake -DBUILD_NUMBER=$(Build.BuildId) -G"Unix Makefiles" ..
         make -j4
+
 - job: macOS
   pool:
     vmImage: 'macOS-latest'
   steps:
   - script: |
-        git submodule update --init
+        brew install qt5
+        export LDFLAGS="-L/usr/local/opt/qt@5/lib"
+        export CPPFLAGS="-I/usr/local/opt/qt@5/include"
+        export QT_DIR=/usr/local/opt/qt@5
+        echo 'export PATH="/usr/local/opt/qt@5/bin:$PATH"' >> /Users/runner/.bash_profile
+        git submodule update --init --recursive
         cmake --version
         mkdir build
         cd build
-        cmake -DBUILD_NUMBER=$(Build.BuildId) -G"Unix Makefiles" ..
+        cmake -DQt5_DIR=$(brew --prefix qt5)/lib/cmake/Qt5 -DCMAKE_PREFIX_PATH=/usr/local/opt/qt@5 -DBUILD_NUMBER=$(Build.BuildId) -G"Unix Makefiles" ..
         make -j4
+
 - job: Windows32
   pool:
     vmImage: 'windows-latest'
   steps:
   - script: |
-        git submodule update --init
+        git submodule update --init --recursive
+        pip install aqtinstall
+        aqt list-qt windows desktop --arch 5.15.2
+        mkdir Qt
+        cd Qt
+        aqt install-qt windows desktop 5.15.2 win32_msvc2019
+        cd ..
+        cd build
         mkdir build
         cd build
-        cmake .. -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DBUILD_NUMBER=$(Build.BuildId) -G "Visual Studio 16 2019" -A Win32
+        dir $(Build.SourcesDirectory)\Qt\5.15.2\msvc2019
+        set QT_DIR=$(Build.SourcesDirectory)\Qt\5.15.2\msvc2019\lib\cmake\Qt5
+        dir %QT_DIR$
+        set path=%path%;$(Build.SourcesDirectory)\Qt\5.15.2\msvc2019
+        cmake .. -DQt5_DIR="$(Build.SourcesDirectory)\Qt\5.15.2\msvc2019\lib\cmake\Qt5" -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DBUILD_NUMBER=$(Build.BuildId) -G "Visual Studio 16 2019" -A Win32
         cmake --build .
+        
 - job: Windows64
   pool:
     vmImage: 'windows-latest'
   steps:
   - script: |
-        git submodule update --init
+        git submodule update --init --recursive
+        pip install aqtinstall
+        aqt list-qt windows desktop --arch 5.15.2
+        mkdir Qt
+        cd Qt
+        aqt install-qt windows desktop 5.15.2 win64_msvc2019_64
+        cd ..
+        cd build
         mkdir build
         cd build
-        cmake .. -DBUILD_NUMBER=$(Build.BuildId) -G "Visual Studio 16 2019" -A x64
+        dir $(Build.SourcesDirectory)\Qt\5.15.2\msvc2019_64
+        set QT_DIR=$(Build.SourcesDirectory)\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5
+        dir %QT_DIR$
+        set path=%path%;$(Build.SourcesDirectory)\Qt\5.15.2\msvc2019_64
+        cmake .. -DQt5_DIR="$(Build.SourcesDirectory)\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5" -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DBUILD_NUMBER=$(Build.BuildId) -G "Visual Studio 16 2019" -A x64
         cmake --build .
