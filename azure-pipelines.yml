@@ -20,5 +20,7 @@ jobs:
         mkdir build
         cd build
         dir $(Build.SourcesDirectory)\Qt\5.15.2\msvc2019
-        cmake .. -DQt5_DIR="$(Build.SourcesDirectory)\Qt\5.15.2\msvc2019" -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DBUILD_NUMBER=$(Build.BuildId) -G "Visual Studio 16 2019" -A Win32
+        set QT_DIR=$(Build.SourcesDirectory)\Qt\5.15.2\msvc2019_64\lib\cmake\Qt5
+        set path=%path%;$(Build.SourcesDirectory)\Qt\5.15.2\msvc2019_64
+        cmake .. -DQt5_DIR="$(Build.SourcesDirectory)\Qt\5.15.2\msvc2019\lib\cmake\Qt5" -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DBUILD_NUMBER=$(Build.BuildId) -G "Visual Studio 16 2019" -A Win32
         cmake --build .
