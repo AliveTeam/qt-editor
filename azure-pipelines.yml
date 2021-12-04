@@ -18,5 +18,5 @@ jobs:
         cmake --version
         mkdir build
         cd build
-        cmake -DCMAKE_PREFIX_PATH=/usr/local/opt/qt@5 -DBUILD_NUMBER=$(Build.BuildId) -G"Unix Makefiles" ..
+        cmake -DQt5_DIR=$(brew --prefix qt5)/lib/cmake/Qt5 -DCMAKE_PREFIX_PATH=/usr/local/opt/qt@5 -DBUILD_NUMBER=$(Build.BuildId) -G"Unix Makefiles" ..
         make -j4
