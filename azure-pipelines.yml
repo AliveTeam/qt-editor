@@ -4,16 +4,17 @@ trigger:
 
 jobs:
 
-- job: macOS
+- job: Windows32
   pool:
-    vmImage: 'macOS-latest'
+    vmImage: 'windows-latest'
   steps:
   - script: |
-        brew install qt5
-        echo 'export PATH="/usr/local/opt/qt@5/bin:$PATH"' >> /Users/runner/.bash_profile
         git submodule update --init
-        cmake --version
+        python pip install aqtinstall
+        python aqt install --outputdir c:\Qt 5.15.2 windows desktop win64_msvc2019_32
+        dir c:\Qt
+        cd build
         mkdir build
         cd build
-        cmake -DQt5_DIR=$(brew --prefix qt5)/lib/cmake/Qt5 -DCMAKE_PREFIX_PATH=/usr/local/opt/qt@5 -DBUILD_NUMBER=$(Build.BuildId) -G"Unix Makefiles" ..
-        make -j4
+        cmake .. DQt5_DIR=c:\Qt\5.15.2 -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DBUILD_NUMBER=$(Build.BuildId) -G "Visual Studio 16 2019" -A Win32
+        cmake --build .
