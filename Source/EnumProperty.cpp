@@ -3,7 +3,7 @@
 #include "IGraphicsItem.hpp"
 #include <QComboBox>
 
-ChangeEnumPropertyCommand::ChangeEnumPropertyCommand(LinkedProperty linkedProperty, EnumPropertyChangeData& propertyData)
+ChangeEnumPropertyCommand::ChangeEnumPropertyCommand(LinkedProperty linkedProperty, EnumPropertyChangeData propertyData)
     : mLinkedProperty(linkedProperty), mPropertyData(propertyData)
 {
     setText(QString("Change property %1 from %2 to %3").arg(mLinkedProperty.mProperty->mName.c_str(), mPropertyData.mEnum->mValues[mPropertyData.mOldIdx].c_str(), mPropertyData.mEnum->mValues[mPropertyData.mNewIdx].c_str()));
