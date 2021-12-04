@@ -9,7 +9,7 @@ jobs:
     vmImage: 'windows-latest'
   steps:
   - script: |
-        git submodule update --init
+        git submodule update --init --recursive
         pip install aqtinstall
         aqt list-qt windows desktop --arch 5.15.2
         mkdir Qt
