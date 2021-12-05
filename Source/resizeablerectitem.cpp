@@ -120,17 +120,24 @@ void ResizeableRectItem::paint( QPainter* aPainter, const QStyleOptionGraphicsIt
             QFont f = aPainter->font();
             QFontMetricsF fm(f);
             QRectF textRect = fm.boundingRect(cRect, Qt::AlignCenter | Qt::TextWrapAnywhere, objectName);
-
+            qDebug() << f.pointSize();
             auto size = f.pointSize();
-            if (size <= 1)
+            if (size <= 0)
             {
-                break;
+                size = 8;
             }
 
             if (textRect.width() > cRect.width() ||
                 textRect.height() > cRect.height())
             {
-                f.setPointSize(--size);
+                if (size > 1)
+                {
+                    f.setPointSize(--size);
+                }
+                else
+                {
+                    break;
+                }
             }
             else
             {
