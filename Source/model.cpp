@@ -55,6 +55,15 @@ static std::string ReadString(jsonxx::Object& o, const std::string& key)
     return o.get<jsonxx::String>(key);
 }
 
+static std::string ReadStringOptional(jsonxx::Object& o, const std::string& key)
+{
+    if (!o.has<jsonxx::String>(key))
+    {
+        return "";
+    }
+    return o.get<jsonxx::String>(key);
+}
+
 static bool ReadBool(jsonxx::Object& o, const std::string& key)
 {
     if (!o.has<jsonxx::Boolean>(key))
@@ -195,6 +204,12 @@ void Model::LoadJson(const std::string& jsonFile)
         tmpCamera->mName = ReadString(camera, "name");
         tmpCamera->mX = ReadNumber(camera, "x");
         tmpCamera->mY = ReadNumber(camera, "y");
+
+        tmpCamera->mCameraImageandLayers.mCameraImage = ReadStringOptional(camera, "image");
+        tmpCamera->mCameraImageandLayers.mForegroundLayer = ReadStringOptional(camera, "foreground_layer");
+        tmpCamera->mCameraImageandLayers.mBackgroundLayer = ReadStringOptional(camera, "background_layer");
+        tmpCamera->mCameraImageandLayers.mForegroundWellLayer = ReadStringOptional(camera, "foreground_well_layer");
+        tmpCamera->mCameraImageandLayers.mBackgroundWellLayer = ReadStringOptional(camera, "background_well_layer");
 
         if (camera.has<jsonxx::Array>("map_objects"))
         {

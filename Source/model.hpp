@@ -157,6 +157,18 @@ struct Camera final
     int mX = 0;
     int mY = 0;
     std::vector<UP_MapObject> mMapObjects;
+
+    class CameraImageAndLayers final
+    {
+    public:
+        std::string mCameraImage;
+        std::string mForegroundLayer;
+        std::string mBackgroundLayer;
+        std::string mForegroundWellLayer;
+        std::string mBackgroundWellLayer;
+    };
+    CameraImageAndLayers mCameraImageandLayers;
+
 };
 using UP_Camera = std::unique_ptr<Camera>;
 
