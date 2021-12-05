@@ -97,7 +97,7 @@ void ResizeableRectItem::paint( QPainter* aPainter, const QStyleOptionGraphicsIt
         // Draw normal rect
         aPainter->setPen( QPen( Qt::black, 2, Qt::SolidLine ) );
     }
-
+    
     if ( m_Pixmap.isNull() )
     {
         aPainter->setBrush( Qt::darkGray );
@@ -109,7 +109,32 @@ void ResizeableRectItem::paint( QPainter* aPainter, const QStyleOptionGraphicsIt
     }
 
     // Draw the rect outline.
-    aPainter->drawRect( cRect );
+    aPainter->drawRect(cRect);
+
+    // Draw the object name on the rect if no image is provided
+    if (m_Pixmap.isNull())
+    {
+        const auto objectName = mMapObject->mObjectStructureType.c_str();
+        for (;;)
+        {
+            QFont f = aPainter->font();
+            QFontMetricsF fm(f);
+            QRectF textRect = fm.boundingRect(cRect, Qt::AlignCenter | Qt::TextWrapAnywhere, objectName);
+
+            auto size = f.pointSize();
+            if (textRect.width() > cRect.width() ||
+                textRect.height() > cRect.height())
+            {
+                f.setPointSize(--size);
+            }
+            else
+            {
+                break;
+            }
+            aPainter->setFont(f);
+        }
+        aPainter->drawText(cRect, Qt::AlignCenter | Qt::TextWrapAnywhere, objectName);
+    }
 }
 
 void ResizeableRectItem::hoverMoveEvent( QGraphicsSceneHoverEvent* aEvent )
@@ -204,8 +229,15 @@ void ResizeableRectItem::Init()
         m_Pixmap = QPixmap(images_path + mMapObject->mObjectStructureType.c_str() + ".bmp");
         QPixmapCache::insert(images_path + mMapObject->mObjectStructureType.c_str() + ".bmp", m_Pixmap );
     }
-
-     this->setOpacity( 0.7 );
+    
+    if (m_Pixmap.isNull())
+    {
+        this->setOpacity(0.5);
+    }
+    else
+    {
+        this->setOpacity(0.7);
+    }
 }
 
 
