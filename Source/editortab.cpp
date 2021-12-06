@@ -9,6 +9,7 @@
 #include <QOpenGLWidget>
 #include <QUndoCommand>
 #include <QSpinBox>
+#include <QMenu>
 #include "resizeablearrowitem.hpp"
 #include "resizeablerectitem.hpp"
 #include "CameraGraphicsItem.hpp"
@@ -21,6 +22,7 @@
 #include <QFileInfo>
 #include "BasicTypeProperty.hpp"
 #include "EnumProperty.hpp"
+#include "cameramanager.hpp"
 #include "exportpathdialog.hpp"
 #include "easylogging++.h"
 
@@ -182,6 +184,12 @@ private:
 class EditorGraphicsView : public QGraphicsView
 {
 public:
+    EditorGraphicsView(EditorTab* editorTab)
+        : mEditorTab(editorTab)
+    {
+
+    }
+
     void mousePressEvent(QMouseEvent* pEvent) override
     {
         if (pEvent->button() != Qt::LeftButton)
@@ -240,6 +248,23 @@ public:
         }
         QGraphicsView::keyPressEvent(pEvent);
     }
+
+    void contextMenuEvent(QContextMenuEvent* pEvent) override
+    {
+        QMenu menu(this);
+        auto pAction = new QAction("Edit camera", &menu);
+        connect(pAction, &QAction::triggered, this, [&]()
+            {
+                const QPoint scenePos = mapToScene(pEvent->pos()).toPoint();
+                CameraManager cameraManager(this, mEditorTab, &scenePos);
+                cameraManager.exec();
+            });
+        menu.addAction(pAction);
+        menu.exec(pEvent->globalPos());
+    }
+
+private:
+    EditorTab* mEditorTab = nullptr;
 };
 
 
@@ -254,7 +279,7 @@ EditorTab::EditorTab(QTabWidget* aParent, UP_Model model, QString jsonFileName)
 
     // TODO: Set as a promoted type
     delete ui->graphicsView;
-    ui->graphicsView = new EditorGraphicsView();
+    ui->graphicsView = new EditorGraphicsView(this);
     QGraphicsView* pView = ui->graphicsView;
     pView->setDragMode(QGraphicsView::RubberBandDrag);
 

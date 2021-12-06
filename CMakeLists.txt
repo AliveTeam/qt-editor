@@ -44,6 +44,9 @@ export(TARGETS jsonxx FILE jsonxx.cmake)
 set_property(TARGET jsonxx PROPERTY FOLDER "3rdParty")
 
 set(PROJECT_SOURCES
+        Source/cameramanager.cpp
+        Source/cameramanager.hpp
+        Source/cameramanager.ui
         Source/exportpathdialog.hpp
         Source/exportpathdialog.cpp
         Source/exportpathdialog.ui

@@ -266,6 +266,8 @@ public:
     void LoadJson(const std::string& jsonFile);
     const MapInfo& GetMapInfo() const { return mMapInfo; }
 
+    const std::vector<UP_Camera>& GetCameras() const { return mCameras; }
+
     Camera* CameraAt(int x, int y) const
     {
         for (auto& cam : mCameras)
