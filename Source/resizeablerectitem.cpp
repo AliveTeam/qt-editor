@@ -125,12 +125,12 @@ void ResizeableRectItem::paint( QPainter* aPainter, const QStyleOptionGraphicsIt
                 textRect.height() > cRect.height())
             {
                f.setPointSize(sizeCandidate);
+               aPainter->setFont(f);
             }
             else
             {
                 break;
             }
-            aPainter->setFont(f);
         }
         aPainter->drawText(cRect, Qt::AlignCenter | Qt::TextWrapAnywhere, objectName);
     }
