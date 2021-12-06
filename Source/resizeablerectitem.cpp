@@ -78,7 +78,7 @@ void ResizeableRectItem::paint( QPainter* aPainter, const QStyleOptionGraphicsIt
 
     //aPainter->setClipRect( aOption->exposedRect );
 
-    QRectF cRect = boundingRect();
+    QRectF cRect = rect();
     /*
     cRect.setX( cRect.x() + 1 );
     cRect.setY( cRect.y() + 1 );

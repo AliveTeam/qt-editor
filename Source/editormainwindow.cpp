@@ -146,10 +146,9 @@ bool EditorMainWindow::onOpenPath(QString fullFileName)
             this, &EditorMainWindow::UpdateWindowTitle
         );
 
-        view->setToolTip(fullFileName);
         QFileInfo fileInfo(fullFileName);
         const int tabIdx = m_ui->tabWidget->addTab(view, fileInfo.fileName());
-        //m_ui->tabWidget->setTabToolTip(tabIdx, fullFileName);
+        m_ui->tabWidget->setTabToolTip(tabIdx, fullFileName);
         m_ui->tabWidget->setTabIcon(tabIdx, m_ui->action_open_path->icon());
         m_ui->tabWidget->setCurrentIndex(tabIdx);
 
