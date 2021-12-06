@@ -115,28 +115,16 @@ void ResizeableRectItem::paint( QPainter* aPainter, const QStyleOptionGraphicsIt
     if (m_Pixmap.isNull())
     {
         const auto objectName = mMapObject->mObjectStructureType.c_str();
-        for (;;)
+        for (int sizeCandidate = 8; sizeCandidate > 1; sizeCandidate--)
         {
             QFont f = aPainter->font();
             QFontMetricsF fm(f);
-            QRectF textRect = fm.boundingRect(cRect, Qt::AlignCenter | Qt::TextWrapAnywhere, objectName);
-            auto size = f.pointSize();
-            if (size <= 0)
-            {
-                size = 8;
-            }
+            const auto textRect = fm.boundingRect(cRect, Qt::AlignCenter | Qt::TextWrapAnywhere, objectName);
 
             if (textRect.width() > cRect.width() ||
                 textRect.height() > cRect.height())
             {
-                if (size > 1)
-                {
-                    f.setPointSize(--size);
-                }
-                else
-                {
-                    break;
-                }
+               f.setPointSize(--sizeCandidate);
             }
             else
             {
