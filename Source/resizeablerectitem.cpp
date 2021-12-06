@@ -124,7 +124,7 @@ void ResizeableRectItem::paint( QPainter* aPainter, const QStyleOptionGraphicsIt
             if (textRect.width() > cRect.width() ||
                 textRect.height() > cRect.height())
             {
-               f.setPointSize(--sizeCandidate);
+               f.setPointSize(sizeCandidate);
             }
             else
             {
