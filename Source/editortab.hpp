@@ -37,7 +37,10 @@ public:
     void Undo();
     void Redo();
     void wheelEvent(QWheelEvent* pEvent) override;
-
+    EditorGraphicsScene& GetScene() 
+    {
+        return *mScene;
+    }
 private slots:
     void UpdateTabTitle(bool clean);
 

@@ -293,6 +293,31 @@ std::string Model::ToJson() const
         camObj << "x" << camera->mX;
         camObj << "y" << camera->mY;
 
+        if (!camera->mCameraImageandLayers.mCameraImage.empty())
+        {
+            camObj << "image" << camera->mCameraImageandLayers.mCameraImage;
+        }
+
+        if (!camera->mCameraImageandLayers.mForegroundLayer.empty())
+        {
+            camObj << "foreground_layer" << camera->mCameraImageandLayers.mForegroundLayer;
+        }
+
+        if (!camera->mCameraImageandLayers.mBackgroundLayer.empty())
+        {
+            camObj << "background_layer" << camera->mCameraImageandLayers.mBackgroundLayer;
+        }
+
+        if (!camera->mCameraImageandLayers.mForegroundWellLayer.empty())
+        {
+            camObj << "foreground_well_layer" << camera->mCameraImageandLayers.mForegroundWellLayer;
+        }
+
+        if (!camera->mCameraImageandLayers.mBackgroundWellLayer.empty())
+        {
+            camObj << "background_well_layer" << camera->mCameraImageandLayers.mBackgroundWellLayer;
+        }
+
         jsonxx::Array mapObjects;
         for (auto& mapObject : camera->mMapObjects)
         {

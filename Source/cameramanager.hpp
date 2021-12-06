@@ -9,6 +9,8 @@ class CameraManager;
 }
 
 class EditorTab;
+class CameraGraphicsItem;
+struct Camera;
 
 class CameraManager : public QDialog
 {
@@ -26,6 +28,9 @@ private slots:
     void on_buttonBox_rejected();
 
 private:
+    CameraGraphicsItem* CameraGraphicsItemByPos(const QPoint& pos);
+    CameraGraphicsItem* CameraGraphicsItemByModelPtr(const Camera* cam);
+
     Ui::CameraManager *ui;
     EditorTab* mTab = nullptr;
 };

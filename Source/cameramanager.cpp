@@ -1,9 +1,58 @@
 #include "cameramanager.hpp"
 #include "ui_cameramanager.h"
 #include "editortab.hpp"
+#include "EditorGraphicsScene.hpp"
 #include <QDebug>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QBuffer>
+#include <QGraphicsItem>
+#include "CameraGraphicsItem.hpp"
+
+class ChangeCameraImageCommand final : public QUndoCommand
+{
+public:
+    ChangeCameraImageCommand(CameraGraphicsItem* pCameraGraphicsItem, QPixmap newImage, EditorTab* pEditorTab)
+        : mCameraGraphicsItem(pCameraGraphicsItem), mNewImage(newImage), mEditorTab(pEditorTab)
+    {
+        // todo: set correctly
+        setText("Change camera image at " + QString::number(mCameraGraphicsItem->GetCamera()->mY) + "," + QString::number(mCameraGraphicsItem->GetCamera()->mX));
+        mOldImage = pCameraGraphicsItem->GetImage();
+    }
+
+    void undo() override
+    {
+        mCameraGraphicsItem->SetImage(mOldImage);
+        mEditorTab->GetScene().invalidate();
+        UpdateModel(mOldImage);
+    }
+
+    void redo() override
+    {
+        mCameraGraphicsItem->SetImage(mNewImage);
+        mEditorTab->GetScene().invalidate();
+        UpdateModel(mNewImage);
+    }
+
+private:
+    void UpdateModel(QPixmap img)
+    {
+        QPixmap pixmap;
+        QByteArray bytes;
+        QBuffer buffer(&bytes);
+        buffer.open(QIODevice::WriteOnly);
+        img.save(&buffer, "PNG");
+        buffer.close();
+
+        mCameraGraphicsItem->GetCamera()->mCameraImageandLayers.mCameraImage = bytes.toBase64().toStdString();
+    }
+
+    CameraGraphicsItem* mCameraGraphicsItem;
+    EditorTab* mEditorTab;
+
+    QPixmap mNewImage;
+    QPixmap mOldImage;
+};
 
 class CameraListItem final : public QListWidgetItem
 {
@@ -36,6 +85,7 @@ CameraManager::CameraManager(QWidget *parent, EditorTab* pParentTab, const QPoin
     {
         ui->listWidget->addItem(new CameraListItem(ui->listWidget, cam.get()));
     }
+    // TODO: Need place holders for blocks that don't have a model item yet
 
     if (openedPos)
     {
@@ -92,10 +142,9 @@ void CameraManager::on_btnSelectImage_clicked()
             }
 
             auto pItem = static_cast<CameraListItem*>(ui->listWidget->selectedItems()[0]);
+            CameraGraphicsItem* pCameraGraphicsItem = CameraGraphicsItemByModelPtr(pItem->GetCamera());
 
-            // TODO: Set Base64 encoded data via a QUndoAction + sync the CameraGraphicsItem
-            //pItem->GetCamera()->mCameraImageandLayers.mCameraImage;
-
+            mTab->GetUndoStack().push(new ChangeCameraImageCommand(pCameraGraphicsItem, img, mTab));
         }
     }
 }
@@ -108,4 +157,36 @@ void CameraManager::on_buttonBox_accepted()
 void CameraManager::on_buttonBox_rejected()
 {
 
+}
+
+CameraGraphicsItem* CameraManager::CameraGraphicsItemByPos(const QPoint& pos)
+{
+    QList<QGraphicsItem*> itemsAtPos = mTab->GetScene().items(pos);
+    CameraGraphicsItem* pCameraGraphicsItem = nullptr;
+    for (int i = 0; i < itemsAtPos.count(); i++)
+    {
+        pCameraGraphicsItem = qgraphicsitem_cast<CameraGraphicsItem*>(itemsAtPos.at(i));
+        if (pCameraGraphicsItem)
+        {
+            break;
+        }
+    }
+    return pCameraGraphicsItem;
+}   
+
+CameraGraphicsItem* CameraManager::CameraGraphicsItemByModelPtr(const Camera* cam)
+{
+    QList<QGraphicsItem*> itemsAtPos = mTab->GetScene().items();
+    for (int i = 0; i < itemsAtPos.count(); i++)
+    {
+        CameraGraphicsItem* pCameraGraphicsItem = qgraphicsitem_cast<CameraGraphicsItem*>(itemsAtPos.at(i));
+        if (pCameraGraphicsItem)
+        {
+            if (pCameraGraphicsItem->GetCamera() == cam)
+            {
+                return pCameraGraphicsItem;
+            }
+        }
+    }
+    return nullptr;
 }

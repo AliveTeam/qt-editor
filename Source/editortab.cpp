@@ -256,9 +256,8 @@ public:
         connect(pAction, &QAction::triggered, this, [&]()
             {
                 const QPoint scenePos = mapToScene(pEvent->pos()).toPoint();
-                qDebug() << "scenePos = " << scenePos;
-                CameraManager camerageManager(this, mEditorTab, &scenePos);
-                camerageManager.exec();
+                CameraManager cameraManager(this, mEditorTab, &scenePos);
+                cameraManager.exec();
             });
         menu.addAction(pAction);
         menu.exec(pEvent->globalPos());
