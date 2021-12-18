@@ -264,6 +264,7 @@ class Model final
 {
 public:
     void LoadJson(const std::string& jsonFile);
+    void CreateAsNewPath(int newPathId);
     const MapInfo& GetMapInfo() const { return mMapInfo; }
 
     const std::vector<UP_Camera>& GetCameras() const { return mCameras; }

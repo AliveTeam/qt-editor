@@ -41,6 +41,12 @@ public:
     {
         return *mScene;
     }
+
+    void EditHintFlyMessages();
+    void EditLEDMessages();
+    void EditPathData();
+    void EditMapSize();
+
 private slots:
     void UpdateTabTitle(bool clean);
 

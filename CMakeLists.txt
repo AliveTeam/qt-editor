@@ -44,6 +44,15 @@ export(TARGETS jsonxx FILE jsonxx.cmake)
 set_property(TARGET jsonxx PROPERTY FOLDER "3rdParty")
 
 set(PROJECT_SOURCES
+        Source/changemapsizedialog.hpp
+        Source/changemapsizedialog.cpp
+        Source/changemapsizedialog.ui
+        Source/pathdataeditordialog.hpp
+        Source/pathdataeditordialog.cpp
+        Source/pathdataeditordialog.ui
+        Source/messageeditordialog.cpp
+        Source/messageeditordialog.hpp
+        Source/messageeditordialog.ui
         Source/cameramanager.cpp
         Source/cameramanager.hpp
         Source/cameramanager.ui

@@ -269,6 +269,17 @@ void Model::LoadJson(const std::string& jsonFile)
 
 }
 
+void Model::CreateAsNewPath(int newPathId)
+{
+    // Reset everything to a 1x1 empty map
+    mMapInfo.mPathId = newPathId;
+    mMapInfo.mXSize = 1;
+    mMapInfo.mYSize = 1;
+
+    mCameras.clear();
+    mCollisions.clear();
+}
+
 std::string Model::ToJson() const
 {
     jsonxx::Object root;

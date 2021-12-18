@@ -7,6 +7,7 @@
 #include <QTabBar>
 #include <QFileDialog>
 #include <QTemporaryFile>
+#include <QInputDialog>
 #include "model.hpp"
 #include "pathselectiondialog.hpp"
 #include "exportpathdialog.hpp"
@@ -52,7 +53,7 @@ EditorMainWindow::EditorMainWindow(QWidget* aParent)
         QFile f(file);
         if (f.exists())
         {
-            onOpenPath(file);
+            onOpenPath(file, false);
         }
     }
 
@@ -74,28 +75,46 @@ EditorMainWindow::~EditorMainWindow()
     delete m_ui;
 }
 
-bool EditorMainWindow::onOpenPath(QString fullFileName)
+bool EditorMainWindow::onOpenPath(QString fullFileName, bool createNewPath)
 {
+    int newPathId = 0;
     try
     {
         if (fullFileName.endsWith(".lvl", Qt::CaseInsensitive))
         {
             // Get the paths in the LVL
             ReliveAPI::EnumeratePathsResult ret = ReliveAPI::EnumeratePaths(fullFileName.toStdString());
-
-            // Ask the user to pick one
-            auto pathSelection = new PathSelectionDialog(this, ret);
-            // Get rid of "?"
-            pathSelection->setWindowFlags(pathSelection->windowFlags() & ~Qt::WindowContextHelpButtonHint);
-            pathSelection->exec();
-
-            std::optional<int> selectedPath = pathSelection->SelectedPath();
-            delete pathSelection;
-
-            if (!selectedPath)
+            std::optional<int> selectedPath;
+            if (!createNewPath)
             {
-                // They didn't pick one
-                return false;
+                // Ask the user to pick one
+                auto pathSelection = new PathSelectionDialog(this, ret);
+                // Get rid of "?"
+                pathSelection->setWindowFlags(pathSelection->windowFlags() & ~Qt::WindowContextHelpButtonHint);
+                pathSelection->exec();
+
+                selectedPath = pathSelection->SelectedPath();
+                delete pathSelection;
+
+                if (!selectedPath)
+                {
+                    // They didn't pick one
+                    return false;
+                }
+            }
+            else
+            {
+                // Pick the first path to use as a template for the new path
+                selectedPath = ret.paths[0];
+
+                // And ask the user for the new path id
+                bool ok = false;
+                newPathId = QInputDialog::getInt(this, "Enter new path Id", "Path Id", 0, 0, 99, 1, &ok);
+                if (!ok)
+                {
+                    // User bailed on picking a path id
+                    return false;
+                }
             }
 
             // They picked one, now ask for the .json to save this path as
@@ -138,6 +157,11 @@ bool EditorMainWindow::onOpenPath(QString fullFileName)
         // Load the json file into the editors object model
         auto model = std::make_unique<Model>();
         model->LoadJson(fullFileName.toStdString());
+
+        if (createNewPath)
+        {
+            model->CreateAsNewPath(newPathId);
+        }
 
         EditorTab* view = new EditorTab(m_ui->tabWidget, std::move(model), fullFileName);
 
@@ -202,7 +226,7 @@ void EditorMainWindow::on_action_open_path_triggered()
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open level"), lastOpenDir, tr("Json files (*.json);;Level files (*.lvl);;All Files (*)"));
     if (!fileName.isEmpty())
     {
-        if (onOpenPath(fileName))
+        if (onOpenPath(fileName, false))
         {
             QFileInfo info(fileName);
             m_Settings.setValue("last_open_dir", info.dir().path());
@@ -395,5 +419,58 @@ void EditorMainWindow::DisconnectTabSignals()
             &pTab->GetUndoStack(), &QUndoStack::cleanChanged,
             this, &EditorMainWindow::UpdateWindowTitle
         );
+    }
+}
+
+void EditorMainWindow::on_actionEdit_HintFly_message_triggered()
+{
+    EditorTab* pTab = getActiveTab(m_ui->tabWidget);
+    if (pTab)
+    {
+        pTab->EditHintFlyMessages();
+    }
+}
+
+
+void EditorMainWindow::on_actionEdit_LED_messages_triggered()
+{
+    EditorTab* pTab = getActiveTab(m_ui->tabWidget);
+    if (pTab)
+    {
+        pTab->EditLEDMessages();
+    }
+}
+
+
+void EditorMainWindow::on_actionEdit_path_data_triggered()
+{
+    EditorTab* pTab = getActiveTab(m_ui->tabWidget);
+    if (pTab)
+    {
+        pTab->EditPathData();
+    }
+}
+
+
+void EditorMainWindow::on_actionEdit_map_size_triggered()
+{
+    EditorTab* pTab = getActiveTab(m_ui->tabWidget);
+    if (pTab)
+    {
+        pTab->EditMapSize();
+    }
+}
+
+void EditorMainWindow::on_actionNew_path_triggered()
+{
+    QString lastOpenDir = m_Settings.value("last_open_dir").toString();
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open lvl (as template for new path)"), lastOpenDir, tr("Level files (*.lvl);;All Files (*)"));
+    if (!fileName.isEmpty())
+    {
+        if (onOpenPath(fileName, true))
+        {
+            QFileInfo info(fileName);
+            m_Settings.setValue("last_open_dir", info.dir().path());
+        }
     }
 }
