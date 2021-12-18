@@ -576,7 +576,7 @@ void EditorTab::EditLEDMessages()
 
 void EditorTab::EditPathData()
 {
-    auto pDlg = new PathDataEditorDialog(this);
+    auto pDlg = new PathDataEditorDialog(this, this);
     pDlg->exec();
 }
 
