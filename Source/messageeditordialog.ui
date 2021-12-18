@@ -38,6 +38,12 @@
      <height>151</height>
     </rect>
    </property>
+   <property name="selectionBehavior">
+    <enum>QAbstractItemView::SelectRows</enum>
+   </property>
+   <property name="selectionRectVisible">
+    <bool>true</bool>
+   </property>
   </widget>
   <widget class="QPushButton" name="btnDeleteAll">
    <property name="geometry">
@@ -88,7 +94,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Add Selected</string>
+    <string>Add new</string>
    </property>
   </widget>
   <widget class="QLineEdit" name="txtMessage">

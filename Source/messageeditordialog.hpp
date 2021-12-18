@@ -7,12 +7,15 @@ namespace Ui {
 class MessageEditorDialog;
 }
 
+class Model;
+class EditorTab;
+
 class MessageEditorDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit MessageEditorDialog(QWidget *parent = nullptr);
+    MessageEditorDialog(QWidget *parent, EditorTab* pTab, Model& model, bool isLedMsgs);
     ~MessageEditorDialog();
 
 private slots:
@@ -31,7 +34,12 @@ private slots:
     void on_listWidget_itemSelectionChanged();
 
 private:
+    std::vector<std::string>& GetMsgs();
+
     Ui::MessageEditorDialog *ui;
+    EditorTab* mTab = nullptr;
+    Model& mModel;
+    bool mIsLedMsgs;
 };
 
 #endif // MESSAGEEDITORDIALOG_HPP

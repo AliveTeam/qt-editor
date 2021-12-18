@@ -564,13 +564,13 @@ void EditorTab::Export()
 
 void EditorTab::EditHintFlyMessages()
 {
-    auto pDlg = new MessageEditorDialog(this);
+    auto pDlg = new MessageEditorDialog(this, this, *mModel, false);
     pDlg->exec();
 }
 
 void EditorTab::EditLEDMessages()
 {
-    auto pDlg = new MessageEditorDialog(this);
+    auto pDlg = new MessageEditorDialog(this, this, *mModel, true);
     pDlg->exec();
 }
 
