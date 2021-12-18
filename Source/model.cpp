@@ -158,6 +158,25 @@ void Model::LoadJson(const std::string& jsonFile)
     mMapInfo.mYGridSize = ReadNumber(map, "y_grid_size");
     mMapInfo.mYSize = ReadNumber(map, "y_size");
 
+    mMapInfo.mAbeStartXPos = ReadNumber(map, "abe_start_xpos");
+    mMapInfo.mAbeStartYPos = ReadNumber(map, "abe_start_ypos");
+    mMapInfo.mNumMudsInPath = ReadNumber(map, "num_muds_in_path");
+    mMapInfo.mTotalMuds = ReadNumber(map, "total_muds");
+    mMapInfo.mBadEndingMuds = ReadNumber(map, "num_muds_for_bad_ending");
+    mMapInfo.mGoodEndingMuds = ReadNumber(map, "num_muds_for_good_ending");
+
+    jsonxx::Array ledMessages = ReadArray(map, "led_messages");
+    for (size_t i = 0; i < ledMessages.size(); i++)
+    {
+        mMapInfo.mLedMessages.emplace_back(ledMessages.get<jsonxx::String>(i));
+    }
+
+    jsonxx::Array hintFlyMessages = ReadArray(map, "hintfly_messages");
+    for (size_t i = 0; i < hintFlyMessages.size(); i++)
+    {
+        mMapInfo.mHintFlyMessages.emplace_back(hintFlyMessages.get<jsonxx::String>(i));
+    }
+
     mSchema = ReadObject(root, "schema");
 
     jsonxx::Array basicTypes = ReadArray(mSchema, "object_structure_property_basic_types");
@@ -294,6 +313,28 @@ std::string Model::ToJson() const
     map << "x_size" << mMapInfo.mXSize;
     map << "y_grid_size" << mMapInfo.mYGridSize;
     map << "y_size" << mMapInfo.mYSize;
+
+    map << "abe_start_xpos" << mMapInfo.mAbeStartXPos;
+    map << "abe_start_ypos" << mMapInfo.mAbeStartYPos;
+
+    map << "num_muds_in_path" << mMapInfo.mNumMudsInPath;
+    map << "total_muds" << mMapInfo.mTotalMuds;
+    map << "num_muds_for_bad_ending" << mMapInfo.mBadEndingMuds;
+    map << "num_muds_for_good_ending" << mMapInfo.mGoodEndingMuds;
+
+    jsonxx::Array ledMessages;
+    for (const auto& msg : mMapInfo.mLedMessages)
+    {
+        ledMessages << msg;
+    }
+    map << "led_messages" << ledMessages;
+
+    jsonxx::Array hintFlyMessages;
+    for (const auto& msg : mMapInfo.mHintFlyMessages)
+    {
+        hintFlyMessages << msg;
+    }
+    map << "hintfly_messages" << hintFlyMessages;
 
     jsonxx::Array cameras;
     for (auto& camera : mCameras)

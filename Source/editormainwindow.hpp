@@ -51,9 +51,11 @@ private slots:
 
     void on_actionNew_path_triggered();
 
+    void on_actionSave_As_triggered();
+
 private:
     bool onOpenPath(QString fileName, bool createNewPath);
-    void UpdateWindowTitle(bool clean);
+    void UpdateWindowTitle();
     void DisconnectTabSignals();
     void closeEvent(QCloseEvent* pEvent) override;
 private:

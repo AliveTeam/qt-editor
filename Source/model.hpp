@@ -258,6 +258,18 @@ struct MapInfo final
     int mXSize = 0;
     int mYGridSize = 0;
     int mYSize = 0;
+
+    int mAbeStartXPos = 0;
+    int mAbeStartYPos = 0;
+    
+    int mNumMudsInPath = 0;
+
+    int mTotalMuds = 0;
+    int mBadEndingMuds = 0;
+    int mGoodEndingMuds = 0;
+
+    std::vector<std::string> mLedMessages;
+    std::vector<std::string> mHintFlyMessages;
 };
 
 class Model final

@@ -6,8 +6,8 @@
 #include "aboutdialog.hpp"
 #include <QTabBar>
 #include <QFileDialog>
-#include <QTemporaryFile>
 #include <QInputDialog>
+#include <QUuid>
 #include "model.hpp"
 #include "pathselectiondialog.hpp"
 #include "exportpathdialog.hpp"
@@ -24,7 +24,7 @@ EditorMainWindow::EditorMainWindow(QWidget* aParent)
     // Construct the UI from the XML
     m_ui->setupUi(this);
 
-    UpdateWindowTitle(true);
+    UpdateWindowTitle();
 
     m_ui->statusbar->showMessage(tr("Ready"));
 
@@ -78,13 +78,14 @@ EditorMainWindow::~EditorMainWindow()
 bool EditorMainWindow::onOpenPath(QString fullFileName, bool createNewPath)
 {
     int newPathId = 0;
+    bool isTempfile = false;
+    std::optional<int> selectedPath;
     try
     {
         if (fullFileName.endsWith(".lvl", Qt::CaseInsensitive))
         {
             // Get the paths in the LVL
             ReliveAPI::EnumeratePathsResult ret = ReliveAPI::EnumeratePaths(fullFileName.toStdString());
-            std::optional<int> selectedPath;
             if (!createNewPath)
             {
                 // Ask the user to pick one
@@ -104,6 +105,12 @@ bool EditorMainWindow::onOpenPath(QString fullFileName, bool createNewPath)
             }
             else
             {
+                if (ret.paths.empty())
+                {
+                    // The selected LVL had no path for some reason
+                    QMessageBox::critical(this, "Error", "Selected LVL appears to contain no paths");
+                    return false;
+                }
                 // Pick the first path to use as a template for the new path
                 selectedPath = ret.paths[0];
 
@@ -117,19 +124,20 @@ bool EditorMainWindow::onOpenPath(QString fullFileName, bool createNewPath)
                 }
             }
 
-            // They picked one, now ask for the .json to save this path as
-            QString jsonSaveFileName = QFileDialog::getSaveFileName(this, tr("Save path json"), "", tr("Json files (*.json);;All Files (*)"));
-            if (jsonSaveFileName.isEmpty())
-            {
-                // They didn't want to save it
-                return false;
-            }
+            QUuid uuid = QUuid::createUuid();
+            QString tempFileFullPath = QDir::toNativeSeparators(
+                QDir::tempPath() + "/" +
+                qApp->applicationName().replace(" ", "") +
+                "_" +
+                uuid.toString(QUuid::WithoutBraces) + ".json");
 
             // Convert the binary lvl path to json
-            ReliveAPI::ExportPathBinaryToJson(jsonSaveFileName.toStdString(), fullFileName.toStdString(), selectedPath.value());
+            ReliveAPI::ExportPathBinaryToJson(tempFileFullPath.toStdString(), fullFileName.toStdString(), selectedPath.value());
+
+            isTempfile = true;
 
             // And continue to load the newly saved json file
-            fullFileName = jsonSaveFileName;
+            fullFileName = tempFileFullPath;
         }
     }
     catch (const ReliveAPI::Exception& e)
@@ -163,10 +171,21 @@ bool EditorMainWindow::onOpenPath(QString fullFileName, bool createNewPath)
             model->CreateAsNewPath(newPathId);
         }
 
-        EditorTab* view = new EditorTab(m_ui->tabWidget, std::move(model), fullFileName);
+        // If exported to a temp file then delete it now we've loaded it to memory
+        if (isTempfile)
+        {
+            QFile::remove(fullFileName);
+
+            // Also change the file name to something more sane and force SaveAs if the user
+            // attempts to save this path.
+            const auto generatedName = model->GetMapInfo().mGame + "_" + model->GetMapInfo().mPathBnd + "_" + QString::number(*selectedPath).toStdString();
+            fullFileName = QString(generatedName.c_str());
+        }
+
+        EditorTab* view = new EditorTab(m_ui->tabWidget, std::move(model), fullFileName, isTempfile);
 
         connect(
-            &view->GetUndoStack(), &QUndoStack::cleanChanged,
+            view, &EditorTab::CleanChanged,
             this, &EditorMainWindow::UpdateWindowTitle
         );
 
@@ -177,6 +196,9 @@ bool EditorMainWindow::onOpenPath(QString fullFileName, bool createNewPath)
         m_ui->tabWidget->setCurrentIndex(tabIdx);
 
         m_ui->stackedWidget->setCurrentIndex(1);
+
+        view->UpdateTabTitle(view->IsClean());
+
         return true;
     }
     catch (const ModelException&)
@@ -191,7 +213,7 @@ void EditorMainWindow::onCloseTab(int index)
     auto tab = static_cast<EditorTab*>(m_ui->tabWidget->widget(index));
 
     bool close = true;
-    if (!tab->GetUndoStack().isClean())
+    if (!tab->IsClean())
     {
         close = QMessageBox::question(this, "Confirm", "Close without saving changes?") == QMessageBox::Yes;
     }
@@ -316,20 +338,19 @@ void EditorMainWindow::on_actionExport_to_lvl_triggered()
 }
 
 
-void EditorMainWindow::on_tabWidget_currentChanged(int index)
+void EditorMainWindow::on_tabWidget_currentChanged(int /*index*/)
 {
-    EditorTab* pTab = getActiveTab(m_ui->tabWidget);
-    UpdateWindowTitle(pTab ? pTab->GetUndoStack().isClean() : true);
+    UpdateWindowTitle();
 }
 
-void EditorMainWindow::UpdateWindowTitle(bool clean)
+void EditorMainWindow::UpdateWindowTitle()
 {
     EditorTab* pTab = getActiveTab(m_ui->tabWidget);
     QString title = "Oddysee/Exoddus editor by Relive Team [https://aliveteam.github.io]";
     if (pTab)
     {
         title += " (" + pTab->GetJsonFileName();
-        if (!clean)
+        if (!pTab->IsClean())
         {
             title += "*";
         }
@@ -345,7 +366,7 @@ void EditorMainWindow::closeEvent(QCloseEvent* pEvent)
         bool anyTabsNeedSaving = false;
         for (int i = 0; i < m_ui->tabWidget->count(); i++)
         {
-            if (!static_cast<EditorTab*>(m_ui->tabWidget->widget(i))->GetUndoStack().isClean())
+            if (!static_cast<EditorTab*>(m_ui->tabWidget->widget(i))->IsClean())
             {
                 anyTabsNeedSaving = true;
                 break;
@@ -416,7 +437,7 @@ void EditorMainWindow::DisconnectTabSignals()
     {
         auto pTab = static_cast<EditorTab*>(m_ui->tabWidget->widget(i));
         disconnect(
-            &pTab->GetUndoStack(), &QUndoStack::cleanChanged,
+            pTab, &EditorTab::CleanChanged,
             this, &EditorMainWindow::UpdateWindowTitle
         );
     }
@@ -474,3 +495,13 @@ void EditorMainWindow::on_actionNew_path_triggered()
         }
     }
 }
+
+void EditorMainWindow::on_actionSave_As_triggered()
+{
+    EditorTab* pTab = getActiveTab(m_ui->tabWidget);
+    if (pTab)
+    {
+        pTab->SaveAs();
+    }
+}
+

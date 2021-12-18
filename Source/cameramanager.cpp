@@ -144,7 +144,7 @@ void CameraManager::on_btnSelectImage_clicked()
             auto pItem = static_cast<CameraListItem*>(ui->listWidget->selectedItems()[0]);
             CameraGraphicsItem* pCameraGraphicsItem = CameraGraphicsItemByModelPtr(pItem->GetCamera());
 
-            mTab->GetUndoStack().push(new ChangeCameraImageCommand(pCameraGraphicsItem, img, mTab));
+            mTab->AddCommand(new ChangeCameraImageCommand(pCameraGraphicsItem, img, mTab));
         }
     }
 }

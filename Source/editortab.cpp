@@ -10,6 +10,7 @@
 #include <QUndoCommand>
 #include <QSpinBox>
 #include <QMenu>
+#include <QFileDialog>
 #include "resizeablearrowitem.hpp"
 #include "resizeablerectitem.hpp"
 #include "CameraGraphicsItem.hpp"
@@ -271,12 +272,13 @@ private:
 };
 
 
-EditorTab::EditorTab(QTabWidget* aParent, UP_Model model, QString jsonFileName)
+EditorTab::EditorTab(QTabWidget* aParent, UP_Model model, QString jsonFileName, bool isTempFile)
     : QMainWindow(aParent),
     ui(new Ui::EditorTab),
     mModel(std::move(model)),
     mJsonFileName(jsonFileName),
-    mParent(aParent)
+    mParent(aParent),
+    mIsTempFile(isTempFile)
 {
     ui->setupUi(this);
 
@@ -305,6 +307,8 @@ EditorTab::EditorTab(QTabWidget* aParent, UP_Model model, QString jsonFileName)
         {
             mUndoStack.push(new MoveItemsCommand(mScene.get(), oldPositions, newPositions));
         });
+
+    connect(&mUndoStack, &QUndoStack::cleanChanged, this, &EditorTab::cleanChanged);
 
     iZoomLevel = 1.0f;
     for (int i = 0; i < 2; ++i)
@@ -372,11 +376,16 @@ EditorTab::EditorTab(QTabWidget* aParent, UP_Model model, QString jsonFileName)
     connect(&mUndoStack , &QUndoStack::cleanChanged, this, &EditorTab::UpdateTabTitle);
 }
 
+void EditorTab::cleanChanged(bool clean)
+{
+    UpdateCleanState();
+}
+
 void EditorTab::UpdateTabTitle(bool clean)
 {
     QFileInfo fileInfo(mJsonFileName);
     QString title = fileInfo.fileName();
-    if (!clean)
+    if (!clean || mIsTempFile)
     {
         title += "*";
     }
@@ -467,8 +476,48 @@ void EditorTab::Redo()
 
 bool EditorTab::Save()
 {
+    if (mIsTempFile)
+    {
+        return SaveAs();
+    }
+    else
+    {
+        return DoSave(mJsonFileName);
+    }
+}
+
+bool EditorTab::SaveAs()
+{
+    QString jsonSaveFileName = QFileDialog::getSaveFileName(this, tr("Save path json"), "", tr("Json files (*.json);;All Files (*)"));
+    if (jsonSaveFileName.isEmpty())
+    {
+        // They didn't want to save it
+        return false;
+    }
+
+    if (!DoSave(jsonSaveFileName))
+    {
+        return false;
+    }
+
+    // Saved OK, update the file name and tab title
+    mJsonFileName = jsonSaveFileName;
+
+    // No longer a temp file so don't force SaveAs next time
+    if (mIsTempFile)
+    {
+        mIsTempFile = false;
+        UpdateCleanState();
+        UpdateTabTitle(true);
+    }
+
+    return true;
+}
+
+bool EditorTab::DoSave(QString fileName)
+{
     std::string json = mModel->ToJson();
-    QFile f(mJsonFileName);
+    QFile f(fileName);
     if (f.open(QIODevice::WriteOnly))
     {
         QTextStream stream(&f);
@@ -478,7 +527,7 @@ bool EditorTab::Save()
     }
     else
     {
-        QMessageBox::critical(this, "Error", "Failed to save " + mJsonFileName);
+        QMessageBox::critical(this, "Error", "Failed to save " + fileName);
         return false;
     }
 }
@@ -535,4 +584,9 @@ void EditorTab::EditMapSize()
 {
     auto pDlg = new ChangeMapSizeDialog(this);
     pDlg->exec();
+}
+
+void EditorTab::UpdateCleanState()
+{
+    emit CleanChanged();
 }
