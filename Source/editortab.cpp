@@ -25,6 +25,9 @@
 #include "cameramanager.hpp"
 #include "exportpathdialog.hpp"
 #include "easylogging++.h"
+#include "changemapsizedialog.hpp"
+#include "messageeditordialog.hpp"
+#include "pathdataeditordialog.hpp"
 
 // Zoom by 10% each time.
 const float KZoomFactor = 0.10f;
@@ -508,4 +511,28 @@ void EditorTab::Export()
     {
         mExportedPathLvlName = exportDialog->getLvlName();
     }
+}
+
+void EditorTab::EditHintFlyMessages()
+{
+    auto pDlg = new MessageEditorDialog(this);
+    pDlg->exec();
+}
+
+void EditorTab::EditLEDMessages()
+{
+    auto pDlg = new MessageEditorDialog(this);
+    pDlg->exec();
+}
+
+void EditorTab::EditPathData()
+{
+    auto pDlg = new PathDataEditorDialog(this);
+    pDlg->exec();
+}
+
+void EditorTab::EditMapSize()
+{
+    auto pDlg = new ChangeMapSizeDialog(this);
+    pDlg->exec();
 }

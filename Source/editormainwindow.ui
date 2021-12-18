@@ -96,6 +96,7 @@
     <property name="title">
      <string>File</string>
     </property>
+    <addaction name="actionNew_path"/>
     <addaction name="action_open_path"/>
     <addaction name="action_close_path"/>
     <addaction name="action_save_path"/>
@@ -137,6 +138,10 @@
     <addaction name="action_add_new_collision_item"/>
     <addaction name="action_add_new_map_object"/>
     <addaction name="action_delete_selected_items"/>
+    <addaction name="actionEdit_HintFly_message"/>
+    <addaction name="actionEdit_LED_messages"/>
+    <addaction name="actionEdit_path_data"/>
+    <addaction name="actionEdit_map_size"/>
    </widget>
    <widget class="QMenu" name="menuSnapping">
     <property name="title">
@@ -792,6 +797,31 @@
   <action name="actionExport_to_lvl">
    <property name="text">
     <string>Export to lvl</string>
+   </property>
+  </action>
+  <action name="actionEdit_HintFly_message">
+   <property name="text">
+    <string>Edit HintFly message</string>
+   </property>
+  </action>
+  <action name="actionEdit_LED_messages">
+   <property name="text">
+    <string>Edit LED messages</string>
+   </property>
+  </action>
+  <action name="actionEdit_path_data">
+   <property name="text">
+    <string>Edit path data</string>
+   </property>
+  </action>
+  <action name="actionEdit_map_size">
+   <property name="text">
+    <string>Edit map size</string>
+   </property>
+  </action>
+  <action name="actionNew_path">
+   <property name="text">
+    <string>New path</string>
    </property>
   </action>
  </widget>

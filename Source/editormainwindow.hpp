@@ -41,8 +41,18 @@ private slots:
 
     void on_tabWidget_currentChanged(int index);
 
+    void on_actionEdit_HintFly_message_triggered();
+
+    void on_actionEdit_LED_messages_triggered();
+
+    void on_actionEdit_path_data_triggered();
+
+    void on_actionEdit_map_size_triggered();
+
+    void on_actionNew_path_triggered();
+
 private:
-    bool onOpenPath(QString fileName);
+    bool onOpenPath(QString fileName, bool createNewPath);
     void UpdateWindowTitle(bool clean);
     void DisconnectTabSignals();
     void closeEvent(QCloseEvent* pEvent) override;
