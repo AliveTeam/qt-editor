@@ -7,12 +7,14 @@ namespace Ui {
 class PathDataEditorDialog;
 }
 
+class EditorTab;
+
 class PathDataEditorDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit PathDataEditorDialog(QWidget *parent = nullptr);
+    PathDataEditorDialog(QWidget *parent, EditorTab* pTab);
     ~PathDataEditorDialog();
 
 private slots:
@@ -22,6 +24,7 @@ private slots:
 
 private:
     Ui::PathDataEditorDialog *ui;
+    EditorTab* mTab = nullptr;
 };
 
 #endif // PATHDATAEDITORDIALOG_HPP
