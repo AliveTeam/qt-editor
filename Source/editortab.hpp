@@ -22,16 +22,16 @@ class EditorTab final : public QMainWindow
 {
     Q_OBJECT
 public:
-    explicit EditorTab(QTabWidget* aParent, UP_Model model, QString jsonFileName);
+    EditorTab(QTabWidget* aParent, UP_Model model, QString jsonFileName, bool isTempFile);
     ~EditorTab();
     void ZoomIn();
     void ZoomOut();
     void ResetZoom();
     bool Save();
+    bool SaveAs();
     void Export();
     QString GetJsonFileName() const { return mJsonFileName; }
     Model& GetModel() const { return *mModel; }
-    QUndoStack& GetUndoStack() { return mUndoStack; }
     void ClearPropertyEditor();
     void PopulatePropertyEditor(QGraphicsItem* pItem);
     void Undo();
@@ -47,10 +47,28 @@ public:
     void EditPathData();
     void EditMapSize();
 
-private slots:
+    void AddCommand(QUndoCommand* pCmd)
+    {
+        mUndoStack.push(pCmd);
+    }
+
+    bool IsClean() const
+    {
+        return !mIsTempFile && mUndoStack.isClean();
+    }
+
+    void UpdateCleanState();
     void UpdateTabTitle(bool clean);
 
+signals:
+    void CleanChanged();
+
+private slots:
+
+    void cleanChanged(bool clean);
+
 private:
+    bool DoSave(QString fileName);
 
     Ui::EditorTab* ui = nullptr;
     float iZoomLevel = 1.0f;
@@ -61,4 +79,5 @@ private:
 
     QString mExportedPathLvlName;
     QTabWidget* mParent = nullptr;
+    bool mIsTempFile = false;
 };
