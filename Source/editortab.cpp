@@ -29,6 +29,7 @@
 #include "changemapsizedialog.hpp"
 #include "messageeditordialog.hpp"
 #include "pathdataeditordialog.hpp"
+#include "addobjectdialog.hpp"
 
 // Zoom by 10% each time.
 const float KZoomFactor = 0.10f;
@@ -341,7 +342,7 @@ EditorTab::EditorTab(QTabWidget* aParent, UP_Model model, QString jsonFileName, 
             {
                 for (auto& mapObj : pCam->mMapObjects)
                 {
-                    auto pMapObject = new ResizeableRectItem(pView, mapObj.get(), *static_cast<PropertyTreeWidget*>(ui->treeWidget));
+                    auto pMapObject = MakeResizeableRectItem(mapObj.get());
                     mScene->addItem(pMapObject);
                 }
             }
@@ -374,6 +375,11 @@ EditorTab::EditorTab(QTabWidget* aParent, UP_Model model, QString jsonFileName, 
     setContextMenuPolicy(Qt::PreventContextMenu);
 
     connect(&mUndoStack , &QUndoStack::cleanChanged, this, &EditorTab::UpdateTabTitle);
+}
+
+ResizeableRectItem* EditorTab::MakeResizeableRectItem(MapObject* pMapObject)
+{
+    return new ResizeableRectItem(ui->graphicsView, pMapObject, *static_cast<PropertyTreeWidget*>(ui->treeWidget));
 }
 
 void EditorTab::cleanChanged(bool clean)
@@ -582,11 +588,17 @@ void EditorTab::EditPathData()
 
 void EditorTab::EditMapSize()
 {
-    auto pDlg = new ChangeMapSizeDialog(this);
+    auto pDlg = new ChangeMapSizeDialog(this, this);
     pDlg->exec();
 }
 
 void EditorTab::UpdateCleanState()
 {
     emit CleanChanged();
+}
+
+void EditorTab::AddObject()
+{
+    auto pDlg = new AddObjectDialog(this, this);
+    pDlg->exec();
 }

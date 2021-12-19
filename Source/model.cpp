@@ -99,6 +99,23 @@ static UP_ObjectStructure ReadObjectStructure(jsonxx::Object& objectStructure)
     return tmpObjectStructure;
 }
 
+UP_ObjectProperty Model::MakeProperty(const Model::FoundType foundTypes, const EnumOrBasicTypeProperty& property, const ObjectStructure* pObjStructure)
+{
+    auto tmpProperty = std::make_unique<ObjectProperty>();
+    tmpProperty->mName = property.mName;
+    tmpProperty->mTypeName = property.mType;
+    tmpProperty->mVisible = property.mVisible;
+    if (foundTypes.mBasicType)
+    {
+        tmpProperty->mType = ObjectProperty::Type::BasicType;
+    }
+    else
+    {
+        tmpProperty->mType = ObjectProperty::Type::Enumeration;
+    }
+    return tmpProperty;
+}
+
 std::vector<UP_ObjectProperty> Model::ReadProperties(const ObjectStructure* pObjStructure, jsonxx::Object& properties)
 {
     std::vector<UP_ObjectProperty> tmpProperties;
@@ -111,21 +128,15 @@ std::vector<UP_ObjectProperty> Model::ReadProperties(const ObjectStructure* pObj
             throw ObjectPropertyTypeNotFoundException(property.mName, property.mType);
         }
 
-        auto tmpProperty = std::make_unique<ObjectProperty>();
-        tmpProperty->mName = property.mName;
-        tmpProperty->mTypeName = property.mType;
-        tmpProperty->mVisible = property.mVisible;
+        auto tmpProperty = MakeProperty(foundTypes, property, pObjStructure);
         if (foundTypes.mBasicType)
         {
-            tmpProperty->mType = ObjectProperty::Type::BasicType;
             tmpProperty->mBasicTypeValue = ReadNumber(properties, property.mName);
         }
         else
         {
-            tmpProperty->mType = ObjectProperty::Type::Enumeration;
             tmpProperty->mEnumValue = ReadString(properties, property.mName);
         }
-
         tmpProperties.push_back(std::move(tmpProperty));
     }
     return tmpProperties;
@@ -286,6 +297,7 @@ void Model::LoadJson(const std::string& jsonFile)
         mCollisions.push_back(std::move(tmpCollision));
     }
 
+    CreateEmptyCameras();
 }
 
 void Model::CreateAsNewPath(int newPathId)
@@ -339,63 +351,66 @@ std::string Model::ToJson() const
     jsonxx::Array cameras;
     for (auto& camera : mCameras)
     {
-        jsonxx::Object camObj;
-        camObj << "id" << camera->mId;
-        camObj << "name" << camera->mName;
-        camObj << "x" << camera->mX;
-        camObj << "y" << camera->mY;
-
-        if (!camera->mCameraImageandLayers.mCameraImage.empty())
+        if (!camera->mMapObjects.empty())
         {
-            camObj << "image" << camera->mCameraImageandLayers.mCameraImage;
-        }
+            jsonxx::Object camObj;
+            camObj << "id" << camera->mId;
+            camObj << "name" << camera->mName;
+            camObj << "x" << camera->mX;
+            camObj << "y" << camera->mY;
 
-        if (!camera->mCameraImageandLayers.mForegroundLayer.empty())
-        {
-            camObj << "foreground_layer" << camera->mCameraImageandLayers.mForegroundLayer;
-        }
-
-        if (!camera->mCameraImageandLayers.mBackgroundLayer.empty())
-        {
-            camObj << "background_layer" << camera->mCameraImageandLayers.mBackgroundLayer;
-        }
-
-        if (!camera->mCameraImageandLayers.mForegroundWellLayer.empty())
-        {
-            camObj << "foreground_well_layer" << camera->mCameraImageandLayers.mForegroundWellLayer;
-        }
-
-        if (!camera->mCameraImageandLayers.mBackgroundWellLayer.empty())
-        {
-            camObj << "background_well_layer" << camera->mCameraImageandLayers.mBackgroundWellLayer;
-        }
-
-        jsonxx::Array mapObjects;
-        for (auto& mapObject : camera->mMapObjects)
-        {
-            jsonxx::Object mapObj;
-            mapObj << "name" << mapObject->mName;
-            mapObj << "object_structures_type" << mapObject->mObjectStructureType;
-            jsonxx::Object propertiesObject;
-            for (auto& property : mapObject->mProperties)
+            if (!camera->mCameraImageandLayers.mCameraImage.empty())
             {
-                switch (property->mType)
-                {
-                case ObjectProperty::Type::BasicType:
-                    propertiesObject << property->mName << property->mBasicTypeValue;
-                    break;
-
-                case ObjectProperty::Type::Enumeration:
-                    propertiesObject << property->mName << property->mEnumValue;
-                    break;
-                }
+                camObj << "image" << camera->mCameraImageandLayers.mCameraImage;
             }
-            mapObj << "properties" << propertiesObject;
-            mapObjects << mapObj;
-        }
-        camObj << "map_objects" << mapObjects;
 
-        cameras << camObj;
+            if (!camera->mCameraImageandLayers.mForegroundLayer.empty())
+            {
+                camObj << "foreground_layer" << camera->mCameraImageandLayers.mForegroundLayer;
+            }
+
+            if (!camera->mCameraImageandLayers.mBackgroundLayer.empty())
+            {
+                camObj << "background_layer" << camera->mCameraImageandLayers.mBackgroundLayer;
+            }
+
+            if (!camera->mCameraImageandLayers.mForegroundWellLayer.empty())
+            {
+                camObj << "foreground_well_layer" << camera->mCameraImageandLayers.mForegroundWellLayer;
+            }
+
+            if (!camera->mCameraImageandLayers.mBackgroundWellLayer.empty())
+            {
+                camObj << "background_well_layer" << camera->mCameraImageandLayers.mBackgroundWellLayer;
+            }
+
+            jsonxx::Array mapObjects;
+            for (auto& mapObject : camera->mMapObjects)
+            {
+                jsonxx::Object mapObj;
+                mapObj << "name" << mapObject->mName;
+                mapObj << "object_structures_type" << mapObject->mObjectStructureType;
+                jsonxx::Object propertiesObject;
+                for (auto& property : mapObject->mProperties)
+                {
+                    switch (property->mType)
+                    {
+                    case ObjectProperty::Type::BasicType:
+                        propertiesObject << property->mName << property->mBasicTypeValue;
+                        break;
+
+                    case ObjectProperty::Type::Enumeration:
+                        propertiesObject << property->mName << property->mEnumValue;
+                        break;
+                    }
+                }
+                mapObj << "properties" << propertiesObject;
+                mapObjects << mapObj;
+            }
+            camObj << "map_objects" << mapObjects;
+
+            cameras << camObj;
+        }
     }
 
     jsonxx::Object collisionsObject;
@@ -429,4 +444,22 @@ std::string Model::ToJson() const
     root << "schema" << mSchema;
 
     return root.json();
+}
+
+void Model::CreateEmptyCameras()
+{
+    // Make sure every cell in the "map" has a camera object
+    for (int x = 0; x < mMapInfo.mXSize; x++)
+    {
+        for (int y = 0; y < mMapInfo.mYSize; y++)
+        {
+            if (!CameraAt(x, y))
+            {
+                auto cam = std::make_unique<Camera>();
+                cam->mX = x;
+                cam->mY = y;
+                mCameras.emplace_back(std::move(cam));
+            }
+        }
+    }
 }
