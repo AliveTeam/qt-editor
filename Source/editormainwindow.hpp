@@ -53,6 +53,8 @@ private slots:
 
     void on_actionSave_As_triggered();
 
+    void on_actionAdd_object_triggered();
+
 private:
     bool onOpenPath(QString fileName, bool createNewPath);
     void UpdateWindowTitle();

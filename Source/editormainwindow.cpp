@@ -505,3 +505,13 @@ void EditorMainWindow::on_actionSave_As_triggered()
     }
 }
 
+
+void EditorMainWindow::on_actionAdd_object_triggered()
+{
+    EditorTab* pTab = getActiveTab(m_ui->tabWidget);
+    if (pTab)
+    {
+        pTab->AddObject();
+    }
+}
+

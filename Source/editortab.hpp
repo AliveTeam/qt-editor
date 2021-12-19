@@ -17,6 +17,8 @@ namespace Ui
 }
 
 class EditorGraphicsScene;
+class ResizeableRectItem;
+struct MapObject;
 
 class EditorTab final : public QMainWindow
 {
@@ -59,6 +61,10 @@ public:
 
     void UpdateCleanState();
     void UpdateTabTitle(bool clean);
+
+    void AddObject();
+    
+    ResizeableRectItem* MakeResizeableRectItem(MapObject* pMapObject);
 
 signals:
     void CleanChanged();

@@ -280,6 +280,14 @@ public:
     const MapInfo& GetMapInfo() const { return mMapInfo; }
     MapInfo& GetMapInfo() { return mMapInfo; }
 
+    struct FoundType;
+    UP_ObjectProperty MakeProperty(const Model::FoundType foundTypes, const EnumOrBasicTypeProperty& property, const ObjectStructure* pObjStructure);
+
+    const std::vector<UP_ObjectStructure>& GetObjectStructures() const 
+    {
+        return mObjectStructures;
+    }
+
     const std::vector<UP_Camera>& GetCameras() const { return mCameras; }
 
     Camera* CameraAt(int x, int y) const
@@ -349,6 +357,8 @@ public:
     std::string ToJson() const;
 
 private:
+    void CreateEmptyCameras();
+
     std::vector<UP_ObjectProperty> ReadProperties(const ObjectStructure* pObjStructure, jsonxx::Object& properties);
 
     MapInfo mMapInfo;
