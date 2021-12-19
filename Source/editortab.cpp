@@ -453,6 +453,7 @@ void EditorTab::ResetZoom()
 
 EditorTab::~EditorTab()
 {
+    disconnect(&mUndoStack, &QUndoStack::cleanChanged, this, &EditorTab::UpdateTabTitle);
     delete ui;
 }
 
