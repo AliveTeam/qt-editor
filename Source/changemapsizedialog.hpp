@@ -7,12 +7,14 @@ namespace Ui {
 class ChangeMapSizeDialog;
 }
 
+class EditorTab;
+
 class ChangeMapSizeDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit ChangeMapSizeDialog(QWidget *parent = nullptr);
+    ChangeMapSizeDialog(QWidget *parent, EditorTab* pTab);
     ~ChangeMapSizeDialog();
 
 private slots:
@@ -26,6 +28,7 @@ private slots:
 
 private:
     Ui::ChangeMapSizeDialog *ui;
+    EditorTab* mTab = nullptr;
 };
 
 #endif // CHANGEMAPSIZEDIALOG_HPP

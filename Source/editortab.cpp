@@ -582,7 +582,7 @@ void EditorTab::EditPathData()
 
 void EditorTab::EditMapSize()
 {
-    auto pDlg = new ChangeMapSizeDialog(this);
+    auto pDlg = new ChangeMapSizeDialog(this, this);
     pDlg->exec();
 }
 
