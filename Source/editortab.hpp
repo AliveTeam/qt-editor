@@ -17,8 +17,10 @@ namespace Ui
 }
 
 class EditorGraphicsScene;
+class ResizeableArrowItem;
 class ResizeableRectItem;
 struct MapObject;
+class CollisionObject;
 
 class EditorTab final : public QMainWindow
 {
@@ -63,9 +65,11 @@ public:
     void UpdateTabTitle(bool clean);
 
     void AddObject();
-    
+    void AddCollision();
+
     ResizeableRectItem* MakeResizeableRectItem(MapObject* pMapObject);
-    
+    ResizeableArrowItem* MakeResizeableArrowItem(CollisionObject* pCollisionObject);
+
     void SyncPropertyEditor();
 
 signals:

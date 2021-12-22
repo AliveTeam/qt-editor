@@ -362,6 +362,11 @@ public:
 
     std::string ToJson() const;
 
+    const ObjectStructure& CollisionStructure() const
+    {
+        return *mCollisionStructure;
+    }
+
 private:
     void CreateEmptyCameras();
 
