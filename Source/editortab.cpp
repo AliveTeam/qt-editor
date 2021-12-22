@@ -109,10 +109,11 @@ private:
 class MoveItemsCommand : public QUndoCommand
 {
 public:
-    MoveItemsCommand(QGraphicsScene* pScene, ItemPositionData oldPositions, ItemPositionData newPositions)
+    MoveItemsCommand(QGraphicsScene* pScene, ItemPositionData oldPositions, ItemPositionData newPositions, Model& model)
         : mScene(pScene),
         mOldPositions(oldPositions),
-        mNewPositions(newPositions)
+        mNewPositions(newPositions),
+        mModel(model)
     {
         mFirst = true;
 
@@ -167,7 +168,7 @@ public:
     {
         if (!mFirst)
         {
-            mNewPositions.Restore();
+            mNewPositions.Restore(mModel);
             mScene->update();
         }
         mFirst = false;
@@ -175,7 +176,7 @@ public:
 
     void undo() override
     {
-        mOldPositions.Restore();
+        mOldPositions.Restore(mModel);
         mScene->update();
     }
 
@@ -183,6 +184,7 @@ private:
     QGraphicsScene* mScene = nullptr;
     ItemPositionData mOldPositions;
     ItemPositionData mNewPositions;
+    Model& mModel;
     bool mFirst = false;
 };
 
@@ -297,7 +299,7 @@ EditorTab::EditorTab(QTabWidget* aParent, UP_Model model, QString jsonFileName, 
     // objects are onscreen
     //pView->setViewport(new QOpenGLWidget()); // Becomes owned by the view
 
-    mScene = std::make_unique<EditorGraphicsScene>();
+    mScene = std::make_unique<EditorGraphicsScene>(*mModel);
 
     connect(mScene.get(), &EditorGraphicsScene::SelectionChanged, this, [&](QList<QGraphicsItem*> oldSelection, QList<QGraphicsItem*> newSelection)
         {
@@ -306,7 +308,7 @@ EditorTab::EditorTab(QTabWidget* aParent, UP_Model model, QString jsonFileName, 
 
     connect(mScene.get(), &EditorGraphicsScene::ItemsMoved, this, [&](ItemPositionData oldPositions, ItemPositionData newPositions)
         {
-            mUndoStack.push(new MoveItemsCommand(mScene.get(), oldPositions, newPositions));
+            mUndoStack.push(new MoveItemsCommand(mScene.get(), oldPositions, newPositions, *mModel));
         });
 
     connect(&mUndoStack, &QUndoStack::cleanChanged, this, &EditorTab::cleanChanged);

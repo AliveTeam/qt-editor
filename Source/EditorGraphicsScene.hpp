@@ -5,23 +5,26 @@
 
 class ResizeableArrowItem;
 class ResizeableRectItem;
+class Model;
+struct Camera;
 
-class ItemPositionData
+class ItemPositionData final
 {
 public:
-    struct RectPos
+    struct RectPos final
     {
         qreal x = 0;
         qreal y = 0;
         QRectF rect;
+        Camera* containingCamera = nullptr;
 
         bool operator == (const RectPos& rhs) const
         {
-            return x == rhs.x && y == rhs.y && rect == rhs.rect;
+            return x == rhs.x && y == rhs.y && rect == rhs.rect && containingCamera == rhs.containingCamera;
         }
     };
 
-    struct LinePos
+    struct LinePos final
     {
         qreal x = 0;
         qreal y = 0;
@@ -33,8 +36,8 @@ public:
         }
     };
 
-    void Save(QList<QGraphicsItem*>& items);
-    void Restore();
+    void Save(QList<QGraphicsItem*>& items, Model& model, bool recalculateParentCamera);
+    void Restore(Model& model);
 
     bool operator == (const ItemPositionData& rhs) const
     {
@@ -79,7 +82,7 @@ public:
         return &mLines.begin()->second;
     }
 private:
-    void AddRect(ResizeableRectItem* pItem);
+    void AddRect(ResizeableRectItem* pItem, Model& model, bool recalculateParentCamera);
 
     void AddLine(ResizeableArrowItem* pItem);
 
@@ -87,11 +90,11 @@ private:
     std::map<ResizeableArrowItem*, LinePos> mLines;
 };
 
-class EditorGraphicsScene : public QGraphicsScene
+class EditorGraphicsScene final : public QGraphicsScene
 {
     Q_OBJECT
 public:
-    EditorGraphicsScene();
+    explicit EditorGraphicsScene(Model& model);
 signals:
     void SelectionChanged(QList<QGraphicsItem*> oldItems, QList<QGraphicsItem*> newItems);
     void ItemsMoved(ItemPositionData oldPositions, ItemPositionData newPositions);
@@ -101,6 +104,7 @@ private:
     void mouseReleaseEvent(QGraphicsSceneMouseEvent* pEvent) override;
     void CreateBackgroundBrush();
 private:
+    Model& mModel;
     QList<QGraphicsItem*> mOldSelection;
     ItemPositionData mOldPositions;
     bool mLeftButtonDown = false;

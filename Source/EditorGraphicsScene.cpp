@@ -4,8 +4,10 @@
 #include <QGraphicsSceneMouseEvent>
 #include "resizeablearrowitem.hpp"
 #include "resizeablerectitem.hpp"
+#include "model.hpp"
 
-EditorGraphicsScene::EditorGraphicsScene()
+EditorGraphicsScene::EditorGraphicsScene(Model& model)
+    : mModel(model)
 {
     CreateBackgroundBrush();
 }
@@ -77,7 +79,7 @@ void EditorGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent* pEvent)
         }
 
         // Save the locations of what is selected after click
-        mOldPositions.Save(mOldSelection);
+        mOldPositions.Save(mOldSelection, mModel, false);
     }
     else
     {
@@ -114,7 +116,7 @@ void EditorGraphicsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent* pEvent)
         {
             // Get the position of where the selected items are now
             ItemPositionData newPositions;
-            newPositions.Save(currentSelection);
+            newPositions.Save(currentSelection, mModel, true);
 
             if (mOldPositions != newPositions)
             {
@@ -129,7 +131,7 @@ void EditorGraphicsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent* pEvent)
     }
 }
 
-void ItemPositionData::Save(QList<QGraphicsItem*>& items)
+void ItemPositionData::Save(QList<QGraphicsItem*>& items, Model& model, bool recalculateParentCamera)
 {
     mRects.clear();
     mLines.clear();
@@ -139,7 +141,7 @@ void ItemPositionData::Save(QList<QGraphicsItem*>& items)
         ResizeableRectItem* pRect = qgraphicsitem_cast<ResizeableRectItem*>(item);
         if (pRect)
         {
-            AddRect(pRect);
+            AddRect(pRect, model, recalculateParentCamera);
         }
         else
         {
@@ -152,13 +154,15 @@ void ItemPositionData::Save(QList<QGraphicsItem*>& items)
     }
 }
 
-void ItemPositionData::Restore()
+void ItemPositionData::Restore(Model& model)
 {
     for (auto& [rect, pos] : mRects)
     {
         rect->RestoreRect(pos.rect);
         rect->setX(pos.x);
         rect->setY(pos.y);
+
+        model.SwapContainingCamera(rect->GetMapObject(), pos.containingCamera);
     }
 
     for (auto& [line, pos] : mLines)
@@ -169,9 +173,49 @@ void ItemPositionData::Restore()
     }
 }
 
-void ItemPositionData::AddRect(ResizeableRectItem* pItem)
+void ItemPositionData::AddRect(ResizeableRectItem* pItem, Model& model, bool recalculateParentCamera)
 {
-    mRects[pItem] = { pItem->x(), pItem->y(), pItem->SaveRect() };
+    Camera* pContainingCamera = nullptr;
+    MapObject* pMapObject = pItem->GetMapObject();
+
+    if (recalculateParentCamera)
+    {
+        QPoint mid = pItem->rect().center().toPoint();
+
+        QPoint midPoint(pItem->x() + mid.x(), pItem->y() + mid.y());
+
+        int camX = midPoint.x() / model.GetMapInfo().mXGridSize;
+        if (camX < 0)
+        {
+            camX = 0;
+        }
+
+        if (camX > model.GetMapInfo().mXSize)
+        {
+            camX = model.GetMapInfo().mXSize;
+        }
+
+        int camY = midPoint.y() / model.GetMapInfo().mYGridSize;
+        if (camY < 0)
+        {
+            camY = 0;
+        }
+
+        if (camY > model.GetMapInfo().mYSize)
+        {
+            camY = model.GetMapInfo().mYSize;
+        }
+
+        pContainingCamera = model.CameraAt(camX, camY);
+
+        model.SwapContainingCamera(pMapObject, pContainingCamera);
+    }
+    else
+    {
+        pContainingCamera = model.GetContainingCamera(pMapObject);
+    }
+
+    mRects[pItem] = { pItem->x(), pItem->y(), pItem->SaveRect(), pContainingCamera };
 }
 
 void ItemPositionData::AddLine(ResizeableArrowItem* pItem)

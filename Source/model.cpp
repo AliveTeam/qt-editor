@@ -99,6 +99,46 @@ static UP_ObjectStructure ReadObjectStructure(jsonxx::Object& objectStructure)
     return tmpObjectStructure;
 }
 
+Camera* Model::GetContainingCamera(MapObject* pMapObject)
+{
+    Camera* pContainingCamera = nullptr;
+    for (auto& camera : mCameras)
+    {
+        for (auto& mapObj : camera->mMapObjects)
+        {
+            if (mapObj.get() == pMapObject)
+            {
+                pContainingCamera = camera.get();
+                break;
+            }
+        }
+    }
+    return pContainingCamera;
+}
+
+UP_MapObject Model::TakeFromContainingCamera(MapObject* pMapObject)
+{
+    for (auto& camera : mCameras)
+    {
+        for (auto it = camera->mMapObjects.begin(); it != camera->mMapObjects.end(); )
+        {
+            if ((*it).get() == pMapObject)
+            {
+                UP_MapObject takenObj((*it).release());
+                camera->mMapObjects.erase(it);
+                return takenObj;
+            }
+            it++;
+        }
+    }
+    return nullptr;
+}
+
+void Model::SwapContainingCamera(MapObject* pMapObject, Camera* pTargetCamera)
+{
+    pTargetCamera->mMapObjects.push_back(TakeFromContainingCamera(pMapObject));
+}
+
 UP_ObjectProperty Model::MakeProperty(const Model::FoundType foundTypes, const EnumOrBasicTypeProperty& property, const ObjectStructure* pObjStructure)
 {
     auto tmpProperty = std::make_unique<ObjectProperty>();
@@ -309,6 +349,11 @@ void Model::CreateAsNewPath(int newPathId)
 
     mCameras.clear();
     mCollisions.clear();
+
+    auto cam = std::make_unique<Camera>();
+    cam->mX = 0;
+    cam->mY = 0;
+    mCameras.emplace_back(std::move(cam));
 }
 
 std::string Model::ToJson() const
