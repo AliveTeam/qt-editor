@@ -131,6 +131,18 @@ void EditorGraphicsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent* pEvent)
     }
 }
 
+void EditorGraphicsScene::keyPressEvent(QKeyEvent* keyEvent)
+{
+    if (keyEvent->key() == Qt::Key_Delete)
+    {
+        // todo: delete command
+    }
+    else
+    {
+        QGraphicsScene::keyPressEvent(keyEvent);
+    }
+}
+
 void ItemPositionData::Save(QList<QGraphicsItem*>& items, Model& model, bool recalculateParentCamera)
 {
     mRects.clear();

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QGraphicsScene>
+#include <QKeyEvent>
 #include <map>
 
 class ResizeableArrowItem;
@@ -102,6 +103,9 @@ private:
     void mousePressEvent(QGraphicsSceneMouseEvent* pEvent) override;
     void mouseMoveEvent(QGraphicsSceneMouseEvent* pEvent) override;
     void mouseReleaseEvent(QGraphicsSceneMouseEvent* pEvent) override;
+
+    void keyPressEvent(QKeyEvent* keyEvent) override;
+
     void CreateBackgroundBrush();
 private:
     Model& mModel;
