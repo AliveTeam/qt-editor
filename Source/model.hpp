@@ -280,6 +280,12 @@ public:
     const MapInfo& GetMapInfo() const { return mMapInfo; }
     MapInfo& GetMapInfo() { return mMapInfo; }
 
+    Camera* GetContainingCamera(MapObject* pMapObject);
+
+    UP_MapObject TakeFromContainingCamera(MapObject* pMapObject);
+
+    void SwapContainingCamera(MapObject* pMapObject, Camera* pTargetCamera);
+
     struct FoundType;
     UP_ObjectProperty MakeProperty(const Model::FoundType foundTypes, const EnumOrBasicTypeProperty& property, const ObjectStructure* pObjStructure);
 
