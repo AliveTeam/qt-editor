@@ -73,6 +73,9 @@ public:
         {
             item->setSelected(true);
         }
+
+        mTab->GetScene().update();
+        mTab->SyncPropertyEditor();
     }
 
     void redo() override
@@ -86,6 +89,9 @@ public:
         // Set the new item as the only thing selected
         mTab->GetScene().clearSelection();
         mNewItem->setSelected(true);
+
+        mTab->GetScene().update();
+        mTab->SyncPropertyEditor();
 
         mAdded = true;
     }

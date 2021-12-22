@@ -70,7 +70,7 @@ public:
             mScene->update();
         }
         mFirst = false;
-        SyncPropertyEditor();
+        mTab->SyncPropertyEditor();
     }
 
     void undo() override
@@ -81,20 +81,7 @@ public:
             item->setSelected(true);
         }
         mScene->update();
-        SyncPropertyEditor();
-    }
-
-    void SyncPropertyEditor()
-    {
-        auto selected = mScene->selectedItems();
-        if (selected.count() == 1)
-        {
-            mTab->PopulatePropertyEditor(selected[0]);
-        }
-        else
-        {
-            mTab->ClearPropertyEditor();
-        }
+        mTab->SyncPropertyEditor();
     }
 
 private:
@@ -382,6 +369,19 @@ EditorTab::EditorTab(QTabWidget* aParent, UP_Model model, QString jsonFileName, 
 ResizeableRectItem* EditorTab::MakeResizeableRectItem(MapObject* pMapObject)
 {
     return new ResizeableRectItem(ui->graphicsView, pMapObject, *static_cast<PropertyTreeWidget*>(ui->treeWidget));
+}
+
+void EditorTab::SyncPropertyEditor()
+{
+    auto selected = mScene->selectedItems();
+    if (selected.count() == 1)
+    {
+        PopulatePropertyEditor(selected[0]);
+    }
+    else
+    {
+        ClearPropertyEditor();
+    }
 }
 
 void EditorTab::cleanChanged(bool clean)

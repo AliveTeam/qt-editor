@@ -65,6 +65,8 @@ public:
     void AddObject();
     
     ResizeableRectItem* MakeResizeableRectItem(MapObject* pMapObject);
+    
+    void SyncPropertyEditor();
 
 signals:
     void CleanChanged();
