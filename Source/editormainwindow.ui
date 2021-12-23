@@ -144,6 +144,7 @@
     <addaction name="actionEdit_path_data"/>
     <addaction name="actionEdit_map_size"/>
     <addaction name="actionAdd_object"/>
+    <addaction name="actionAdd_collision"/>
    </widget>
    <widget class="QMenu" name="menuSnapping">
     <property name="title">
@@ -834,6 +835,11 @@
   <action name="actionAdd_object">
    <property name="text">
     <string>Add object</string>
+   </property>
+  </action>
+  <action name="actionAdd_collision">
+   <property name="text">
+    <string>Add collision</string>
    </property>
   </action>
  </widget>

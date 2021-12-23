@@ -70,7 +70,7 @@ public:
             mScene->update();
         }
         mFirst = false;
-        SyncPropertyEditor();
+        mTab->SyncPropertyEditor();
     }
 
     void undo() override
@@ -81,20 +81,7 @@ public:
             item->setSelected(true);
         }
         mScene->update();
-        SyncPropertyEditor();
-    }
-
-    void SyncPropertyEditor()
-    {
-        auto selected = mScene->selectedItems();
-        if (selected.count() == 1)
-        {
-            mTab->PopulatePropertyEditor(selected[0]);
-        }
-        else
-        {
-            mTab->ClearPropertyEditor();
-        }
+        mTab->SyncPropertyEditor();
     }
 
 private:
@@ -299,7 +286,7 @@ EditorTab::EditorTab(QTabWidget* aParent, UP_Model model, QString jsonFileName, 
     // objects are onscreen
     //pView->setViewport(new QOpenGLWidget()); // Becomes owned by the view
 
-    mScene = std::make_unique<EditorGraphicsScene>(*mModel);
+    mScene = std::make_unique<EditorGraphicsScene>(this);
 
     connect(mScene.get(), &EditorGraphicsScene::SelectionChanged, this, [&](QList<QGraphicsItem*> oldSelection, QList<QGraphicsItem*> newSelection)
         {
@@ -353,7 +340,7 @@ EditorTab::EditorTab(QTabWidget* aParent, UP_Model model, QString jsonFileName, 
 
     for (auto& collision : mModel->CollisionItems())
     {
-        auto pLine = new ResizeableArrowItem(pView, collision.get(), *static_cast<PropertyTreeWidget*>(ui->treeWidget));
+        auto pLine = MakeResizeableArrowItem(collision.get());
         mScene->addItem(pLine);
     }
 
@@ -382,6 +369,24 @@ EditorTab::EditorTab(QTabWidget* aParent, UP_Model model, QString jsonFileName, 
 ResizeableRectItem* EditorTab::MakeResizeableRectItem(MapObject* pMapObject)
 {
     return new ResizeableRectItem(ui->graphicsView, pMapObject, *static_cast<PropertyTreeWidget*>(ui->treeWidget));
+}
+
+ResizeableArrowItem* EditorTab::MakeResizeableArrowItem(CollisionObject* pCollisionObject)
+{
+    return new ResizeableArrowItem(ui->graphicsView, pCollisionObject, *static_cast<PropertyTreeWidget*>(ui->treeWidget));
+}
+
+void EditorTab::SyncPropertyEditor()
+{
+    auto selected = mScene->selectedItems();
+    if (selected.count() == 1)
+    {
+        PopulatePropertyEditor(selected[0]);
+    }
+    else
+    {
+        ClearPropertyEditor();
+    }
 }
 
 void EditorTab::cleanChanged(bool clean)
@@ -604,4 +609,104 @@ void EditorTab::AddObject()
 {
     auto pDlg = new AddObjectDialog(this, this);
     pDlg->exec();
+}
+
+class AddCollisionCommand final : public QUndoCommand
+{
+public:
+    explicit AddCollisionCommand(EditorTab* pTab)
+        : mTab(pTab)
+    {
+        MakeNewCollision();
+
+        mOldSelection = mTab->GetScene().selectedItems();
+
+        setText("Add collision line");
+    }
+
+    ~AddCollisionCommand()
+    {
+        if (!mAdded)
+        {
+            //delete mArrowItem->GetCollisionItem(); // not owned by the model as its removed during undo
+            delete mArrowItem;
+        }
+    }
+
+    void undo() override
+    {
+        mTab->GetScene().removeItem(mArrowItem);
+
+        mNewObject = mTab->GetModel().RemoveCollisionItem(mArrowItem->GetCollisionItem());
+
+        mAdded = false;
+
+        // TODO: Dup code
+
+        // Select whatever was selected before we added this item
+        for (auto& item : mOldSelection)
+        {
+            item->setSelected(true);
+        }
+
+        mTab->GetScene().update();
+        mTab->SyncPropertyEditor();
+
+    }
+
+    void redo() override
+    {
+        mTab->GetScene().addItem(mArrowItem);
+        mTab->GetModel().CollisionItems().push_back(std::move(mNewObject));
+
+        // Set the new item as the only thing selected
+        mTab->GetScene().clearSelection();
+        mArrowItem->setSelected(true);
+
+        mTab->GetScene().update();
+        mTab->SyncPropertyEditor();
+
+        mAdded = true;
+    }
+
+private:
+    void MakeNewCollision()
+    {
+        mNewObject = std::make_unique<CollisionObject>();
+        // TODO: Duplicated with AddNewObjectCommand::MakeNewObject
+        for (auto& prop : mTab->GetModel().CollisionStructure().mEnumAndBasicTypeProperties)
+        {
+            auto foundType = mTab->GetModel().FindType(prop.mType);
+
+            auto newProp = mTab->GetModel().MakeProperty(foundType, prop, &mTab->GetModel().CollisionStructure());
+            if (foundType.mEnum)
+            {
+                auto enumType = mTab->GetModel().FindEnum(prop.mType);
+                newProp->mEnumValue = enumType->mValues[0];
+            }
+
+            mNewObject->mProperties.emplace_back(std::move(newProp));
+        }
+
+        QGraphicsView* pView = mTab->GetScene().views().at(0);
+        QPoint scenePos = pView->mapToScene(pView->pos()).toPoint();
+        mNewObject->SetX1(scenePos.x() + 100);
+        mNewObject->SetX2(scenePos.x() + 200);
+
+        mNewObject->SetY1(scenePos.y() + 100);
+        mNewObject->SetY2(scenePos.y() + 100);
+
+        mArrowItem = mTab->MakeResizeableArrowItem(mNewObject.get());
+    }
+
+    QList<QGraphicsItem*> mOldSelection;
+    bool mAdded = false;
+    EditorTab* mTab = nullptr;
+    UP_CollisionObject mNewObject;
+    ResizeableArrowItem* mArrowItem = nullptr;
+};
+
+void EditorTab::AddCollision()
+{
+    mUndoStack.push(new AddCollisionCommand(this));
 }

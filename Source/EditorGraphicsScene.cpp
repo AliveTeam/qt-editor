@@ -4,10 +4,12 @@
 #include <QGraphicsSceneMouseEvent>
 #include "resizeablearrowitem.hpp"
 #include "resizeablerectitem.hpp"
+#include "editortab.hpp"
 #include "model.hpp"
+#include <QUndoCommand>
 
-EditorGraphicsScene::EditorGraphicsScene(Model& model)
-    : mModel(model)
+EditorGraphicsScene::EditorGraphicsScene(EditorTab* pTab)
+    : mTab(pTab)
 {
     CreateBackgroundBrush();
 }
@@ -79,7 +81,7 @@ void EditorGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent* pEvent)
         }
 
         // Save the locations of what is selected after click
-        mOldPositions.Save(mOldSelection, mModel, false);
+        mOldPositions.Save(mOldSelection, mTab->GetModel(), false);
     }
     else
     {
@@ -116,7 +118,7 @@ void EditorGraphicsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent* pEvent)
         {
             // Get the position of where the selected items are now
             ItemPositionData newPositions;
-            newPositions.Save(currentSelection, mModel, true);
+            newPositions.Save(currentSelection, mTab->GetModel(), true);
 
             if (mOldPositions != newPositions)
             {
@@ -128,6 +130,121 @@ void EditorGraphicsScene::mouseReleaseEvent(QGraphicsSceneMouseEvent* pEvent)
         }
 
         mLeftButtonDown = false;
+    }
+}
+
+class DeleteItemsCommand final : public QUndoCommand
+{
+public:
+    DeleteItemsCommand(EditorTab* pTab, QList<QGraphicsItem*> graphicsItemsToDelete)
+        : mTab(pTab), mGraphicsItemsToDelete(graphicsItemsToDelete)
+    {
+        setText("Delete " + QString::number(mGraphicsItemsToDelete.count()) + " item(s)");
+    }
+
+    ~DeleteItemsCommand()
+    {
+        if (!mAdded)
+        {
+            // Delete un-owned graphics items
+            for (auto& item : mGraphicsItemsToDelete)
+            {
+                delete item;
+            }
+        }
+    }
+
+    void undo() override
+    {
+        // add back to scene
+        for (auto& item : mGraphicsItemsToDelete)
+        {
+            mTab->GetScene().addItem(item);
+        }
+
+        // add back to model
+        for (auto& item : mRemovedCollisions)
+        {
+            mTab->GetModel().CollisionItems().emplace_back(std::move(item));
+        }
+        mRemovedCollisions.clear();
+
+        // add back to model
+        for (auto& item : mRemovedMapObjects)
+        {
+            item.mContainingCamera->mMapObjects.push_back(std::move(item.mRemovedMapObject));
+        }
+        mRemovedMapObjects.clear();
+
+        mAdded = true;
+
+        // Select whatever was selected before we deleted anything (which IS the stuff we deleted)
+        for (auto& item : mGraphicsItemsToDelete)
+        {
+            item->setSelected(true);
+        }
+
+        mTab->GetScene().update();
+        mTab->SyncPropertyEditor();
+    }
+
+    void redo() override
+    {
+        // remove from scene
+        for (auto& item : mGraphicsItemsToDelete)
+        {
+            mTab->GetScene().removeItem(item);
+
+            ResizeableArrowItem* pArrow = qgraphicsitem_cast<ResizeableArrowItem*>(item);
+            if (pArrow)
+            {
+                mRemovedCollisions.emplace_back(mTab->GetModel().RemoveCollisionItem(pArrow->GetCollisionItem()));
+            }
+
+            ResizeableRectItem* pRect = qgraphicsitem_cast<ResizeableRectItem*>(item);
+            if (pRect)
+            {
+                // todo: prevent double cam look up
+                auto pCam = mTab->GetModel().GetContainingCamera(pRect->GetMapObject());
+                mRemovedMapObjects.emplace_back(DeletedMapObject{ mTab->GetModel().TakeFromContainingCamera(pRect->GetMapObject()), pCam });
+            }
+        }
+
+        mAdded = false;
+
+        // Select nothing after deleting the selection
+        mTab->GetScene().clearSelection();
+        mTab->GetScene().update();
+        mTab->SyncPropertyEditor();
+    }
+
+private:
+    std::vector<UP_CollisionObject> mRemovedCollisions;
+    struct DeletedMapObject final
+    {
+        UP_MapObject mRemovedMapObject;
+        Camera* mContainingCamera;
+    };
+    std::vector<DeletedMapObject> mRemovedMapObjects;
+
+    bool mAdded = false;
+    EditorTab* mTab = nullptr;
+    QList<QGraphicsItem*> mGraphicsItemsToDelete;
+};
+
+void EditorGraphicsScene::keyPressEvent(QKeyEvent* keyEvent)
+{
+    if (keyEvent->key() == Qt::Key_Delete)
+    {
+        QList<QGraphicsItem*> selected = selectedItems();
+        if (!selected.isEmpty())
+        {
+            mTab->AddCommand(new DeleteItemsCommand(mTab, selected));
+        }
+    }
+    else
+    {
+        QGraphicsScene::keyPressEvent(keyEvent);
     }
 }
 
