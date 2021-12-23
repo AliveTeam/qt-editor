@@ -56,7 +56,5 @@ void CameraGraphicsItem::LoadImages()
         {
             mImages.mCamera.loadFromData(QByteArray::fromBase64(QByteArray(mCamera->mCameraImageandLayers.mCameraImage.c_str(), static_cast<int>(mCamera->mCameraImageandLayers.mCameraImage.length()))));
         }
-
-        // TODO: others
     }
 }

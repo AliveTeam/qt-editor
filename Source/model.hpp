@@ -313,7 +313,7 @@ public:
         return mCollisions;
     }
 
-    struct FoundType
+    struct FoundType final
     {
         Enum* mEnum = nullptr;
         BasicType* mBasicType = nullptr;
