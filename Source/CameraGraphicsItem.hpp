@@ -37,10 +37,6 @@ private:
     struct Images final
     {
         QPixmap mCamera;
-        QPixmap mForeground;
-        QPixmap mBackground;
-        QPixmap mWellForeground;
-        QPixmap mWellBackground;
     };
     Images mImages;
 };

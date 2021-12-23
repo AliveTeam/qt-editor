@@ -23,11 +23,19 @@ public:
 private slots:
     void on_btnSelectImage_clicked();
 
-    void on_buttonBox_accepted();
+    void on_btnDeleteImage_clicked();
 
-    void on_buttonBox_rejected();
+    void on_btnSetCameraId_clicked();
+
+    void on_btnDeleteCamera_clicked();
+
+    void on_lstCameras_itemSelectionChanged();
 
 private:
+    void SetTabImage(int idx, QPixmap img);
+
+    void UpdateTabImages(CameraGraphicsItem* pItem);
+
     CameraGraphicsItem* CameraGraphicsItemByPos(const QPoint& pos);
     CameraGraphicsItem* CameraGraphicsItemByModelPtr(const Camera* cam);
 
