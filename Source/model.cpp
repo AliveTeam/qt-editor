@@ -491,6 +491,21 @@ std::string Model::ToJson() const
     return root.json();
 }
 
+UP_CollisionObject Model::RemoveCollisionItem(CollisionObject* pItem)
+{
+    for (auto it = mCollisions.begin(); it != mCollisions.end(); )
+    {
+        if ((*it).get() == pItem)
+        {
+            auto ret = std::move(*it);
+            mCollisions.erase(it);
+            return ret;
+        }
+        it++;
+    }
+    return nullptr;
+}
+
 void Model::CreateEmptyCameras()
 {
     // Make sure every cell in the "map" has a camera object

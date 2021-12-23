@@ -8,6 +8,7 @@ class ResizeableArrowItem;
 class ResizeableRectItem;
 class Model;
 struct Camera;
+class EditorTab;
 
 class ItemPositionData final
 {
@@ -95,7 +96,7 @@ class EditorGraphicsScene final : public QGraphicsScene
 {
     Q_OBJECT
 public:
-    explicit EditorGraphicsScene(Model& model);
+    explicit EditorGraphicsScene(EditorTab* pTab);
 signals:
     void SelectionChanged(QList<QGraphicsItem*> oldItems, QList<QGraphicsItem*> newItems);
     void ItemsMoved(ItemPositionData oldPositions, ItemPositionData newPositions);
@@ -108,7 +109,7 @@ private:
 
     void CreateBackgroundBrush();
 private:
-    Model& mModel;
+    EditorTab* mTab = nullptr;
     QList<QGraphicsItem*> mOldSelection;
     ItemPositionData mOldPositions;
     bool mLeftButtonDown = false;

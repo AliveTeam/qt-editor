@@ -286,7 +286,7 @@ EditorTab::EditorTab(QTabWidget* aParent, UP_Model model, QString jsonFileName, 
     // objects are onscreen
     //pView->setViewport(new QOpenGLWidget()); // Becomes owned by the view
 
-    mScene = std::make_unique<EditorGraphicsScene>(*mModel);
+    mScene = std::make_unique<EditorGraphicsScene>(this);
 
     connect(mScene.get(), &EditorGraphicsScene::SelectionChanged, this, [&](QList<QGraphicsItem*> oldSelection, QList<QGraphicsItem*> newSelection)
         {
@@ -637,17 +637,7 @@ public:
     {
         mTab->GetScene().removeItem(mArrowItem);
 
-        auto& items = mTab->GetModel().CollisionItems();
-        for (auto it = items.begin(); it != items.end(); )
-        {
-            if ((*it).get() == mArrowItem->GetCollisionItem())
-            {
-                mNewObject = std::move(*it);
-                items.erase(it);
-                break;
-            }
-            it++;
-        }
+        mNewObject = mTab->GetModel().RemoveCollisionItem(mArrowItem->GetCollisionItem());
 
         mAdded = false;
 

@@ -367,6 +367,8 @@ public:
         return *mCollisionStructure;
     }
 
+    UP_CollisionObject RemoveCollisionItem(CollisionObject* pItem);
+
 private:
     void CreateEmptyCameras();
 
