@@ -8,6 +8,8 @@
 #include <QBuffer>
 #include <QGraphicsItem>
 #include "CameraGraphicsItem.hpp"
+#include "selectionsaver.hpp"
+#include "resizeablerectitem.hpp"
 
 static QPixmap Base64ToPixmap(const std::string& s)
 {
@@ -124,30 +126,140 @@ private:
     TabImageIdx mImgIdx = {};
 };
 
-// todo
 class DeleteCameraCommand final : public QUndoCommand
 {
 public:
-    explicit DeleteCameraCommand(CameraGraphicsItem* pItem)
-        : mItem(pItem)
+    DeleteCameraCommand(EditorTab* pTab, CameraGraphicsItem* pItem)
+        : mSelectionSaver(pTab), mTab(pTab), mCameraOriginal(pItem)
     {
         setText("Delete camera");
+
+        mEmptyCameraModel = std::make_unique<Camera>();
+        mEmptyCameraModel->mX = pItem->GetCamera()->mX;
+        mEmptyCameraModel->mY = pItem->GetCamera()->mY;
+
+        mEmptyCamera = mTab->MakeCameraGraphicsItem(
+            mEmptyCameraModel.get(),
+            mTab->GetModel().GetMapInfo().mXGridSize * mEmptyCameraModel->mX,
+            mTab->GetModel().GetMapInfo().mYGridSize * mEmptyCameraModel->mY,
+            mTab->GetModel().GetMapInfo().mXGridSize,
+            mTab->GetModel().GetMapInfo().mYGridSize);
+
+        mGraphicsItemMapObjects = CollectMapObjectGraphicsItems(mCameraOriginal->GetCamera()->mMapObjects);
+    }
+
+    ~DeleteCameraCommand()
+    {
+        if (mAdded)
+        {
+            delete mEmptyCamera;
+        }
+        else
+        {
+            delete mCameraOriginal;
+
+            // Owned by the scene, not added so we own it
+            for (auto& item : mGraphicsItemMapObjects)
+            {
+                delete item;
+            }
+        }
     }
 
     void undo() override
     {
-        
+        // Remove "blank" graphics item
+        mTab->GetScene().removeItem(mEmptyCamera);
+        mEmptyCameraModel = mTab->GetModel().RemoveCamera(mEmptyCamera->GetCamera());
+
+        // Move empty camera map objects to original camera
+        mCameraOriginalModel->mMapObjects = std::move(mEmptyCameraModel->mMapObjects);
+
+        // Add back the original camera
+        mTab->GetModel().AddCamera(std::move(mCameraOriginalModel));
+        mTab->GetScene().addItem(mCameraOriginal);
+
+        // Add map objects back to the graphics scene
+        for (auto& item : mGraphicsItemMapObjects)
+        {
+            mTab->GetScene().addItem(item);
+        }
+
+        // Update camera manager UI if open
+        CameraManager* pMgr = mTab->GetCameraManagerDialog();
+        if (pMgr)
+        {
+            pMgr->OnCameraSwapped(mEmptyCamera->GetCamera(), mCameraOriginal->GetCamera());
+        }
+        mSelectionSaver.undo();
+
+        mAdded = true;
     }
 
     void redo() override
     {
-        mItem->SetImage(QPixmap());
+        // Remove original camera
+        mCameraOriginalModel = mTab->GetModel().RemoveCamera(mCameraOriginal->GetCamera());
+        mTab->GetScene().removeItem(mCameraOriginal);
 
-        mItem->GetCamera()->mName.clear();
+        // Move original map objects to blank camera
+        mEmptyCameraModel->mMapObjects = std::move(mCameraOriginalModel->mMapObjects);
+
+        // Remove map object graphics items
+        for (auto& item : mGraphicsItemMapObjects)
+        {
+            mTab->GetScene().removeItem(item);
+        }
+        // Add "blank" camera
+        mTab->GetScene().addItem(mEmptyCamera);
+        mTab->GetModel().AddCamera(std::move(mEmptyCameraModel));
+
+        // Update camera manager UI if open
+        CameraManager* pMgr = mTab->GetCameraManagerDialog();
+        if (pMgr)
+        {
+            pMgr->OnCameraSwapped(mCameraOriginal->GetCamera(), mEmptyCamera->GetCamera());
+        }
+
+        mSelectionSaver.redo();
+
+        mAdded = false;
     }
 
 private:
-    CameraGraphicsItem* mItem = nullptr;
+    QList<ResizeableRectItem*> CollectMapObjectGraphicsItems(std::vector<UP_MapObject>& modelMapObjects)
+    {
+        QList<ResizeableRectItem*> graphicsItemMapObjects;
+        QList<QGraphicsItem*> allItems = mTab->GetScene().items();
+        for (QGraphicsItem* item : allItems)
+        {
+            ResizeableRectItem* pCastedGraphicsItemMapObject = qgraphicsitem_cast<ResizeableRectItem*>(item);
+            if (pCastedGraphicsItemMapObject)
+            {
+                for (auto& mapModelObj : modelMapObjects)
+                {
+                    if (mapModelObj.get() == pCastedGraphicsItemMapObject->GetMapObject())
+                    {
+                        graphicsItemMapObjects.append(pCastedGraphicsItemMapObject);
+                        break;
+                    }
+                }
+            }
+        }
+        return graphicsItemMapObjects;
+    }
+
+    QList<ResizeableRectItem*> mGraphicsItemMapObjects;
+
+    SelectionSaver mSelectionSaver;
+    EditorTab* mTab = nullptr;
+    CameraGraphicsItem* mCameraOriginal = nullptr;
+    UP_Camera mCameraOriginalModel;
+
+    CameraGraphicsItem* mEmptyCamera = nullptr;
+    UP_Camera mEmptyCameraModel;
+
+    bool mAdded = false;
 };
 
 class CameraListItem final : public QListWidgetItem
@@ -162,6 +274,12 @@ public:
     const Camera* GetCamera() const
     {
         return mCamera;
+    }
+
+    void SetCamera(Camera* pNew)
+    {
+        mCamera = pNew;
+        SetLabel();
     }
 
     void SetLabel()
@@ -227,6 +345,20 @@ CameraManager::~CameraManager()
     delete ui;
 }
 
+void CameraManager::OnCameraSwapped(Camera* pOld, Camera* pNew)
+{
+    for (int i = 0; i < ui->lstCameras->count(); i++)
+    {
+        auto pItem = static_cast<CameraListItem*>(ui->lstCameras->item(i));
+        if (pItem->GetCamera() == pOld)
+        {
+            pItem->SetCamera(pNew);
+            CameraGraphicsItem* pCameraGraphicsItem = CameraGraphicsItemByModelPtr(pItem->GetCamera());
+            UpdateTabImages(pCameraGraphicsItem);
+        }
+    }
+}
+
 void CameraManager::on_btnSelectImage_clicked()
 {
     if (!ui->lstCameras->selectedItems().empty())
@@ -276,7 +408,7 @@ CameraGraphicsItem* CameraManager::CameraGraphicsItemByPos(const QPoint& pos)
         }
     }
     return pCameraGraphicsItem;
-}   
+}
 
 CameraGraphicsItem* CameraManager::CameraGraphicsItemByModelPtr(const Camera* cam)
 {
@@ -331,10 +463,13 @@ void CameraManager::on_btnDeleteCamera_clicked()
     if (!ui->lstCameras->selectedItems().isEmpty())
     {
         auto pItem = static_cast<CameraListItem*>(ui->lstCameras->selectedItems()[0]);
-        CameraGraphicsItem* pCameraGraphicsItem = CameraGraphicsItemByModelPtr(pItem->GetCamera());
+        if (!pItem->GetCamera()->mName.empty())
+        {
+            CameraGraphicsItem* pCameraGraphicsItem = CameraGraphicsItemByModelPtr(pItem->GetCamera());
+            mTab->AddCommand(new DeleteCameraCommand(mTab, pCameraGraphicsItem));
 
-        // todo
-        //mTab->AddCommand(new DeleteCameraCommand(pCameraGraphicsItem));
+            // TODO: This dialog must be updated if its open because we will have bad pointers to cameras now
+        }
     }
 }
 

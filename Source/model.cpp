@@ -134,6 +134,26 @@ UP_MapObject Model::TakeFromContainingCamera(MapObject* pMapObject)
     return nullptr;
 }
 
+UP_Camera Model::RemoveCamera(Camera* pCamera)
+{
+    for (auto it = mCameras.begin(); it != mCameras.end(); )
+    {
+        if ((*it).get() == pCamera)
+        {
+            auto ret = std::move(*it);
+            mCameras.erase(it);
+            return ret;
+        }
+        it++;
+    }
+    return nullptr;
+}
+
+void Model::AddCamera(UP_Camera pCamera)
+{
+    mCameras.push_back(std::move(pCamera));
+}
+
 void Model::SwapContainingCamera(MapObject* pMapObject, Camera* pTargetCamera)
 {
     pTargetCamera->mMapObjects.push_back(TakeFromContainingCamera(pMapObject));

@@ -284,6 +284,9 @@ public:
 
     UP_MapObject TakeFromContainingCamera(MapObject* pMapObject);
 
+    UP_Camera RemoveCamera(Camera* pCamera);
+    void AddCamera(UP_Camera pCamera);
+
     void SwapContainingCamera(MapObject* pMapObject, Camera* pTargetCamera);
 
     struct FoundType;
