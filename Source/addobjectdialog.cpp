@@ -5,6 +5,7 @@
 #include <QUndoCommand>
 #include <QGraphicsItem>
 #include "resizeablerectitem.hpp"
+#include "selectionsaver.hpp"
 
 class ObjectListItem final : public QListWidgetItem
 {
@@ -30,11 +31,10 @@ class AddNewObjectCommand : public QUndoCommand
 public:
     AddNewObjectCommand(EditorTab* pTab, const UP_ObjectStructure& objStructure)
         : mTab(pTab),
-        mObjStructure(objStructure)
+        mObjStructure(objStructure),
+        mSelectionSaver(pTab)
     {
         MakeNewObject();
-        
-        mOldSelection = mTab->GetScene().selectedItems();
 
         setText(QString("Add new object ") + objStructure->mName.c_str());
     }
@@ -68,14 +68,7 @@ public:
         mTab->GetScene().removeItem(mNewItem);
         mAdded = false;
 
-        // Select whatever was selected before we added this item
-        for (auto& item : mOldSelection)
-        {
-            item->setSelected(true);
-        }
-
-        mTab->GetScene().update();
-        mTab->SyncPropertyEditor();
+        mSelectionSaver.undo();
     }
 
     void redo() override
@@ -90,8 +83,7 @@ public:
         mTab->GetScene().clearSelection();
         mNewItem->setSelected(true);
 
-        mTab->GetScene().update();
-        mTab->SyncPropertyEditor();
+        mSelectionSaver.redo();
 
         mAdded = true;
     }
@@ -150,7 +142,7 @@ private:
         mNewItem = mTab->MakeResizeableRectItem(pNewMapObj);
     }
 
-    QList<QGraphicsItem*> mOldSelection;
+    SelectionSaver mSelectionSaver;
     Camera* mCamera = nullptr;
     bool mAdded = false;
     ResizeableRectItem* mNewItem = nullptr;

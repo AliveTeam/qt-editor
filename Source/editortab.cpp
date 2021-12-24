@@ -30,6 +30,7 @@
 #include "messageeditordialog.hpp"
 #include "pathdataeditordialog.hpp"
 #include "addobjectdialog.hpp"
+#include "selectionsaver.hpp"
 
 // Zoom by 10% each time.
 const float KZoomFactor = 0.10f;
@@ -251,7 +252,9 @@ public:
             {
                 const QPoint scenePos = mapToScene(pEvent->pos()).toPoint();
                 CameraManager cameraManager(this, mEditorTab, &scenePos);
+                mEditorTab->SetCameraManagerDialog(&cameraManager);
                 cameraManager.exec();
+                mEditorTab->SetCameraManagerDialog(nullptr);
             });
         menu.addAction(pAction);
         menu.exec(pEvent->globalPos());
@@ -324,7 +327,7 @@ EditorTab::EditorTab(QTabWidget* aParent, UP_Model model, QString jsonFileName, 
         for (int y = 0; y < mapInfo.mYSize; y++)
         {
             Camera* pCam = mModel->CameraAt(x, y);
-            auto pCameraGraphicsItem = new CameraGraphicsItem(pCam, mapInfo.mXGridSize * x, y *  mapInfo.mYGridSize, mapInfo.mXGridSize, mapInfo.mYGridSize);
+            auto pCameraGraphicsItem = MakeCameraGraphicsItem(pCam, mapInfo.mXGridSize * x, y *  mapInfo.mYGridSize, mapInfo.mXGridSize, mapInfo.mYGridSize);
             mScene->addItem(pCameraGraphicsItem);
 
             if (pCam)
@@ -374,6 +377,11 @@ ResizeableRectItem* EditorTab::MakeResizeableRectItem(MapObject* pMapObject)
 ResizeableArrowItem* EditorTab::MakeResizeableArrowItem(CollisionObject* pCollisionObject)
 {
     return new ResizeableArrowItem(ui->graphicsView, pCollisionObject, *static_cast<PropertyTreeWidget*>(ui->treeWidget));
+}
+
+CameraGraphicsItem* EditorTab::MakeCameraGraphicsItem(Camera* pCamera, int x, int y, int w, int h)
+{
+    return new CameraGraphicsItem(pCamera, x, y, w, h);
 }
 
 void EditorTab::SyncPropertyEditor()
@@ -615,11 +623,9 @@ class AddCollisionCommand final : public QUndoCommand
 {
 public:
     explicit AddCollisionCommand(EditorTab* pTab)
-        : mTab(pTab)
+        : mTab(pTab), mSelectionSaver(pTab)
     {
         MakeNewCollision();
-
-        mOldSelection = mTab->GetScene().selectedItems();
 
         setText("Add collision line");
     }
@@ -641,17 +647,7 @@ public:
 
         mAdded = false;
 
-        // TODO: Dup code
-
-        // Select whatever was selected before we added this item
-        for (auto& item : mOldSelection)
-        {
-            item->setSelected(true);
-        }
-
-        mTab->GetScene().update();
-        mTab->SyncPropertyEditor();
-
+        mSelectionSaver.undo();
     }
 
     void redo() override
@@ -663,10 +659,9 @@ public:
         mTab->GetScene().clearSelection();
         mArrowItem->setSelected(true);
 
-        mTab->GetScene().update();
-        mTab->SyncPropertyEditor();
-
         mAdded = true;
+
+        mSelectionSaver.redo();
     }
 
 private:
@@ -699,7 +694,7 @@ private:
         mArrowItem = mTab->MakeResizeableArrowItem(mNewObject.get());
     }
 
-    QList<QGraphicsItem*> mOldSelection;
+    SelectionSaver mSelectionSaver;
     bool mAdded = false;
     EditorTab* mTab = nullptr;
     UP_CollisionObject mNewObject;

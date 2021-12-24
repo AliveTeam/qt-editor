@@ -20,6 +20,8 @@ public:
     CameraManager(QWidget *parent, EditorTab* pParentTab, const QPoint* openedPos);
     ~CameraManager();
 
+    void OnCameraSwapped(Camera* pOld, Camera* pNew);
+
 private slots:
     void on_btnSelectImage_clicked();
 

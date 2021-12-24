@@ -19,8 +19,10 @@ namespace Ui
 class EditorGraphicsScene;
 class ResizeableArrowItem;
 class ResizeableRectItem;
+class CameraGraphicsItem;
 struct MapObject;
 class CollisionObject;
+class CameraManager;
 
 class EditorTab final : public QMainWindow
 {
@@ -69,6 +71,17 @@ public:
 
     ResizeableRectItem* MakeResizeableRectItem(MapObject* pMapObject);
     ResizeableArrowItem* MakeResizeableArrowItem(CollisionObject* pCollisionObject);
+    CameraGraphicsItem* MakeCameraGraphicsItem(Camera* pCamera, int x, int y, int w, int h);
+
+    CameraManager* GetCameraManagerDialog()
+    {
+        return mCameraManager;
+    }
+
+    void SetCameraManagerDialog(CameraManager* pDlg)
+    {
+        mCameraManager = pDlg;
+    }
 
     void SyncPropertyEditor();
 
@@ -92,4 +105,6 @@ private:
     QString mExportedPathLvlName;
     QTabWidget* mParent = nullptr;
     bool mIsTempFile = false;
+
+    CameraManager* mCameraManager = nullptr;
 };
