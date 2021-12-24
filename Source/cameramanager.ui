@@ -31,7 +31,7 @@
      <x>10</x>
      <y>10</y>
      <width>201</width>
-     <height>281</height>
+     <height>280</height>
     </rect>
    </property>
   </widget>
@@ -79,9 +79,12 @@
     <rect>
      <x>220</x>
      <y>10</y>
-     <width>661</width>
-     <height>291</height>
+     <width>641</width>
+     <height>281</height>
     </rect>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::NoFrame</enum>
    </property>
    <property name="currentIndex">
     <number>1</number>
@@ -110,8 +113,8 @@
       <rect>
        <x>0</x>
        <y>0</y>
-       <width>661</width>
-       <height>281</height>
+       <width>640</width>
+       <height>280</height>
       </rect>
      </property>
      <property name="currentIndex">
@@ -124,14 +127,14 @@
       <widget class="QLabel" name="lblMainImage">
        <property name="geometry">
         <rect>
-         <x>10</x>
+         <x>0</x>
          <y>10</y>
          <width>640</width>
          <height>240</height>
         </rect>
        </property>
        <property name="frameShape">
-        <enum>QFrame::Box</enum>
+        <enum>QFrame::NoFrame</enum>
        </property>
        <property name="text">
         <string/>
@@ -148,14 +151,14 @@
       <widget class="QLabel" name="lblFullMask">
        <property name="geometry">
         <rect>
-         <x>10</x>
+         <x>0</x>
          <y>10</y>
          <width>640</width>
          <height>240</height>
         </rect>
        </property>
        <property name="frameShape">
-        <enum>QFrame::Box</enum>
+        <enum>QFrame::NoFrame</enum>
        </property>
        <property name="text">
         <string/>
@@ -172,14 +175,14 @@
       <widget class="QLabel" name="lblHalfMask">
        <property name="geometry">
         <rect>
-         <x>10</x>
+         <x>0</x>
          <y>10</y>
          <width>640</width>
          <height>240</height>
         </rect>
        </property>
        <property name="frameShape">
-        <enum>QFrame::Box</enum>
+        <enum>QFrame::NoFrame</enum>
        </property>
        <property name="text">
         <string/>
@@ -196,14 +199,14 @@
       <widget class="QLabel" name="lblFullWellMask">
        <property name="geometry">
         <rect>
-         <x>10</x>
+         <x>0</x>
          <y>10</y>
          <width>640</width>
          <height>240</height>
         </rect>
        </property>
        <property name="frameShape">
-        <enum>QFrame::Box</enum>
+        <enum>QFrame::NoFrame</enum>
        </property>
        <property name="text">
         <string/>
@@ -220,14 +223,14 @@
       <widget class="QLabel" name="lblHalfWellMask">
        <property name="geometry">
         <rect>
-         <x>10</x>
+         <x>0</x>
          <y>10</y>
          <width>640</width>
          <height>240</height>
         </rect>
        </property>
        <property name="frameShape">
-        <enum>QFrame::Box</enum>
+        <enum>QFrame::NoFrame</enum>
        </property>
        <property name="text">
         <string/>
@@ -243,7 +246,7 @@
   <widget class="QSpinBox" name="spnCameraId">
    <property name="geometry">
     <rect>
-     <x>790</x>
+     <x>780</x>
      <y>300</y>
      <width>81</width>
      <height>22</height>
@@ -253,7 +256,7 @@
   <widget class="QPushButton" name="btnSetCameraId">
    <property name="geometry">
     <rect>
-     <x>680</x>
+     <x>670</x>
      <y>300</y>
      <width>101</width>
      <height>23</height>
