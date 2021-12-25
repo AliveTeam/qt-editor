@@ -132,7 +132,7 @@ public:
     DeleteCameraCommand(EditorTab* pTab, CameraGraphicsItem* pItem)
         : mSelectionSaver(pTab), mTab(pTab), mCameraOriginal(pItem)
     {
-        setText("Delete camera");
+        setText("Delete camera at " + QString::number(pItem->GetCamera()->mX) + "," + QString::number(pItem->GetCamera()->mY));
 
         mEmptyCameraModel = std::make_unique<Camera>();
         mEmptyCameraModel->mX = pItem->GetCamera()->mX;
@@ -429,7 +429,24 @@ CameraGraphicsItem* CameraManager::CameraGraphicsItemByModelPtr(const Camera* ca
 
 void CameraManager::on_btnDeleteImage_clicked()
 {
-    // todo
+    if (!ui->lstCameras->selectedItems().empty())
+    {
+        auto pItem = static_cast<CameraListItem*>(ui->lstCameras->selectedItems()[0]);
+        CameraGraphicsItem* pCameraGraphicsItem = CameraGraphicsItemByModelPtr(pItem->GetCamera());
+        if (!pItem->GetCamera()->mName.empty())
+        {
+            // Don't allow removing of the main camera image, because that makes no sense
+            if (ui->tabWidget->currentIndex() != 0)
+            {
+                mTab->AddCommand(new ChangeCameraImageCommand(pCameraGraphicsItem, QPixmap(), static_cast<TabImageIdx>(ui->tabWidget->currentIndex()), mTab));
+                UpdateTabImages(pCameraGraphicsItem);
+            }
+            else
+            {
+                on_btnDeleteCamera_clicked();
+            }
+        }
+    }
 }
 
 
