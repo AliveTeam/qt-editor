@@ -416,7 +416,7 @@ std::string Model::ToJson() const
     jsonxx::Array cameras;
     for (auto& camera : mCameras)
     {
-        if (!camera->mMapObjects.empty())
+        if (!camera->mMapObjects.empty() || !camera->mCameraImageandLayers.mCameraImage.empty())
         {
             jsonxx::Object camObj;
             camObj << "id" << camera->mId;

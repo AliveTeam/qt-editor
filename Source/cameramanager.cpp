@@ -30,6 +30,35 @@ static std::string PixmapToBase64PngString(QPixmap img)
     return bytes.toBase64().toStdString();
 }
 
+static std::string CameraNameFromId(Model& model, int camId)
+{
+    std::string lvl = model.GetMapInfo().mPathBnd.substr(0, 2);
+    std::string path = std::to_string(model.GetMapInfo().mPathId);
+    if (path.length() != 2)
+    {
+        path = "0" + path;
+    }
+
+    std::string strCamId = std::to_string(camId);
+    if (strCamId.length() != 2)
+    {
+        strCamId = "0" + strCamId;
+    }
+
+    return lvl + "P" + path + "C" + strCamId;
+}
+
+static int CamIdFromCamName(const std::string camName)
+{
+    if (camName.empty())
+    {
+        return -1;
+    }
+    std::string strCamId = camName.substr(6, 2);
+
+    return QString(strCamId.c_str()).toInt();
+}
+
 enum TabImageIdx
 {
     Main = 0,
@@ -37,6 +66,63 @@ enum TabImageIdx
     Background = 2,
     ForegroundWell = 3,
     BackgroundWell = 4,
+};
+
+class NewCameraCommand final : public QUndoCommand
+{
+public:
+    NewCameraCommand(CameraGraphicsItem* pCameraGraphicsItem, QPixmap newImage, EditorTab* pEditorTab, const std::string& newCamName, int newCamId)
+        : mItem(pCameraGraphicsItem), mCamImage(newImage), mTab(pEditorTab), mNewCamName(newCamName), mNewCamId(newCamId)
+    {
+        int pathIdShifted = mTab->GetModel().GetMapInfo().mPathId * 100;
+        mNewCamId += pathIdShifted;
+        QString posStr = QString::number(pCameraGraphicsItem->GetCamera()->mX) + "," + QString::number(pCameraGraphicsItem->GetCamera()->mY);
+
+        setText("Create new camera at " + posStr);
+    }
+    
+    void redo() override
+    {
+        mItem->GetCamera()->mId = mNewCamId;
+        mItem->GetCamera()->mName = mNewCamName;
+
+        mItem->SetImage(mCamImage);
+        mItem->GetCamera()->mCameraImageandLayers.mCameraImage = PixmapToBase64PngString(mCamImage);
+
+        mTab->GetScene().update();
+
+        // Update camera manager UI if open
+        CameraManager* pMgr = mTab->GetCameraManagerDialog();
+        if (pMgr)
+        {
+            pMgr->OnCameraIdChanged(mItem->GetCamera());
+        }
+    }
+
+    void undo() override
+    {
+        mItem->GetCamera()->mId = 0;
+        mItem->GetCamera()->mName.clear();
+
+        mItem->SetImage(QPixmap());
+        mItem->GetCamera()->mCameraImageandLayers.mCameraImage.clear();
+
+        mTab->GetScene().update();
+
+        // Update camera manager UI if open
+        CameraManager* pMgr = mTab->GetCameraManagerDialog();
+        if (pMgr)
+        {
+            pMgr->OnCameraIdChanged(mItem->GetCamera());
+        }
+    }
+
+private:
+    CameraGraphicsItem* mItem = nullptr;
+    QPixmap mCamImage;
+    EditorTab* mTab = nullptr;
+    std::string mNewCamName;
+    int mNewCamId = 0;
 };
 
 class ChangeCameraImageCommand final : public QUndoCommand
@@ -355,6 +441,20 @@ void CameraManager::OnCameraSwapped(Camera* pOld, Camera* pNew)
             pItem->SetCamera(pNew);
             CameraGraphicsItem* pCameraGraphicsItem = CameraGraphicsItemByModelPtr(pItem->GetCamera());
             UpdateTabImages(pCameraGraphicsItem);
+            break;
+        }
+    }
+}
+
+void CameraManager::OnCameraIdChanged(Camera* pCam)
+{
+    for (int i = 0; i < ui->lstCameras->count(); i++)
+    {
+        auto pItem = static_cast<CameraListItem*>(ui->lstCameras->item(i));
+        if (pItem->GetCamera() == pCam)
+        {
+            pItem->SetLabel();
+            break;
         }
     }
 }
@@ -365,30 +465,51 @@ void CameraManager::on_btnSelectImage_clicked()
     {
         auto pItem = static_cast<CameraListItem*>(ui->lstCameras->selectedItems()[0]);
         CameraGraphicsItem* pCameraGraphicsItem = CameraGraphicsItemByModelPtr(pItem->GetCamera());
-        if (!pItem->GetCamera()->mName.empty())
+
+        QString fileName = QFileDialog::getOpenFileName(this, tr("Open level"), "", tr("PNG image files (*.png);;"));
+        if (!fileName.isEmpty())
         {
-            QString fileName = QFileDialog::getOpenFileName(this, tr("Open level"), "", tr("PNG image files (*.png);;"));
-            if (!fileName.isEmpty())
+            QPixmap img(fileName);
+            if (img.isNull())
             {
-                QPixmap img(fileName);
+                QMessageBox::critical(this, "Error", "Failed to load image");
+                return;
+            }
+
+            if (img.width() != 640 || img.height() != 240)
+            {
+                img = img.scaled(640, 240);
                 if (img.isNull())
                 {
-                    QMessageBox::critical(this, "Error", "Failed to load image");
+                    QMessageBox::critical(this, "Error", "Failed to resize image");
+                    return;
+                }
+            }
+
+            if (!pItem->GetCamera()->mName.empty())
+            {
+                // Update image of existing camera
+                mTab->AddCommand(new ChangeCameraImageCommand(pCameraGraphicsItem, img, static_cast<TabImageIdx>(ui->tabWidget->currentIndex()), mTab));
+                UpdateTabImages(pCameraGraphicsItem);
+            }
+            else
+            {
+                // Create new camera
+                const int camId = NextFreeCamId();
+                if (camId == -1)
+                {
+                    QMessageBox::critical(this, "Error", "No more free camera Ids (only 0-99 is valid)");
                     return;
                 }
 
-                if (img.width() != 640 || img.height() != 240)
+                if (ui->tabWidget->currentIndex() != TabImageIdx::Main)
                 {
-                    img = img.scaled(640, 240);
-                    if (img.isNull())
-                    {
-                        QMessageBox::critical(this, "Error", "Failed to resize image");
-                        return;
-                    }
+                    QMessageBox::critical(this, "Error", "You need to set the main image first when creating a new camera");
+                    return;
                 }
 
-                mTab->AddCommand(new ChangeCameraImageCommand(pCameraGraphicsItem, img, static_cast<TabImageIdx>(ui->tabWidget->currentIndex()), mTab));
-
+                const std::string newCamName = CameraNameFromId(mTab->GetModel(), camId);
+                mTab->AddCommand(new NewCameraCommand(pCameraGraphicsItem, img, mTab, newCamName, camId));
                 UpdateTabImages(pCameraGraphicsItem);
             }
         }
@@ -449,10 +570,107 @@ void CameraManager::on_btnDeleteImage_clicked()
     }
 }
 
+class ChangeCameraIdCommand final : public QUndoCommand
+{
+public:
+    ChangeCameraIdCommand(EditorTab* pTab, CameraGraphicsItem* pItem, int oldId, int newId)
+        : mTab(pTab), mItem(pItem), mOldId(oldId), mNewId(newId)
+    {
+        setText("Change camera id from " + QString::number(oldId) + " to " + QString::number(newId));
+
+        const int pathIdShifted = mTab->GetModel().GetMapInfo().mPathId * 100;
+        mOldId += pathIdShifted;
+        mNewId += pathIdShifted;
+    }
+
+    void redo() override
+    {
+        mItem->GetCamera()->mId = mNewId;
+        int pathIdShifted = mTab->GetModel().GetMapInfo().mPathId * 100;
+        const int id = mNewId - pathIdShifted;
+        mItem->GetCamera()->mName = CameraNameFromId(mTab->GetModel(), id);
+        
+        mTab->GetScene().update();
+
+        // Update camera manager UI if open
+        CameraManager* pMgr = mTab->GetCameraManagerDialog();
+        if (pMgr)
+        {
+            pMgr->OnCameraIdChanged(mItem->GetCamera());
+        }
+    }
+
+    void undo() override
+    {
+        mItem->GetCamera()->mId = mOldId;
+        int pathIdShifted = mTab->GetModel().GetMapInfo().mPathId * 100;
+        const int id = mOldId - pathIdShifted;
+        mItem->GetCamera()->mName = CameraNameFromId(mTab->GetModel(), id);
+
+        mTab->GetScene().update();
+
+        // Update camera manager UI if open
+        CameraManager* pMgr = mTab->GetCameraManagerDialog();
+        if (pMgr)
+        {
+            pMgr->OnCameraIdChanged(mItem->GetCamera());
+        }
+    }
+
+private:
+    EditorTab* mTab = nullptr;
+    CameraGraphicsItem* mItem = nullptr;
+    int mOldId = 0;
+    int mNewId = 0;
+};
+
+int CameraManager::NextFreeCamId()
+{
+    for (int i = 0; i < 99; i++)
+    {
+        bool used = false;
+        for (int j = 0; j < ui->lstCameras->count(); j++)
+        {
+            auto pItem = static_cast<CameraListItem*>(ui->lstCameras->item(j));
+            if (CamIdFromCamName(pItem->GetCamera()->mName) == i)
+            {
+                used = true;
+                break;
+            }
+        }
+        if (!used)
+        {
+            return i;
+        }
+    }
+    return -1;
+}
 
 void CameraManager::on_btnSetCameraId_clicked()
 {
-    // todo
+    if (!ui->lstCameras->selectedItems().empty())
+    {
+        auto pItem = static_cast<CameraListItem*>(ui->lstCameras->selectedItems()[0]);
+        CameraGraphicsItem* pCameraGraphicsItem = CameraGraphicsItemByModelPtr(pItem->GetCamera());
+        if (!pItem->GetCamera()->mName.empty())
+        {
+            const int newCamId = ui->spnCameraId->value();
+            const int oldCamId = CamIdFromCamName(pItem->GetCamera()->mName);
+            if (oldCamId != newCamId)
+            {
+                for (int i = 0; i < ui->lstCameras->count(); i++)
+                {
+                    auto pItem = static_cast<CameraListItem*>(ui->lstCameras->item(i));
+                    if (CamIdFromCamName(pItem->GetCamera()->mName) == newCamId)
+                    {
+                        QMessageBox::warning(this, "Error", "Camera Id already in use");
+                        return;
+                    }
+                }
+                mTab->AddCommand(new ChangeCameraIdCommand(mTab, pCameraGraphicsItem, oldCamId, newCamId));
+            }
+        }
+    }
 }
 
 void CameraManager::SetTabImage(int idx, QPixmap img)
@@ -484,8 +702,6 @@ void CameraManager::on_btnDeleteCamera_clicked()
         {
             CameraGraphicsItem* pCameraGraphicsItem = CameraGraphicsItemByModelPtr(pItem->GetCamera());
             mTab->AddCommand(new DeleteCameraCommand(mTab, pCameraGraphicsItem));
-
-            // TODO: This dialog must be updated if its open because we will have bad pointers to cameras now
         }
     }
 }
