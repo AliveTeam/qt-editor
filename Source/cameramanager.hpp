@@ -21,6 +21,7 @@ public:
     ~CameraManager();
 
     void OnCameraSwapped(Camera* pOld, Camera* pNew);
+    void OnCameraIdChanged(Camera* pCam);
 
 private slots:
     void on_btnSelectImage_clicked();
@@ -37,6 +38,8 @@ private:
     void SetTabImage(int idx, QPixmap img);
 
     void UpdateTabImages(CameraGraphicsItem* pItem);
+    
+    int NextFreeCamId();
 
     CameraGraphicsItem* CameraGraphicsItemByPos(const QPoint& pos);
     CameraGraphicsItem* CameraGraphicsItemByModelPtr(const Camera* cam);
