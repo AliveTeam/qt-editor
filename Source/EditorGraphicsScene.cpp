@@ -4,6 +4,7 @@
 #include <QGraphicsSceneMouseEvent>
 #include "resizeablearrowitem.hpp"
 #include "resizeablerectitem.hpp"
+#include "CameraGraphicsItem.hpp"
 #include "editortab.hpp"
 #include "model.hpp"
 #include <QUndoCommand>
@@ -12,6 +13,55 @@ EditorGraphicsScene::EditorGraphicsScene(EditorTab* pTab)
     : mTab(pTab)
 {
     CreateBackgroundBrush();
+}
+
+QList<ResizeableRectItem*> EditorGraphicsScene::MapObjectsForCamera(CameraGraphicsItem* pCameraGraphicsItem)
+{
+    const auto& modelMapObjects = pCameraGraphicsItem->GetCamera()->mMapObjects;
+
+    QList<ResizeableRectItem*> graphicsItemMapObjects;
+    QList<QGraphicsItem*> allItems = items();
+    for (QGraphicsItem* item : allItems)
+    {
+        ResizeableRectItem* pCastedGraphicsItemMapObject = qgraphicsitem_cast<ResizeableRectItem*>(item);
+        if (pCastedGraphicsItemMapObject)
+        {
+            for (auto& mapModelObj : modelMapObjects)
+            {
+                if (mapModelObj.get() == pCastedGraphicsItemMapObject->GetMapObject())
+                {
+                    graphicsItemMapObjects.append(pCastedGraphicsItemMapObject);
+                    break;
+                }
+            }
+        }
+    }
+    return graphicsItemMapObjects;
+}
+
+void EditorGraphicsScene::UpdateSceneRect()
+{
+    const int kXMargin = 100;
+    const int kYMargin = 100;
+    const auto& mapInfo = mTab->GetModel().GetMapInfo();
+    setSceneRect(-kXMargin, -kYMargin, (mapInfo.mXSize * mapInfo.mXGridSize) + (kXMargin * 2), (mapInfo.mYSize * mapInfo.mYGridSize) + (kYMargin * 2));
+}
+
+CameraGraphicsItem* EditorGraphicsScene::CameraAt(int x, int y)
+{
+    QList<QGraphicsItem*> allItems = items();
+    for (QGraphicsItem* item : allItems)
+    {
+        CameraGraphicsItem* pCameraItem = qgraphicsitem_cast<CameraGraphicsItem*>(item);
+        if (pCameraItem)
+        {
+            if (pCameraItem->GetCamera()->mX == x && pCameraItem->GetCamera()->mY == y)
+            {
+                return pCameraItem;
+            }
+        }
+    }
+    return nullptr;
 }
 
 void EditorGraphicsScene::CreateBackgroundBrush()
