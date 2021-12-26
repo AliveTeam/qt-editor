@@ -18,13 +18,7 @@ public:
     ~ChangeMapSizeDialog();
 
 private slots:
-    void on_spnXSize_valueChanged(int arg1);
-
-    void on_spnYSize_textChanged(const QString &arg1);
-
     void on_buttonBox_accepted();
-
-    void on_buttonBox_rejected();
 
 private:
     Ui::ChangeMapSizeDialog *ui;

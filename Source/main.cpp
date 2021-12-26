@@ -2,8 +2,12 @@
 #include <QApplication>
 #include <QFile>
 
+void DoMapSizeTests();
+
 int main(int argc, char *argv[])
 {
+    DoMapSizeTests();
+
     QApplication a(argc, argv);
     EditorMainWindow w;
 

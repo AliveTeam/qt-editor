@@ -6,6 +6,7 @@
 
 class ResizeableArrowItem;
 class ResizeableRectItem;
+class CameraGraphicsItem;
 class Model;
 struct Camera;
 class EditorTab;
@@ -97,6 +98,13 @@ class EditorGraphicsScene final : public QGraphicsScene
     Q_OBJECT
 public:
     explicit EditorGraphicsScene(EditorTab* pTab);
+
+    QList<ResizeableRectItem*> MapObjectsForCamera(CameraGraphicsItem* pCameraGraphicsItem);
+
+    void UpdateSceneRect();
+
+    CameraGraphicsItem* CameraAt(int x, int y);
+
 signals:
     void SelectionChanged(QList<QGraphicsItem*> oldItems, QList<QGraphicsItem*> newItems);
     void ItemsMoved(ItemPositionData oldPositions, ItemPositionData newPositions);

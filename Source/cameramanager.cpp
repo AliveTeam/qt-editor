@@ -231,7 +231,7 @@ public:
             mTab->GetModel().GetMapInfo().mXGridSize,
             mTab->GetModel().GetMapInfo().mYGridSize);
 
-        mGraphicsItemMapObjects = CollectMapObjectGraphicsItems(mCameraOriginal->GetCamera()->mMapObjects);
+        mGraphicsItemMapObjects = mTab->GetScene().MapObjectsForCamera(mCameraOriginal);
     }
 
     ~DeleteCameraCommand()
@@ -313,27 +313,6 @@ public:
     }
 
 private:
-    QList<ResizeableRectItem*> CollectMapObjectGraphicsItems(std::vector<UP_MapObject>& modelMapObjects)
-    {
-        QList<ResizeableRectItem*> graphicsItemMapObjects;
-        QList<QGraphicsItem*> allItems = mTab->GetScene().items();
-        for (QGraphicsItem* item : allItems)
-        {
-            ResizeableRectItem* pCastedGraphicsItemMapObject = qgraphicsitem_cast<ResizeableRectItem*>(item);
-            if (pCastedGraphicsItemMapObject)
-            {
-                for (auto& mapModelObj : modelMapObjects)
-                {
-                    if (mapModelObj.get() == pCastedGraphicsItemMapObject->GetMapObject())
-                    {
-                        graphicsItemMapObjects.append(pCastedGraphicsItemMapObject);
-                        break;
-                    }
-                }
-            }
-        }
-        return graphicsItemMapObjects;
-    }
 
     QList<ResizeableRectItem*> mGraphicsItemMapObjects;
 

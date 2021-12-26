@@ -347,10 +347,7 @@ EditorTab::EditorTab(QTabWidget* aParent, UP_Model model, QString jsonFileName, 
         mScene->addItem(pLine);
     }
 
-    const int kXMargin = 100;
-    const int kYMargin = 100;
-    mScene->setSceneRect(-kXMargin, -kYMargin, (mapInfo.mXSize * mapInfo.mXGridSize) + (kXMargin * 2), (mapInfo.mYSize * mapInfo.mYGridSize) + (kYMargin * 2));
-
+    mScene->UpdateSceneRect();
 
     ui->graphicsView->setScene(mScene.get());
 
