@@ -84,12 +84,10 @@ QWidget* BasicTypeProperty::CreateEditorWidget(PropertyTreeWidget* pParent)
 
 void BasicTypeProperty::Refresh()
 {
+    setText(1, QString::number(mProperty->mBasicTypeValue));
+
     if (mSpinBox)
     {
         mSpinBox->setValue(mProperty->mBasicTypeValue, false);
-    }
-    else
-    {
-        setText(1, QString::number(mProperty->mBasicTypeValue));
     }
 }
