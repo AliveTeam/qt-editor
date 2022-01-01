@@ -59,7 +59,7 @@ void BigSpinBox::setValue( qint64 aValue, bool aEmitChangedSignal )
         updateLineEdit();
         if ( aEmitChangedSignal )
         {
-            emit valueChanged( mValue );
+            emit valueChanged( mValue, false );
         }
     }
 }
@@ -69,7 +69,7 @@ void BigSpinBox::OnEditComplete()
     if ( mOldValue != mValue )
     {
         mOldValue = mValue;
-        emit valueChanged( mValue );
+        emit valueChanged( mValue, true );
     }
 }
 
@@ -92,7 +92,7 @@ void BigSpinBox::stepBy( int aSteps )
         mValue = temp;
         mOldValue = mValue;
         updateLineEdit();
-        emit valueChanged( mValue );
+        emit valueChanged( mValue, false );
     }
 }
 
@@ -105,6 +105,13 @@ QValidator::State BigSpinBox::validate( QString& aInput, int& aPos ) const
 {
     bool ok = false;
     qint64 value = aInput.toLongLong( &ok );
+    if (!ok && aInput.isEmpty())
+    {
+        // Special case to allow deleting all of the spinbox input, when deleted we use a value of the min range
+        value = mMinRange;
+        ok = true;
+    }
+
     if ( ok )
     {
         if ( value > mMaxRange )

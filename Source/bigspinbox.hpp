@@ -14,7 +14,7 @@ public:
     qint64 value() const;
     void setValue( qint64 aValue, bool aEmitChangedSignal = true );
 signals:
-    void valueChanged( qint64 aValue ) const;
+    void valueChanged( qint64 aValue, bool closeEditor ) const;
 private slots:
     void OnEditComplete();
 protected:
