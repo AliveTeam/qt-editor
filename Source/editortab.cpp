@@ -130,17 +130,17 @@ public:
             else
             {
                 auto pNewRect = mNewPositions.FirstRectPos();
-                const bool posChange = pOldRect->x != pNewRect->x || pOldRect->y != pNewRect->y;
-                const bool rectChanged = pNewRect->rect != pOldRect->rect;
-                if (posChange && rectChanged)
+                const bool xOryChanged = pOldRect->rect.x() != pNewRect->rect.x() || pOldRect->rect.y() != pNewRect->rect.y();
+                const bool wOrhChanged = pOldRect->rect.width() != pNewRect->rect.width() || pOldRect->rect.height() != pNewRect->rect.height();
+                if (xOryChanged && wOrhChanged)
                 {
                     setText(QString("Move and resize map object"));
                 }
-                else if (posChange && !rectChanged)
+                else if (xOryChanged && !wOrhChanged)
                 {
                     setText(QString("Move map object"));
                 }
-                else
+                else // only wOrhChanged
                 {
                     setText(QString("Resize map object"));
                 }

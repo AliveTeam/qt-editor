@@ -16,14 +16,12 @@ class ItemPositionData final
 public:
     struct RectPos final
     {
-        qreal x = 0;
-        qreal y = 0;
         QRectF rect;
         Camera* containingCamera = nullptr;
 
         bool operator == (const RectPos& rhs) const
         {
-            return x == rhs.x && y == rhs.y && rect == rhs.rect && containingCamera == rhs.containingCamera;
+            return rect == rhs.rect && containingCamera == rhs.containingCamera;
         }
     };
 

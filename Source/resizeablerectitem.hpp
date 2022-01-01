@@ -7,19 +7,19 @@
 struct MapObject;
 class ISyncPropertiesToTree;
 
-class ResizeableRectItem final : public IGraphicsItem, public QGraphicsRectItem
+class ResizeableRectItem final : public IGraphicsItem, public QGraphicsItem
 {
 public:
     ResizeableRectItem(QGraphicsView* pView, MapObject* pMapObject, ISyncPropertiesToTree& propSyncer);
     enum { Type = UserType + 1 };
     int type() const override { return Type; }
-    QRectF SaveRect() const;
-    void RestoreRect(const QRectF& rect);
+    QRectF CurrentRect() const;
+    void SetRect(const QRectF& rect);
     MapObject* GetMapObject() const { return mMapObject; }
  
     void SyncInternalObject() override
     {
-        SyncToMapObject();
+        SyncFromMapObject();
     }
 
     std::vector<UP_ObjectProperty>& GetProperties() override
@@ -27,7 +27,7 @@ public:
         return mMapObject->mProperties;
     }
 
-protected:  // From QGraphicsItem
+private:  // From QGraphicsItem
     void mousePressEvent(QGraphicsSceneMouseEvent* aEvent) override;
     void mouseMoveEvent(QGraphicsSceneMouseEvent* aEvent) override;
     void mouseReleaseEvent(QGraphicsSceneMouseEvent* aEvent) override;
@@ -35,6 +35,7 @@ protected:  // From QGraphicsItem
     void hoverMoveEvent(QGraphicsSceneHoverEvent* aEvent) override;
     void hoverLeaveEvent(QGraphicsSceneHoverEvent* aEvent) override;
     QVariant itemChange(GraphicsItemChange aChange, const QVariant& aValue) override;
+    QRectF boundingRect() const override;
 private:
     enum eResize
     {
@@ -54,8 +55,29 @@ private:
     void onResize( QPointF aPos );
     void SetViewCursor(Qt::CursorShape cursor);
     qreal CalcZPos() const;
-    void SyncToMapObject();
+    void SyncFromMapObject();
     void PosOrRectChanged();
+    
+    void setWidth(int width)
+    {
+        if (mWidth != width)
+        {
+            prepareGeometryChange();
+            mWidth = width;
+        }
+    }
+
+    void setHeight(int height)
+    {
+        if (mHeight != height)
+        {
+            prepareGeometryChange();
+            mHeight = height;
+        }
+    }
+
+    void SyncToMapObject();
+
 private:
     eResize m_ResizeMode = eResize_None;
     static const quint32 kMinRectSize;
@@ -63,4 +85,6 @@ private:
     QGraphicsView* mView = nullptr;
     MapObject* mMapObject = nullptr;
     ISyncPropertiesToTree& mPropSyncer;
+    int mWidth = 0;
+    int mHeight = 0;
 };
