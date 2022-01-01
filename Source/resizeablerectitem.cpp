@@ -15,20 +15,20 @@
 
 const quint32 ResizeableRectItem::kMinRectSize = 10;
 
-
 ResizeableRectItem::ResizeableRectItem(QGraphicsView* pView, MapObject* pMapObject, ISyncPropertiesToTree& propSyncer)
-      : QGraphicsRectItem( pMapObject->XPos(), pMapObject->YPos(), pMapObject->Width(), pMapObject->Height(), nullptr ), mView(pView), mMapObject(pMapObject), mPropSyncer(propSyncer)
+      : mView(pView), mMapObject(pMapObject), mPropSyncer(propSyncer)
 {
+    SyncFromMapObject();
+
     Init();
     setZValue(3.0 + CalcZPos());
 }
 
+// TODO: Re-calc on new w/h
 qreal ResizeableRectItem::CalcZPos() const
 {
     // Why isn't area == 1 ?
-    QRectF ourRect = rect();
-
-    float area = ((float)ourRect.width() * (float)ourRect.height()) / 4294836225.0f;
+    float area = ((float)mWidth * (float)mHeight) / 4294836225.0f;
     float percentArea = area * 100.0f;
 
     qreal zpos = 999999.0f - (percentArea*1000.0f);
@@ -50,17 +50,17 @@ void ResizeableRectItem::mousePressEvent( QGraphicsSceneMouseEvent* aEvent )
             SetViewCursor( Qt::ClosedHandCursor );
         }
     }
-    QGraphicsRectItem::mousePressEvent( aEvent );
+    QGraphicsItem::mousePressEvent( aEvent );
 }
 
 void ResizeableRectItem::mouseMoveEvent( QGraphicsSceneMouseEvent* aEvent )
 {
     if ( m_ResizeMode != eResize_None )
     {
-        onResize( aEvent->pos() );
+        onResize( aEvent->scenePos() );
         return;
     }
-    QGraphicsRectItem::mouseMoveEvent( aEvent );
+    QGraphicsItem::mouseMoveEvent( aEvent );
 }
 
 void ResizeableRectItem::mouseReleaseEvent( QGraphicsSceneMouseEvent* aEvent )
@@ -69,24 +69,12 @@ void ResizeableRectItem::mouseReleaseEvent( QGraphicsSceneMouseEvent* aEvent )
     {
         m_ResizeMode = eResize_None;
     }
-    QGraphicsRectItem::mouseReleaseEvent( aEvent );
+    QGraphicsItem::mouseReleaseEvent( aEvent );
 }
 
-void ResizeableRectItem::paint( QPainter* aPainter, const QStyleOptionGraphicsItem* aOption, QWidget* aWidget /*= nullptr*/ )
+void ResizeableRectItem::paint( QPainter* aPainter, const QStyleOptionGraphicsItem* aOption, QWidget* aWidget)
 {
-    Q_UNUSED( aWidget );
-
-    //aPainter->setClipRect( aOption->exposedRect );
-
-    QRectF cRect = rect();
-    /*
-    cRect.setX( cRect.x() + 1 );
-    cRect.setY( cRect.y() + 1 );
-    cRect.setWidth( cRect.width() - 1 );
-    cRect.setHeight( cRect.height() - 1 );
-*/
-    // Draw the rect middle
-   // aPainter->fillRect( cRect, Qt::SolidPattern );
+    QRectF cRect(0, 0, mWidth, mHeight);
 
     if ( isSelected() )
     {
@@ -131,6 +119,12 @@ void ResizeableRectItem::paint( QPainter* aPainter, const QStyleOptionGraphicsIt
         }
         aPainter->drawText(cRect, Qt::AlignCenter | Qt::TextWrapAnywhere, objectName);
     }
+}
+
+QRectF ResizeableRectItem::boundingRect() const
+{
+    qreal penWidth = 2;
+    return QRectF(0 - penWidth / 2, 0 - penWidth / 2, mWidth + penWidth, mHeight + penWidth);
 }
 
 void ResizeableRectItem::hoverMoveEvent( QGraphicsSceneHoverEvent* aEvent )
@@ -191,25 +185,16 @@ void ResizeableRectItem::hoverLeaveEvent( QGraphicsSceneHoverEvent* aEvent )
 
 QVariant ResizeableRectItem::itemChange( GraphicsItemChange aChange, const QVariant& aValue )
 {
-    if (aChange == ItemPositionChange)
-    {
-        //QPointF newPos = aValue.toPointF();
-        // TODO: Change rect instead
-        //return QVariant();
-    }
     if ( aChange == ItemPositionHasChanged )
     {
         PosOrRectChanged();
     }
-    return QGraphicsRectItem::itemChange( aChange, aValue );
+    return QGraphicsItem::itemChange( aChange, aValue );
 }
 
 void ResizeableRectItem::Init()
 {
     m_ResizeMode = eResize_None;
-
-    // Must set pen width for bounding rect calcs
-    setPen( QPen( Qt::black, 2, Qt::SolidLine ) );
 
     setAcceptHoverEvents( true );
 
@@ -217,7 +202,7 @@ void ResizeableRectItem::Init()
     SetViewCursor( Qt::PointingHandCursor );
 
     // Allow select and move.
-    setFlags( ItemSendsScenePositionChanges |  ItemSendsGeometryChanges | ItemIsMovable | ItemIsSelectable );
+    setFlags( ItemSendsScenePositionChanges | ItemSendsGeometryChanges | ItemIsMovable | ItemIsSelectable );
 
     QString images_path = ":/object_images/rsc/object_images/";
     if ( !QPixmapCache::find(images_path + mMapObject->mObjectStructureType.c_str() + ".bmp", &m_Pixmap ) )
@@ -226,16 +211,8 @@ void ResizeableRectItem::Init()
         QPixmapCache::insert(images_path + mMapObject->mObjectStructureType.c_str() + ".bmp", m_Pixmap );
     }
     
-    if (m_Pixmap.isNull())
-    {
-        this->setOpacity(0.5);
-    }
-    else
-    {
-        this->setOpacity(0.7);
-    }
+    setOpacity(m_Pixmap.isNull() ? 0.5 : 0.7);
 }
-
 
 ResizeableRectItem::eResize ResizeableRectItem::getResizeLocation( QPointF aPos, QRectF aRect )
 {
@@ -243,10 +220,10 @@ ResizeableRectItem::eResize ResizeableRectItem::getResizeLocation( QPointF aPos,
     const auto y = aPos.y();
     const auto& bRect = aRect;
 
-    bool xPosNearRectX = IsNear( x, bRect.x() );
-    bool yPosNearRectY = IsNear( y, bRect.y() );
-    bool xPosNearRectW = IsNear( x, bRect.x() + bRect.width() );
-    bool yPosNearRectH = IsNear( y, bRect.y() + bRect.height() );
+    const bool xPosNearRectX = IsNear( x, bRect.x() );
+    const bool yPosNearRectY = IsNear( y, bRect.y() );
+    const bool xPosNearRectW = IsNear( x, bRect.x() + bRect.width() );
+    const bool yPosNearRectH = IsNear( y, bRect.y() + bRect.height() );
 
     // Top right corner
     if ( xPosNearRectW && yPosNearRectY )
@@ -302,7 +279,7 @@ ResizeableRectItem::eResize ResizeableRectItem::getResizeLocation( QPointF aPos,
 bool ResizeableRectItem::IsNear( qreal xP1, qreal xP2 )
 {
     qreal tolerance = 8; // aka epsilon
-    if ( rect().width() <= kMinRectSize || rect().height() <= kMinRectSize )
+    if ( mWidth <= kMinRectSize || mHeight <= kMinRectSize )
     {
         tolerance = 1;
     }
@@ -315,7 +292,7 @@ bool ResizeableRectItem::IsNear( qreal xP1, qreal xP2 )
 
 void ResizeableRectItem::onResize( QPointF aPos )
 {
-    QRectF curRect = rect();
+    QRectF curRect = CurrentRect();
     const bool isLeft = ( m_ResizeMode == eResize_Left )     || ( m_ResizeMode == eResize_TopLeftCorner )    || ( m_ResizeMode == eResize_BottomLeftCorner );
     const bool isRight = ( m_ResizeMode == eResize_Right )   || ( m_ResizeMode == eResize_TopRightCorner )   || ( m_ResizeMode == eResize_BottomRightCorner );
     const bool isTop = ( m_ResizeMode == eResize_Top )       || ( m_ResizeMode == eResize_TopLeftCorner )    || ( m_ResizeMode == eResize_TopRightCorner );
@@ -359,9 +336,7 @@ void ResizeableRectItem::onResize( QPointF aPos )
         curRect.setHeight( newHeight );
     }
 
-    prepareGeometryChange();
-    setRect( curRect );
-    PosOrRectChanged();
+    SetRect( curRect );
 }
 
 void ResizeableRectItem::SetViewCursor(Qt::CursorShape cursor)
@@ -369,32 +344,39 @@ void ResizeableRectItem::SetViewCursor(Qt::CursorShape cursor)
     mView->setCursor(cursor);
 }
 
-QRectF ResizeableRectItem::SaveRect() const
+QRectF ResizeableRectItem::CurrentRect() const
 {
-    return rect();
+    return QRectF(x(), y(), mWidth, mHeight);
 }
 
-void ResizeableRectItem::RestoreRect(const QRectF& rect)
+void ResizeableRectItem::SetRect(const QRectF& rect)
 {
-    prepareGeometryChange();
-    setRect(rect);
+    setX(rect.x());
+    setWidth(rect.width());
+    setY(rect.y());
+    setHeight(rect.height());
     PosOrRectChanged();
+}
+
+void ResizeableRectItem::SyncFromMapObject()
+{
+    setX(mMapObject->XPos());
+    setY(mMapObject->YPos());
+    setWidth(mMapObject->Width());
+    setHeight(mMapObject->Height());
 }
 
 void ResizeableRectItem::SyncToMapObject()
 {
-    setRect(mMapObject->XPos(), mMapObject->YPos(), mMapObject->Width(), mMapObject->Height());
+    mMapObject->SetXPos(static_cast<int>(pos().x()));
+    mMapObject->SetYPos(static_cast<int>(pos().y()));
+    mMapObject->SetWidth(mWidth);
+    mMapObject->SetHeight(mHeight);
 }
 
 void ResizeableRectItem::PosOrRectChanged()
 {
-    QRectF curRect = rect();
-
-    // Sync the model to the graphics item
-    mMapObject->SetXPos(static_cast<int>(pos().x() + curRect.x()));
-    mMapObject->SetYPos(static_cast<int>(pos().y() + curRect.y()));
-    mMapObject->SetWidth(static_cast<int>(curRect.width()));
-    mMapObject->SetHeight(static_cast<int>(curRect.height()));
+    SyncToMapObject();
 
     // Update the property tree view
     mPropSyncer.Sync(this);

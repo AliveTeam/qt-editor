@@ -325,10 +325,7 @@ void ItemPositionData::Restore(Model& model)
 {
     for (auto& [rect, pos] : mRects)
     {
-        rect->RestoreRect(pos.rect);
-        rect->setX(pos.x);
-        rect->setY(pos.y);
-
+        rect->SetRect(pos.rect);
         model.SwapContainingCamera(rect->GetMapObject(), pos.containingCamera);
     }
 
@@ -347,9 +344,7 @@ void ItemPositionData::AddRect(ResizeableRectItem* pItem, Model& model, bool rec
 
     if (recalculateParentCamera)
     {
-        QPoint mid = pItem->rect().center().toPoint();
-
-        QPoint midPoint(pItem->x() + mid.x(), pItem->y() + mid.y());
+        QPoint midPoint = pItem->CurrentRect().center().toPoint();
 
         int camX = midPoint.x() / model.GetMapInfo().mXGridSize;
         if (camX < 0)
@@ -382,7 +377,7 @@ void ItemPositionData::AddRect(ResizeableRectItem* pItem, Model& model, bool rec
         pContainingCamera = model.GetContainingCamera(pMapObject);
     }
 
-    mRects[pItem] = { pItem->x(), pItem->y(), pItem->SaveRect(), pContainingCamera };
+    mRects[pItem] = { pItem->CurrentRect(), pContainingCamera };
 }
 
 void ItemPositionData::AddLine(ResizeableArrowItem* pItem)
