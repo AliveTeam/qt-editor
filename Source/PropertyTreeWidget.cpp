@@ -78,6 +78,16 @@ void PropertyTreeWidget::Init()
 
     setRootIsDecorated(false);
 
+    connect(this, &QTreeWidget::itemClicked, this, [&](QTreeWidgetItem* current, int col)
+        {
+            if (current && col == 1)
+            {
+                if (!itemWidget(current, 1))
+                {
+                    setItemWidget(current, 1, static_cast<PropertyTreeItemBase*>(current)->CreateEditorWidget(this));
+                }
+            }
+        });
     connect(this, &QTreeWidget::currentItemChanged, this, [&](QTreeWidgetItem* current, QTreeWidgetItem* prev)
         {
             if (prev)

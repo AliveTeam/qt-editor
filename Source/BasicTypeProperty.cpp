@@ -63,7 +63,7 @@ QWidget* BasicTypeProperty::CreateEditorWidget(PropertyTreeWidget* pParent)
 
     mOldValue = mProperty->mBasicTypeValue;
 
-    connect(mSpinBox, &BigSpinBox::valueChanged, this, [pParent, this](qint64 newValue)
+    connect(mSpinBox, &BigSpinBox::valueChanged, this, [pParent, this](qint64 newValue, bool closeEditor)
         {
             if (mOldValue != newValue)
             {
@@ -72,6 +72,11 @@ QWidget* BasicTypeProperty::CreateEditorWidget(PropertyTreeWidget* pParent)
                     BasicTypePropertyChangeData(this->mBasicType, this->mOldValue, newValue)));
             }
             mOldValue = newValue;
+
+            if (closeEditor)
+            {
+                pParent->setItemWidget(this, 1, nullptr);
+            }
         });
 
     connect(mSpinBox, &BigSpinBox::destroyed, this, [this](QObject*)
