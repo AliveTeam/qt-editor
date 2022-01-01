@@ -525,3 +525,12 @@ void EditorMainWindow::on_actionAdd_collision_triggered()
     }
 }
 
+
+void EditorMainWindow::on_action_close_path_triggered()
+{
+    const int idx = m_ui->tabWidget->currentIndex();
+    if (idx != -1)
+    {
+        onCloseTab(idx);
+    }
+}
