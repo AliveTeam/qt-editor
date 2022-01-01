@@ -57,6 +57,8 @@ private slots:
 
     void on_actionAdd_collision_triggered();
 
+    void on_action_close_path_triggered();
+
 private:
     bool onOpenPath(QString fileName, bool createNewPath);
     void UpdateWindowTitle();
