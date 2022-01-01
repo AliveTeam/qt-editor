@@ -352,9 +352,9 @@ void ItemPositionData::AddRect(ResizeableRectItem* pItem, Model& model, bool rec
             camX = 0;
         }
 
-        if (camX > model.GetMapInfo().mXSize)
+        if (camX >= model.GetMapInfo().mXSize)
         {
-            camX = model.GetMapInfo().mXSize;
+            camX = model.GetMapInfo().mXSize - 1;
         }
 
         int camY = midPoint.y() / model.GetMapInfo().mYGridSize;
@@ -363,9 +363,9 @@ void ItemPositionData::AddRect(ResizeableRectItem* pItem, Model& model, bool rec
             camY = 0;
         }
 
-        if (camY > model.GetMapInfo().mYSize)
+        if (camY >= model.GetMapInfo().mYSize)
         {
-            camY = model.GetMapInfo().mYSize;
+            camY = model.GetMapInfo().mYSize - 1;
         }
 
         pContainingCamera = model.CameraAt(camX, camY);
