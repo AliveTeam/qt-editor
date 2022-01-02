@@ -32,6 +32,10 @@
 #include "addobjectdialog.hpp"
 #include "selectionsaver.hpp"
 #include "transparencydialog.hpp"
+#include "progressdialog.hpp"
+#include <QFutureWatcher>
+#include <QFuture>
+#include <QtConcurrent/QtConcurrent>
 
 // Zoom by 10% each time.
 const float KZoomFactor = 0.10f;
@@ -540,14 +544,39 @@ bool EditorTab::SaveAs()
     return true;
 }
 
+template<class ResultType>
+static ResultType ExecASync(QString dialogTitle, std::function<ResultType()> fnDoWork)
+{
+    auto dlg = new ProgressDialog();
+    dlg->setWindowFlags(Qt::Window | Qt::WindowTitleHint | Qt::CustomizeWindowHint);
+    dlg->setWindowTitle(dialogTitle);
+
+    QFutureWatcher<ResultType>* watcher = new QFutureWatcher<ResultType>();
+    QObject::connect(watcher, &QFutureWatcher<ResultType>::finished, [&]() { dlg->close(); });
+    QFuture<ResultType> f = QtConcurrent::run(fnDoWork);
+
+    watcher->setFuture(f);
+
+    dlg->exec();
+
+    return f.result();
+}
+
 bool EditorTab::DoSave(QString fileName)
 {
-    std::string json = mModel->ToJson();
-    QFile f(fileName);
-    if (f.open(QIODevice::WriteOnly))
+    if (ExecASync<bool>("Saving... " + fileName, [&]()
+        {
+            std::string json = mModel->ToJson();
+            QFile f(fileName);
+            if (f.open(QIODevice::WriteOnly))
+            {
+                QTextStream stream(&f);
+                stream << json.c_str();
+                return true;
+            }
+            return false;
+        }))
     {
-        QTextStream stream(&f);
-        stream << json.c_str();
         mUndoStack.setClean();
         return true;
     }
