@@ -22,6 +22,25 @@ AboutDialog::AboutDialog(QWidget *parent) :
     this->setMinimumSize( this->size() );
 
     setWindowTitle(windowTitle() + QString::fromStdString(" (Relive API v" + std::to_string(ReliveAPI::GetApiVersion()) + ")"));
+
+    QTimer* timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()), this, SLOT(DoText()));
+    timer->start(40);
+
+    mScrollText = "                                                                                                                                                                                                 Thanks and greetz to all the supporters of the relive project. It might have taken 10 years but we are BACK ;)";
+
+    this->width();
+
+
+}
+
+void AboutDialog::DoText()
+{
+    char first = mScrollText[0];
+    mScrollText = mScrollText.substr(1);
+    mScrollText.append(1, first);
+
+    ui->txtScroller->setText(mScrollText.c_str());
 }
 
 AboutDialog::~AboutDialog()
