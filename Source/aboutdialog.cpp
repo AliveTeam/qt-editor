@@ -29,9 +29,6 @@ AboutDialog::AboutDialog(QWidget *parent) :
 
     mScrollText = "                                                                                                                                                                                                 Thanks and greetz to all the supporters of the relive project. It might have taken 10 years but we are BACK ;)";
 
-    this->width();
-
-
 }
 
 void AboutDialog::DoText()
