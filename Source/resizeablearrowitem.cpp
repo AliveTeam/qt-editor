@@ -7,11 +7,12 @@
 #include "model.hpp"
 #include "PropertyTreeWidget.hpp"
 
-ResizeableArrowItem::ResizeableArrowItem(QGraphicsView* pView, CollisionObject* pLine, ISyncPropertiesToTree& propSyncer)
+ResizeableArrowItem::ResizeableArrowItem(QGraphicsView* pView, CollisionObject* pLine, ISyncPropertiesToTree& propSyncer, int transparency)
     : QGraphicsLineItem(pLine->X1(), pLine->Y1(), pLine->X2(), pLine->Y2()), mView(pView), mLine(pLine), mPropSyncer(propSyncer)
 {
     Init();
     setZValue(2.0);
+    SetTransparency(this, transparency);
 }
 
 void ResizeableArrowItem::hoverLeaveEvent( QGraphicsSceneHoverEvent* aEvent )

@@ -59,6 +59,10 @@ private slots:
 
     void on_action_close_path_triggered();
 
+    void on_actionItem_transparency_triggered();
+
+    void on_action_toggle_show_grid_triggered();
+
 private:
     bool onOpenPath(QString fileName, bool createNewPath);
     void UpdateWindowTitle();

@@ -8,7 +8,7 @@ struct Camera;
 class CameraGraphicsItem final : public QGraphicsRectItem
 {
 public:
-    CameraGraphicsItem(Camera* pCamera, int xpos, int ypos, int width, int height);
+    CameraGraphicsItem(Camera* pCamera, int xpos, int ypos, int width, int height, int transparency);
     void paint(QPainter* aPainter, const QStyleOptionGraphicsItem* aOption, QWidget* aWidget) override;
 
     const Camera* GetCamera() const

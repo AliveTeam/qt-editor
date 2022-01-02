@@ -12,7 +12,7 @@
 EditorGraphicsScene::EditorGraphicsScene(EditorTab* pTab)
     : mTab(pTab)
 {
-    CreateBackgroundBrush();
+    ToggleGrid();
 }
 
 QList<ResizeableRectItem*> EditorGraphicsScene::MapObjectsForCamera(CameraGraphicsItem* pCameraGraphicsItem)
@@ -64,6 +64,40 @@ CameraGraphicsItem* EditorGraphicsScene::CameraAt(int x, int y)
     return nullptr;
 }
 
+TransparencySettings& EditorGraphicsScene::GetTransparencySettings()
+{
+    return mTransparencySettings;
+}
+
+void EditorGraphicsScene::SyncTransparencySettings()
+{
+    QList<QGraphicsItem*> objs = items();
+    for (auto& obj : objs)
+    {
+        auto pCameraGraphicsItem = qgraphicsitem_cast<CameraGraphicsItem*>(obj);
+        if (pCameraGraphicsItem)
+        {
+            IGraphicsItem::SetTransparency(pCameraGraphicsItem, mTransparencySettings.CameraTransparency());
+        }
+        else
+        {
+            auto pResizeableArrowItem = qgraphicsitem_cast<ResizeableArrowItem*>(obj);
+            if (pResizeableArrowItem)
+            {
+                pResizeableArrowItem->SetTransparency(pResizeableArrowItem, mTransparencySettings.CollisionTransparency());
+            }
+            else
+            {
+                auto pResizeableRectItem = qgraphicsitem_cast<ResizeableRectItem*>(obj);
+                if (pResizeableRectItem)
+                {
+                    pResizeableRectItem->SetTransparency(pResizeableRectItem, mTransparencySettings.MapObjectTransparency());
+                }
+            }
+        }
+    }
+}
+
 void EditorGraphicsScene::CreateBackgroundBrush()
 {
     int gridSizeX = 25;
@@ -98,6 +132,20 @@ void EditorGraphicsScene::CreateBackgroundBrush()
     // the overriding drawBackground() method.
     QBrush brushBackground(singleGrid);
     setBackgroundBrush(brushBackground);
+}
+
+void EditorGraphicsScene::ToggleGrid()
+{
+    mGridEnabled = !mGridEnabled;
+    if (mGridEnabled)
+    {
+        CreateBackgroundBrush();
+    }
+    else
+    {
+        QBrush b;
+        setBackgroundBrush(b);
+    }
 }
 
 void EditorGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent* pEvent)
