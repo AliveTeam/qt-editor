@@ -44,6 +44,9 @@ export(TARGETS jsonxx FILE jsonxx.cmake)
 set_property(TARGET jsonxx PROPERTY FOLDER "3rdParty")
 
 set(PROJECT_SOURCES
+        Source/transparencydialog.hpp
+        Source/transparencydialog.cpp
+        Source/transparencydialog.ui
         Source/selectionsaver.hpp
         Source/addobjectdialog.hpp
         Source/addobjectdialog.cpp

@@ -12,6 +12,7 @@
 #include "pathselectiondialog.hpp"
 #include "exportpathdialog.hpp"
 #include "relive_api.hpp"
+#include "EditorGraphicsScene.hpp"
 
 EditorMainWindow::EditorMainWindow(QWidget* aParent)
     : QMainWindow(aParent),
@@ -64,9 +65,7 @@ EditorMainWindow::EditorMainWindow(QWidget* aParent)
     m_ui->toolBar->setContextMenuPolicy(Qt::PreventContextMenu);
 
     // Not implemented so remove for now
-
     delete m_ui->menuSnapping;
-    delete m_ui->menuOptions;
 }
 
 EditorMainWindow::~EditorMainWindow()
@@ -534,3 +533,23 @@ void EditorMainWindow::on_action_close_path_triggered()
         onCloseTab(idx);
     }
 }
+
+void EditorMainWindow::on_actionItem_transparency_triggered()
+{
+    EditorTab* pTab = getActiveTab(m_ui->tabWidget);
+    if (pTab)
+    {
+        pTab->EditTransparency();
+    }
+}
+
+
+void EditorMainWindow::on_action_toggle_show_grid_triggered()
+{
+    EditorTab* pTab = getActiveTab(m_ui->tabWidget);
+    if (pTab)
+    {
+        pTab->GetScene().ToggleGrid();
+    }
+}
+

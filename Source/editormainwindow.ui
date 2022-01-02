@@ -122,6 +122,7 @@
     </property>
     <addaction name="action_toggle_show_grid"/>
     <addaction name="action_toggle_bring_selection_to_front"/>
+    <addaction name="actionItem_transparency"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -295,7 +296,7 @@
     <bool>false</bool>
    </property>
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="icon">
     <iconset>
@@ -305,7 +306,7 @@
     <string>Toggle grid</string>
    </property>
    <property name="visible">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="iconVisibleInMenu">
     <bool>true</bool>
@@ -644,18 +645,6 @@
     <bool>true</bool>
    </property>
   </action>
-  <action name="action_setup_grid_lines">
-   <property name="icon">
-    <iconset>
-     <normaloff>:/images/grid.png</normaloff>:/images/grid.png</iconset>
-   </property>
-   <property name="text">
-    <string>Setup grid lines</string>
-   </property>
-   <property name="iconVisibleInMenu">
-    <bool>true</bool>
-   </property>
-  </action>
   <action name="action_set_transparency_levels">
    <property name="icon">
     <iconset>
@@ -840,6 +829,11 @@
   <action name="actionAdd_collision">
    <property name="text">
     <string>Add collision</string>
+   </property>
+  </action>
+  <action name="actionItem_transparency">
+   <property name="text">
+    <string>Item transparency</string>
    </property>
   </action>
  </widget>

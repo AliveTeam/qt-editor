@@ -10,7 +10,7 @@ class ISyncPropertiesToTree;
 class ResizeableRectItem final : public IGraphicsItem, public QGraphicsItem
 {
 public:
-    ResizeableRectItem(QGraphicsView* pView, MapObject* pMapObject, ISyncPropertiesToTree& propSyncer);
+    ResizeableRectItem(QGraphicsView* pView, MapObject* pMapObject, ISyncPropertiesToTree& propSyncer, int transparency);
     enum { Type = UserType + 1 };
     int type() const override { return Type; }
     QRectF CurrentRect() const;

@@ -85,6 +85,8 @@ public:
 
     void SyncPropertyEditor();
 
+    void EditTransparency();
+
 signals:
     void CleanChanged();
 

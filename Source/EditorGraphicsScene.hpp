@@ -91,6 +91,45 @@ private:
     std::map<ResizeableArrowItem*, LinePos> mLines;
 };
 
+class TransparencySettings final
+{
+public:
+    int CameraTransparency() const
+    {
+        return mCameraTransparency;
+    }
+
+    int CollisionTransparency() const
+    {
+        return mCollisionTransparency;
+    }
+
+    int MapObjectTransparency() const
+    {
+        return mMapObjectTransparency;
+    }
+
+    void SetCameraTransparency(int value)
+    {
+        mCameraTransparency = value;
+    }
+
+    void SetCollisionTransparency(int value)
+    {
+        mCollisionTransparency = value;
+    }
+
+    void SetMapObjectTransparency(int value)
+    {
+        mMapObjectTransparency = value;
+    }
+
+private:
+    int mCameraTransparency = 70;
+    int mCollisionTransparency = 90;
+    int mMapObjectTransparency = 60;
+};
+
 class EditorGraphicsScene final : public QGraphicsScene
 {
     Q_OBJECT
@@ -103,6 +142,11 @@ public:
 
     CameraGraphicsItem* CameraAt(int x, int y);
 
+    TransparencySettings& GetTransparencySettings();
+
+    void SyncTransparencySettings();
+    void ToggleGrid();
+
 signals:
     void SelectionChanged(QList<QGraphicsItem*> oldItems, QList<QGraphicsItem*> newItems);
     void ItemsMoved(ItemPositionData oldPositions, ItemPositionData newPositions);
@@ -114,9 +158,12 @@ private:
     void keyPressEvent(QKeyEvent* keyEvent) override;
 
     void CreateBackgroundBrush();
+
 private:
     EditorTab* mTab = nullptr;
     QList<QGraphicsItem*> mOldSelection;
     ItemPositionData mOldPositions;
     bool mLeftButtonDown = false;
+    TransparencySettings mTransparencySettings;
+    bool mGridEnabled = false;
 };

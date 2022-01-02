@@ -10,7 +10,7 @@ class ISyncPropertiesToTree;
 class ResizeableArrowItem final : public IGraphicsItem, public QGraphicsLineItem
 {
 public:
-    ResizeableArrowItem(QGraphicsView* pView, CollisionObject* pLine, ISyncPropertiesToTree& propSyncer);
+    ResizeableArrowItem(QGraphicsView* pView, CollisionObject* pLine, ISyncPropertiesToTree& propSyncer, int transparency);
     enum { Type = UserType + 2 };
     int type() const override { return Type; }
     QLineF SaveLine() const;

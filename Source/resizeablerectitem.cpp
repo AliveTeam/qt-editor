@@ -15,13 +15,15 @@
 
 const quint32 ResizeableRectItem::kMinRectSize = 10;
 
-ResizeableRectItem::ResizeableRectItem(QGraphicsView* pView, MapObject* pMapObject, ISyncPropertiesToTree& propSyncer)
+ResizeableRectItem::ResizeableRectItem(QGraphicsView* pView, MapObject* pMapObject, ISyncPropertiesToTree& propSyncer, int transparency)
       : mView(pView), mMapObject(pMapObject), mPropSyncer(propSyncer)
 {
     SyncFromMapObject();
 
     Init();
     setZValue(3.0 + CalcZPos());
+
+    SetTransparency(this, transparency);
 }
 
 // TODO: Re-calc on new w/h
@@ -210,8 +212,6 @@ void ResizeableRectItem::Init()
         m_Pixmap = QPixmap(images_path + mMapObject->mObjectStructureType.c_str() + ".bmp");
         QPixmapCache::insert(images_path + mMapObject->mObjectStructureType.c_str() + ".bmp", m_Pixmap );
     }
-    
-    setOpacity(m_Pixmap.isNull() ? 0.5 : 0.7);
 }
 
 ResizeableRectItem::eResize ResizeableRectItem::getResizeLocation( QPointF aPos, QRectF aRect )

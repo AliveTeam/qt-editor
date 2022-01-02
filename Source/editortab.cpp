@@ -31,6 +31,7 @@
 #include "pathdataeditordialog.hpp"
 #include "addobjectdialog.hpp"
 #include "selectionsaver.hpp"
+#include "transparencydialog.hpp"
 
 // Zoom by 10% each time.
 const float KZoomFactor = 0.10f;
@@ -368,17 +369,17 @@ EditorTab::EditorTab(QTabWidget* aParent, UP_Model model, QString jsonFileName, 
 
 ResizeableRectItem* EditorTab::MakeResizeableRectItem(MapObject* pMapObject)
 {
-    return new ResizeableRectItem(ui->graphicsView, pMapObject, *static_cast<PropertyTreeWidget*>(ui->treeWidget));
+    return new ResizeableRectItem(ui->graphicsView, pMapObject, *static_cast<PropertyTreeWidget*>(ui->treeWidget), mScene->GetTransparencySettings().MapObjectTransparency());
 }
 
 ResizeableArrowItem* EditorTab::MakeResizeableArrowItem(CollisionObject* pCollisionObject)
 {
-    return new ResizeableArrowItem(ui->graphicsView, pCollisionObject, *static_cast<PropertyTreeWidget*>(ui->treeWidget));
+    return new ResizeableArrowItem(ui->graphicsView, pCollisionObject, *static_cast<PropertyTreeWidget*>(ui->treeWidget), mScene->GetTransparencySettings().CollisionTransparency());
 }
 
 CameraGraphicsItem* EditorTab::MakeCameraGraphicsItem(Camera* pCamera, int x, int y, int w, int h)
 {
-    return new CameraGraphicsItem(pCamera, x, y, w, h);
+    return new CameraGraphicsItem(pCamera, x, y, w, h, mScene->GetTransparencySettings().CameraTransparency());
 }
 
 void EditorTab::SyncPropertyEditor()
@@ -392,6 +393,12 @@ void EditorTab::SyncPropertyEditor()
     {
         ClearPropertyEditor();
     }
+}
+
+void EditorTab::EditTransparency()
+{
+    auto transparencyDialog = new TransparencyDialog(this, this);
+    transparencyDialog->exec();
 }
 
 void EditorTab::cleanChanged(bool clean)
