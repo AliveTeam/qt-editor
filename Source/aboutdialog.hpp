@@ -17,7 +17,10 @@ public:
 private:
     void stopMusic();
     void startMusic();
+private slots:
+    void DoText();
 private:
     Ui::AboutDialog *ui;
     ModThread* mThread = nullptr;
+    std::string mScrollText;
 };
