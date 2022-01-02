@@ -1,3 +1,25 @@
+QProgressBar {
+background-color: rgb(50, 50, 50);
+border: 1px solid rgb(80, 80, 80);
+border-radius: 2px;
+}
+
+QProgressBar::chunk {
+background-color: rgb(130, 130, 255);
+}
+
+QSlider::groove:horizontal {
+height: 3px;
+background-color: rgb(80, 80, 80);
+}
+
+QSlider::handle:horizontal {
+margin: -8px 0;
+border-radius: 2px;
+width: 12px;
+background-color: rgb(130, 130, 255);
+}
+
 QScrollBar:horizontal {
 background-color: rgb(120, 120, 120);
 padding-left: 16px;
