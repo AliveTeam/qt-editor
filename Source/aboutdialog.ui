@@ -43,13 +43,13 @@
      <item>
       <widget class="QLabel" name="label">
        <property name="text">
-        <string/>
-       </property>
-       <property name="pixmap">
-        <pixmap resource="resources.qrc">:/about/rsc/about/site.png</pixmap>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;https://aliveteam.github.io/&quot;&gt;&lt;span style=&quot; font-size:22pt; text-decoration: none; color:#ffffff;&quot;&gt;aliveteam.github.io&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
+       </property>
+       <property name="openExternalLinks">
+        <bool>true</bool>
        </property>
       </widget>
      </item>
