@@ -1,6 +1,5 @@
 <RCC>
     <qresource prefix="/about">
-        <file>rsc/about/site.png</file>
         <file>rsc/about/tune.xm</file>
     </qresource>
 
