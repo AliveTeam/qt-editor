@@ -23,6 +23,30 @@ private:
     QString mNewValue;
 };
 
+class ReadOnlyStringProperty : public PropertyTreeItemBase
+{
+public:
+    ReadOnlyStringProperty(QTreeWidgetItem* pParent, QString propertyName, int* pProperty);
+
+    virtual QWidget* CreateEditorWidget(PropertyTreeWidget* ) override
+    {
+        return nullptr;
+    }
+
+    void Refresh() override
+    {
+        setText(1, QString::number(*mProperty));
+    }
+
+    const void* GetPropertyLookUpKey() const override
+    {
+        return mProperty;
+    }
+
+private:
+    int* mProperty = nullptr;
+};
+
 class StringProperty : public QObject, public PropertyTreeItemBase
 {
     Q_OBJECT

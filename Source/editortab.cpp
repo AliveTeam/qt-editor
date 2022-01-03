@@ -433,7 +433,7 @@ void EditorTab::wheelEvent(QWheelEvent* pEvent)
 {
     if (pEvent->modifiers() == Qt::Modifier::CTRL)
     {
-        if (pEvent->delta() > 0)
+        if (pEvent->angleDelta().y() > 0)
         {
             ZoomIn();
         }
@@ -700,7 +700,7 @@ public:
 private:
     void MakeNewCollision()
     {
-        mNewObject = std::make_unique<CollisionObject>();
+        mNewObject = std::make_unique<CollisionObject>(mTab->GetModel().NextCollisionId());
         // TODO: Duplicated with AddNewObjectCommand::MakeNewObject
         for (auto& prop : mTab->GetModel().CollisionStructure().mEnumAndBasicTypeProperties)
         {
