@@ -175,7 +175,14 @@ using UP_Camera = std::unique_ptr<Camera>;
 class CollisionObject final
 {
 public:
+    explicit CollisionObject(int id) : mId(id) { }
+
     std::vector<UP_ObjectProperty> mProperties;
+
+    // The previous/next in the collision data is the index of the next/previous line. Removing or adding line
+    // will cause this to break so we remap to a generated Id that then gets normalized back to indicies on save
+    // by looking up the index of the line with the given Id.
+    int mId = 0;
 
     int X1() const
     {
@@ -371,6 +378,38 @@ public:
     }
 
     UP_CollisionObject RemoveCollisionItem(CollisionObject* pItem);
+
+    int NextCollisionId() const
+    {
+        int biggestId = 0;
+        for (auto& item : mCollisions)
+        {
+            if (item->mId > biggestId)
+            {
+                biggestId = item->mId;
+            }
+        }
+        return biggestId + 1;
+    }
+
+    int IndexOfCollisionId(int id) const
+    {
+        if (id == -1)
+        {
+            return -1;
+        }
+
+        for (size_t i=0; i<mCollisions.size(); i++)
+        {
+            if (mCollisions[i]->mId == id)
+            {
+                return static_cast<int>(i);
+            }
+        }
+
+        // Id wasn't found, bad input json ?
+        return -1;
+    }
 
 private:
     void CreateEmptyCameras();

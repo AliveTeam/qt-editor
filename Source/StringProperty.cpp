@@ -2,6 +2,12 @@
 #include <QComboBox>
 #include "model.hpp"
 
+ReadOnlyStringProperty::ReadOnlyStringProperty(QTreeWidgetItem* pParent, QString propertyName, int* pProperty)
+    : PropertyTreeItemBase(pParent, QStringList{ propertyName, QString::number(*pProperty) }), mProperty(pProperty)
+{
+
+}
+
 StringProperty::StringProperty(QUndoStack& undoStack, QTreeWidgetItem* pParent, QString propertyName, std::string* pProperty) 
     : PropertyTreeItemBase(pParent, QStringList{ propertyName, pProperty->c_str() }), mUndoStack(undoStack), mProperty(pProperty)
 {

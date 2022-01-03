@@ -78,7 +78,7 @@ static std::vector<EnumOrBasicTypeProperty> ReadObjectStructureProperties(jsonxx
     std::vector<EnumOrBasicTypeProperty> properties;
     for (size_t j = 0; j < enumAndBasicTypes.size(); j++)
     {
-        jsonxx::Object enumOrBasicType = enumAndBasicTypes.get<jsonxx::Object>(j);
+        jsonxx::Object enumOrBasicType = enumAndBasicTypes.get<jsonxx::Object>(static_cast<unsigned int>(j));
         EnumOrBasicTypeProperty tmpEnumOrBasicTypeProperty;
         tmpEnumOrBasicTypeProperty.mName = ReadString(enumOrBasicType, "name");
         tmpEnumOrBasicTypeProperty.mType = ReadString(enumOrBasicType, "Type");
@@ -239,13 +239,13 @@ void Model::LoadJson(const std::string& jsonFile)
     jsonxx::Array ledMessages = ReadArray(map, "led_messages");
     for (size_t i = 0; i < ledMessages.size(); i++)
     {
-        mMapInfo.mLedMessages.emplace_back(ledMessages.get<jsonxx::String>(i));
+        mMapInfo.mLedMessages.emplace_back(ledMessages.get<jsonxx::String>(static_cast<unsigned int>(i)));
     }
 
     jsonxx::Array hintFlyMessages = ReadArray(map, "hintfly_messages");
     for (size_t i = 0; i < hintFlyMessages.size(); i++)
     {
-        mMapInfo.mHintFlyMessages.emplace_back(hintFlyMessages.get<jsonxx::String>(i));
+        mMapInfo.mHintFlyMessages.emplace_back(hintFlyMessages.get<jsonxx::String>(static_cast<unsigned int>(i)));
     }
 
     mSchema = ReadObject(root, "schema");
@@ -253,7 +253,7 @@ void Model::LoadJson(const std::string& jsonFile)
     jsonxx::Array basicTypes = ReadArray(mSchema, "object_structure_property_basic_types");
     for (size_t i = 0; i < basicTypes.size(); i++)
     {
-        jsonxx::Object basicType = basicTypes.get<jsonxx::Object>(i);
+        jsonxx::Object basicType = basicTypes.get<jsonxx::Object>(static_cast<unsigned int>(i));
         auto tmpBasicType = std::make_unique<BasicType>();
         tmpBasicType->mName = ReadString(basicType, "name");
         tmpBasicType->mMaxValue = ReadNumber(basicType, "max_value");
@@ -264,14 +264,14 @@ void Model::LoadJson(const std::string& jsonFile)
     jsonxx::Array enums = ReadArray(mSchema, "object_structure_property_enums");
     for (size_t i = 0; i < enums.size(); i++)
     {
-        jsonxx::Object enumObject = enums.get<jsonxx::Object>(i);
+        jsonxx::Object enumObject = enums.get<jsonxx::Object>(static_cast<unsigned int>(i));
         auto tmpEnum = std::make_unique<Enum>();
         tmpEnum->mName = ReadString(enumObject, "name");
 
         jsonxx::Array enumValuesArray = ReadArray(enumObject, "values");
         for (size_t j = 0; j < enumValuesArray.size(); j++)
         {
-            tmpEnum->mValues.push_back(enumValuesArray.get<jsonxx::String>(j));
+            tmpEnum->mValues.push_back(enumValuesArray.get<jsonxx::String>(static_cast<unsigned int>(j)));
         }
         mEnums.push_back(std::move(tmpEnum));
     }
@@ -279,7 +279,7 @@ void Model::LoadJson(const std::string& jsonFile)
     jsonxx::Array objectStructures = ReadArray(mSchema, "object_structures");
     for (size_t i = 0; i < objectStructures.size(); i++)
     {
-        jsonxx::Object objectStructure = objectStructures.get<jsonxx::Object>(i);
+        jsonxx::Object objectStructure = objectStructures.get<jsonxx::Object>(static_cast<unsigned int>(i));
         auto tmpObjectStructure = ReadObjectStructure(objectStructure);
         mObjectStructures.push_back(std::move(tmpObjectStructure));
     }
@@ -287,7 +287,7 @@ void Model::LoadJson(const std::string& jsonFile)
     jsonxx::Array cameras = ReadArray(map, "cameras");
     for (size_t i = 0; i < cameras.size(); i++)
     {
-        jsonxx::Object camera = cameras.get<jsonxx::Object>(i);
+        jsonxx::Object camera = cameras.get<jsonxx::Object>(static_cast<unsigned int>(i));
 
         auto tmpCamera = std::make_unique<Camera>();
         tmpCamera->mId = ReadNumber(camera, "id");
@@ -307,7 +307,7 @@ void Model::LoadJson(const std::string& jsonFile)
 
             for (size_t j = 0; j < mapObjects.size(); j++)
             {
-                jsonxx::Object mapObject = mapObjects.get<jsonxx::Object>(j);
+                jsonxx::Object mapObject = mapObjects.get<jsonxx::Object>(static_cast<unsigned int>(j));
                 auto tmpMapObject = std::make_unique<MapObject>();
                 tmpMapObject->mName = ReadString(mapObject, "name");
                 tmpMapObject->mObjectStructureType = ReadString(mapObject, "object_structures_type");
@@ -350,9 +350,9 @@ void Model::LoadJson(const std::string& jsonFile)
 
     for (size_t i = 0; i < collisionsArray.size(); i++)
     {
-        jsonxx::Object collision = collisionsArray.get<jsonxx::Object>(i);
+        jsonxx::Object collision = collisionsArray.get<jsonxx::Object>(static_cast<unsigned int>(i));
 
-        auto tmpCollision = std::make_unique<CollisionObject>();
+        auto tmpCollision = std::make_unique<CollisionObject>(static_cast<int>(i));
         tmpCollision->mProperties = ReadProperties(mCollisionStructure.get(), collision);
         mCollisions.push_back(std::move(tmpCollision));
     }
@@ -488,7 +488,15 @@ std::string Model::ToJson() const
             switch (property->mType)
             {
             case ObjectProperty::Type::BasicType:
-                collisionObj << property->mName << property->mBasicTypeValue;
+                // Special case handling for next/previous property links, map line Ids to line index
+                if (property->mName == "Previous" || property->mName == "Next")
+                {
+                    collisionObj << property->mName << IndexOfCollisionId(property->mBasicTypeValue);
+                }
+                else
+                {
+                    collisionObj << property->mName << property->mBasicTypeValue;
+                }
                 break;
 
             case ObjectProperty::Type::Enumeration:

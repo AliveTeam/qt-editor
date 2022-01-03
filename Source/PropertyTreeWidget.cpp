@@ -39,6 +39,9 @@ void PropertyTreeWidget::Populate(Model& model, QUndoStack& undoStack, QGraphics
     else if (pLine)
     {
         CollisionObject* pCollisionItem = pLine->GetCollisionItem();
+
+        items.append(new ReadOnlyStringProperty(parent, kIndent + "Id", &pCollisionItem->mId));
+
         AddProperties(model, undoStack, items, pCollisionItem->mProperties, pLine);
     }
 
