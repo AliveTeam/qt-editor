@@ -27,7 +27,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets Multimedia LinguistTools REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets Multimedia LinguistTools REQUIRED)
 
-#set(TS_FILES qt-editor_en_GB.ts)
+set(TS_FILES qt-editor_en_GB.ts qt-editor_German.ts)
 
 add_subdirectory(3rdParty/libmodplug)
 add_subdirectory(3rdParty/alive_reversing/Source/Tools/relive_api)
@@ -115,23 +115,15 @@ set(PROJECT_SOURCES
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
-    qt_add_executable(qt-editor
-        ${PROJECT_SOURCES}
-    )
-
     qt_create_translation(QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES})
+    qt_add_executable(qt-editor ${PROJECT_SOURCES} ${QM_FILES})
 else()
-    if(ANDROID)
-        add_library(qt-editor SHARED
-            ${PROJECT_SOURCES}
-        )
-    else()
-        add_executable(qt-editor
-            ${PROJECT_SOURCES}
-        )
-    endif()
-
     qt5_create_translation(QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES})
+    if(ANDROID)
+        add_library(qt-editor SHARED ${PROJECT_SOURCES} ${QM_FILES})
+    else()
+        add_executable(qt-editor ${PROJECT_SOURCES} ${QM_FILES})
+    endif()
 endif()
 
 target_link_libraries(qt-editor PUBLIC relive_api Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Multimedia modplug jsonxx)
