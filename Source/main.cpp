@@ -1,6 +1,8 @@
 #include "editormainwindow.hpp"
 #include <QApplication>
 #include <QFile>
+#include <QTranslator>
+#include <QDebug>
 
 void DoMapSizeTests();
 
@@ -8,17 +10,26 @@ int main(int argc, char *argv[])
 {
     DoMapSizeTests();
 
-    QApplication a(argc, argv);
+    QTranslator translator;
+
+    if (!translator.load("qt-editor_German"))
+    {
+        qDebug() << "Translator load failed";
+    }
+
+    QApplication app(argc, argv);
+    app.installTranslator(&translator);
+
     EditorMainWindow w;
 
     QFile File(":/stylesheets/rsc/stylesheets/dark-stylesheet.qss");
     File.open(QFile::ReadOnly);
     QString styleSheet = QLatin1String(File.readAll());
 
-    a.setStyleSheet(styleSheet);
-    a.setWindowIcon(QIcon(":/icons/rsc/icons/icon.png"));
+    app.setStyleSheet(styleSheet);
+    app.setWindowIcon(QIcon(":/icons/rsc/icons/icon.png"));
     w.setWindowIcon(QIcon(":/icons/rsc/icons/icon.png"));
 
     w.show();
-    return a.exec();
+    return app.exec();
 }
