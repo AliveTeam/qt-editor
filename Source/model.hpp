@@ -275,7 +275,7 @@ struct MapInfo final
     int mBadEndingMuds = 0;
     int mGoodEndingMuds = 0;
 
-    std::vector<std::string> mLedMessages;
+    std::vector<std::string> mLCDScreenMessages;
     std::vector<std::string> mHintFlyMessages;
 };
 

@@ -39,7 +39,7 @@ private:
     Ui::MessageEditorDialog *ui;
     EditorTab* mTab = nullptr;
     Model& mModel;
-    bool mIsLedMsgs;
+    bool mIsLCDScreenMsgs;
 };
 
 #endif // MESSAGEEDITORDIALOG_HPP
