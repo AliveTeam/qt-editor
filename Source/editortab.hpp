@@ -49,7 +49,7 @@ public:
     }
 
     void EditHintFlyMessages();
-    void EditLEDMessages();
+    void EditLCDScreenMessages();
     void EditPathData();
     void EditMapSize();
 

@@ -623,7 +623,7 @@ void EditorTab::EditHintFlyMessages()
     pDlg->exec();
 }
 
-void EditorTab::EditLEDMessages()
+void EditorTab::EditLCDScreenMessages()
 {
     auto pDlg = new MessageEditorDialog(this, this, *mModel, true);
     pDlg->exec();

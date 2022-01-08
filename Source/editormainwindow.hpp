@@ -41,9 +41,9 @@ private slots:
 
     void on_tabWidget_currentChanged(int index);
 
-    void on_actionEdit_HintFly_message_triggered();
+    void on_actionEdit_HintFly_messages_triggered();
 
-    void on_actionEdit_LED_messages_triggered();
+    void on_actionEdit_LCDScreen_messages_triggered();
 
     void on_actionEdit_path_data_triggered();
 

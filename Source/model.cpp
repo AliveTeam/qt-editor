@@ -236,10 +236,10 @@ void Model::LoadJson(const std::string& jsonFile)
     mMapInfo.mBadEndingMuds = ReadNumber(map, "num_muds_for_bad_ending");
     mMapInfo.mGoodEndingMuds = ReadNumber(map, "num_muds_for_good_ending");
 
-    jsonxx::Array ledMessages = ReadArray(map, "led_messages");
-    for (size_t i = 0; i < ledMessages.size(); i++)
+    jsonxx::Array LCDScreenMessages = ReadArray(map, "lcdscreen_messages");
+    for (size_t i = 0; i < LCDScreenMessages.size(); i++)
     {
-        mMapInfo.mLedMessages.emplace_back(ledMessages.get<jsonxx::String>(static_cast<unsigned int>(i)));
+        mMapInfo.mLCDScreenMessages.emplace_back(LCDScreenMessages.get<jsonxx::String>(static_cast<unsigned int>(i)));
     }
 
     jsonxx::Array hintFlyMessages = ReadArray(map, "hintfly_messages");
@@ -399,12 +399,12 @@ std::string Model::ToJson() const
     map << "num_muds_for_bad_ending" << mMapInfo.mBadEndingMuds;
     map << "num_muds_for_good_ending" << mMapInfo.mGoodEndingMuds;
 
-    jsonxx::Array ledMessages;
-    for (const auto& msg : mMapInfo.mLedMessages)
+    jsonxx::Array LCDScreenMessages;
+    for (const auto& msg : mMapInfo.mLCDScreenMessages)
     {
-        ledMessages << msg;
+        LCDScreenMessages << msg;
     }
-    map << "led_messages" << ledMessages;
+    map << "lcdscreen_messages" << LCDScreenMessages;
 
     jsonxx::Array hintFlyMessages;
     for (const auto& msg : mMapInfo.mHintFlyMessages)

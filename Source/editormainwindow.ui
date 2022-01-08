@@ -140,8 +140,8 @@
     <addaction name="action_add_new_collision_item"/>
     <addaction name="action_add_new_map_object"/>
     <addaction name="action_delete_selected_items"/>
-    <addaction name="actionEdit_HintFly_message"/>
-    <addaction name="actionEdit_LED_messages"/>
+    <addaction name="actionEdit_HintFly_messages"/>
+    <addaction name="actionEdit_LCDScreen_messages"/>
     <addaction name="actionEdit_path_data"/>
     <addaction name="actionEdit_map_size"/>
     <addaction name="actionAdd_object"/>
@@ -791,14 +791,14 @@
     <string>Export to lvl</string>
    </property>
   </action>
-  <action name="actionEdit_HintFly_message">
+  <action name="actionEdit_HintFly_messages">
    <property name="text">
-    <string>Edit HintFly message</string>
+    <string>Edit HintFly messages</string>
    </property>
   </action>
-  <action name="actionEdit_LED_messages">
+  <action name="actionEdit_LCDScreen_messages">
    <property name="text">
-    <string>Edit LED messages</string>
+    <string>Edit LCDScreen messages</string>
    </property>
   </action>
   <action name="actionEdit_path_data">

@@ -7,27 +7,27 @@
 class ChangeMessagesCommand final : public QUndoCommand
 {
 public:
-    ChangeMessagesCommand(Model& model, const std::vector<std::string>& oldMsgs, const std::vector<std::string>& newMsgs, bool isLedMsgs)
+    ChangeMessagesCommand(Model& model, const std::vector<std::string>& oldMsgs, const std::vector<std::string>& newMsgs, bool isLCDScreenMsgs)
         : mModel(model),
         mOldMsgs(oldMsgs),
         mNewMsgs(newMsgs),
-        mIsLedMsgs(isLedMsgs)
+        mIsLCDScreenMsgs(isLCDScreenMsgs)
     {
-        if (mIsLedMsgs)
+        if (mIsLCDScreenMsgs)
         {
-            setText("Change LED messages");
+            setText("Change LCDScreen messages");
         }
         else
         {
-            setText("Change hint fly messages");
+            setText("Change HintFly messages");
         }
     }
 
     void undo() override
     {
-        if (mIsLedMsgs)
+        if (mIsLCDScreenMsgs)
         {
-            mModel.GetMapInfo().mLedMessages = mOldMsgs;
+            mModel.GetMapInfo().mLCDScreenMessages = mOldMsgs;
         }
         else
         {
@@ -37,9 +37,9 @@ public:
 
     void redo() override
     {
-        if (mIsLedMsgs)
+        if (mIsLCDScreenMsgs)
         {
-            mModel.GetMapInfo().mLedMessages = mNewMsgs;
+            mModel.GetMapInfo().mLCDScreenMessages = mNewMsgs;
         }
         else
         {
@@ -51,15 +51,15 @@ private:
     Model& mModel;
     const std::vector<std::string> mOldMsgs;
     const std::vector<std::string> mNewMsgs;
-    bool mIsLedMsgs = false;
+    bool mIsLCDScreenMsgs = false;
 };
 
-MessageEditorDialog::MessageEditorDialog(QWidget *parent, EditorTab* pTab, Model& model, bool isLedMsgs) :
+MessageEditorDialog::MessageEditorDialog(QWidget *parent, EditorTab* pTab, Model& model, bool isLCDScreenMsgs) :
     QDialog(parent),
     ui(new Ui::MessageEditorDialog),
     mTab(pTab),
     mModel(model),
-    mIsLedMsgs(isLedMsgs)
+    mIsLCDScreenMsgs(isLCDScreenMsgs)
 {
     ui->setupUi(this);
 
@@ -121,7 +121,7 @@ void MessageEditorDialog::on_buttonBox_accepted()
 
     if (oldMsgs != newMsgs)
     {
-        auto cmd = new ChangeMessagesCommand(mModel, oldMsgs, newMsgs, mIsLedMsgs);
+        auto cmd = new ChangeMessagesCommand(mModel, oldMsgs, newMsgs, mIsLCDScreenMsgs);
         mTab->AddCommand(cmd);
     }
 }
@@ -142,9 +142,9 @@ void MessageEditorDialog::on_listWidget_itemSelectionChanged()
 
 std::vector<std::string>& MessageEditorDialog::GetMsgs()
 {
-    if (mIsLedMsgs)
+    if (mIsLCDScreenMsgs)
     {
-        return mModel.GetMapInfo().mLedMessages;
+        return mModel.GetMapInfo().mLCDScreenMessages;
     }
     else
     {

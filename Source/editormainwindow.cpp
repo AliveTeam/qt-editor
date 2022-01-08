@@ -442,7 +442,7 @@ void EditorMainWindow::DisconnectTabSignals()
     }
 }
 
-void EditorMainWindow::on_actionEdit_HintFly_message_triggered()
+void EditorMainWindow::on_actionEdit_HintFly_messages_triggered()
 {
     EditorTab* pTab = getActiveTab(m_ui->tabWidget);
     if (pTab)
@@ -452,12 +452,12 @@ void EditorMainWindow::on_actionEdit_HintFly_message_triggered()
 }
 
 
-void EditorMainWindow::on_actionEdit_LED_messages_triggered()
+void EditorMainWindow::on_actionEdit_LCDScreen_messages_triggered()
 {
     EditorTab* pTab = getActiveTab(m_ui->tabWidget);
     if (pTab)
     {
-        pTab->EditLEDMessages();
+        pTab->EditLCDScreenMessages();
     }
 }
 
