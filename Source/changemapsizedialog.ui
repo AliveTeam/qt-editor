@@ -6,18 +6,18 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>200</width>
+    <height>130</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Map Size Editor</string>
   </property>
   <widget class="QDialogButtonBox" name="buttonBox">
    <property name="geometry">
     <rect>
-     <x>30</x>
-     <y>240</y>
+     <x>-150</x>
+     <y>90</y>
      <width>341</width>
      <height>32</height>
     </rect>
@@ -32,9 +32,9 @@
   <widget class="QSpinBox" name="spnXSize">
    <property name="geometry">
     <rect>
-     <x>80</x>
+     <x>120</x>
      <y>20</y>
-     <width>42</width>
+     <width>71</width>
      <height>22</height>
     </rect>
    </property>
@@ -42,9 +42,9 @@
   <widget class="QSpinBox" name="spnYSize">
    <property name="geometry">
     <rect>
-     <x>80</x>
+     <x>120</x>
      <y>60</y>
-     <width>42</width>
+     <width>71</width>
      <height>22</height>
     </rect>
    </property>

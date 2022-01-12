@@ -92,11 +92,11 @@ void MessageEditorDialog::on_btnDeleteSelected_clicked()
 
 void MessageEditorDialog::on_btnUpdate_clicked()
 {
-    if (!ui->txtMessage->text().isEmpty())
+    if (!ui->txtMessage->toPlainText().isEmpty())
     {
         if (!ui->listWidget->selectedItems().empty())
         {
-            ui->listWidget->selectedItems().at(0)->setText(ui->txtMessage->text());
+            ui->listWidget->selectedItems().at(0)->setText(ui->txtMessage->toPlainText());
         }
     }
 }
@@ -104,9 +104,9 @@ void MessageEditorDialog::on_btnUpdate_clicked()
 
 void MessageEditorDialog::on_btnAdd_clicked()
 {
-    if (!ui->txtMessage->text().isEmpty())
+    if (!ui->txtMessage->toPlainText().isEmpty())
     {
-        ui->listWidget->addItem(ui->txtMessage->text());
+        ui->listWidget->addItem(ui->txtMessage->toPlainText());
     }
 }
 
