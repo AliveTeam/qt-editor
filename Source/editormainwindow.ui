@@ -805,10 +805,16 @@
    <property name="text">
     <string>Edit path data</string>
    </property>
+   <property name="shortcut">
+    <string>Shift+P</string>
+   </property>
   </action>
   <action name="actionEdit_map_size">
    <property name="text">
     <string>Edit map size</string>
+   </property>
+   <property name="shortcut">
+    <string>Shift+M</string>
    </property>
   </action>
   <action name="actionNew_path">
@@ -825,10 +831,16 @@
    <property name="text">
     <string>Add object</string>
    </property>
+   <property name="shortcut">
+    <string>Shift+A</string>
+   </property>
   </action>
   <action name="actionAdd_collision">
    <property name="text">
     <string>Add collision</string>
+   </property>
+   <property name="shortcut">
+    <string>Shift+C</string>
    </property>
   </action>
   <action name="actionItem_transparency">

@@ -136,8 +136,8 @@ private:
 
         pNewMapObj->SetXPos(viewPos.x());
         pNewMapObj->SetYPos(viewPos.y());
-        pNewMapObj->SetWidth(40);
-        pNewMapObj->SetHeight(40);
+        pNewMapObj->SetWidth(24);
+        pNewMapObj->SetHeight(24);
 
         mNewItem = mTab->MakeResizeableRectItem(pNewMapObj);
     }
@@ -156,7 +156,7 @@ AddObjectDialog::AddObjectDialog(QWidget *parent, EditorTab* pTab) :
     mTab(pTab)
 {
     ui->setupUi(this);
-
+    ui->txtSearch->setFocus();
     PopulateListFiltered("");
 }
 
