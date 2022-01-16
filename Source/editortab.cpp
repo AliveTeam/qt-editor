@@ -520,7 +520,7 @@ bool EditorTab::Save()
 
 bool EditorTab::SaveAs()
 {
-    QString jsonSaveFileName = QFileDialog::getSaveFileName(this, tr("Save path json"), "", tr("Json files (*.json);;All Files (*)"));
+    QString jsonSaveFileName = QFileDialog::getSaveFileName(this, tr("Save path json"), "", tr("Json Files (*.json);;All Files (*)"));
     if (jsonSaveFileName.isEmpty())
     {
         // They didn't want to save it
