@@ -44,6 +44,10 @@ export(TARGETS jsonxx FILE jsonxx.cmake)
 set_property(TARGET jsonxx PROPERTY FOLDER "3rdParty")
 
 set(PROJECT_SOURCES
+        Source/ClipBoard.cpp
+        Source/ClipBoard.hpp
+        Source/DeleteItemsCommand.cpp
+        Source/DeleteItemsCommand.hpp
         Source/progressdialog.hpp
         Source/progressdialog.cpp
         Source/progressdialog.ui

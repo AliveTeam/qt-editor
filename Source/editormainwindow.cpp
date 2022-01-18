@@ -664,3 +664,42 @@ void EditorMainWindow::on_action_toggle_show_grid_triggered()
     }
 }
 
+
+void EditorMainWindow::on_actionCut_triggered()
+{
+    EditorTab* pTab = getActiveTab(m_ui->tabWidget);
+    if (pTab)
+    {
+        pTab->Cut(mClipBoard);
+    }
+}
+
+
+void EditorMainWindow::on_actionCopy_triggered()
+{
+    EditorTab* pTab = getActiveTab(m_ui->tabWidget);
+    if (pTab)
+    {
+        pTab->Cut(mClipBoard);
+    }
+}
+
+
+void EditorMainWindow::on_actionPaste_triggered()
+{
+    if (!mClipBoard.IsEmpty())
+    {
+        EditorTab* pTab = getActiveTab(m_ui->tabWidget);
+        if (pTab)
+        {
+            if (mClipBoard.SourceGame() != pTab->GetModel().GetMapInfo().mGame)
+            {
+                QMessageBox::critical(this, "Error", "You can't cut/copy paste data between AO and AE");
+            }
+            else
+            {
+                pTab->Paste(mClipBoard);
+            }
+        }
+    }
+}

@@ -36,6 +36,8 @@
 #include <QFutureWatcher>
 #include <QFuture>
 #include <QtConcurrent/QtConcurrent>
+#include "DeleteItemsCommand.hpp"
+#include "ClipBoard.hpp"
 
 // Zoom by 10% each time.
 const float KZoomFactor = 0.10f;
@@ -403,6 +405,31 @@ void EditorTab::EditTransparency()
 {
     auto transparencyDialog = new TransparencyDialog(this, this);
     transparencyDialog->exec();
+}
+
+void EditorTab::Cut(ClipBoard& clipBoard)
+{
+    if (!mScene->selectedItems().isEmpty())
+    {
+        clipBoard.Set(mScene->selectedItems(), *mModel);
+        mUndoStack.push(new DeleteItemsCommand(this, true, mScene->selectedItems()));
+    }
+}
+
+void EditorTab::Copy(ClipBoard& clipBoard)
+{
+    if (!mScene->selectedItems().isEmpty())
+    {
+        clipBoard.Set(mScene->selectedItems(), *mModel);
+    }
+}
+
+void EditorTab::Paste(ClipBoard& clipBoard)
+{
+    if (!clipBoard.IsEmpty())
+    {
+        mUndoStack.push(new PasteItemsCommand(this, clipBoard));
+    }
 }
 
 void EditorTab::cleanChanged(bool clean)

@@ -23,6 +23,7 @@ class CameraGraphicsItem;
 struct MapObject;
 class CollisionObject;
 class CameraManager;
+class ClipBoard;
 
 class EditorTab final : public QMainWindow
 {
@@ -86,6 +87,10 @@ public:
     void SyncPropertyEditor();
 
     void EditTransparency();
+
+    void Cut(ClipBoard& clipBoard);
+    void Copy(ClipBoard& clipBoard);
+    void Paste(ClipBoard& clipBoard);
 
 signals:
     void CleanChanged();
