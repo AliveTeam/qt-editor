@@ -4,11 +4,15 @@
 #include <QGraphicsItem>
 #include <QUndoCommand>
 #include <string>
+#include "model.hpp"
+#include "selectionsaver.hpp"
+#include "EditorGraphicsScene.hpp"
 
 class EditorTab;
 class Model;
 class ClipBoard;
 class ResizeableRectItem;
+class ResizeableArrowItem;
 
 class PasteItemsCommand final : public QUndoCommand
 {
@@ -18,6 +22,20 @@ public:
     void redo() override;
     void undo() override;
 private:
+    EditorTab* mTab = nullptr;
+
+    struct PastedMapObject final
+    {
+        UP_MapObject mPastedMapObject;
+        Camera* mContainingCamera;
+    };
+    std::vector<PastedMapObject> mMapObjects;
+    std::vector<ResizeableRectItem*> mMapGraphicsObjects;
+
+    std::vector<UP_CollisionObject> mCollisions;
+    std::vector<ResizeableArrowItem*> mCollisionGraphicsObjects;
+
+    SelectionSaver mSelectionSaver;
 };
 
 class ClipBoard final
@@ -29,8 +47,12 @@ public:
     bool IsEmpty() const;
 
     const std::string& SourceGame() const;
+
+    std::vector<UP_MapObject> CloneMapObjects() const;
+    std::vector<UP_CollisionObject> CloneCollisions() const;
 private:
     std::string mSourceGame;
 
-    QList<ResizeableRectItem*> mMapObjectGraphicsItems;
+    std::vector<UP_CollisionObject> mCollisions;
+    std::vector<UP_MapObject> mMapObjects;
 };

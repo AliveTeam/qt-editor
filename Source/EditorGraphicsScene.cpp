@@ -248,6 +248,37 @@ void EditorGraphicsScene::keyPressEvent(QKeyEvent* keyEvent)
     }
 }
 
+
+Camera* CalcContainingCamera(ResizeableRectItem* pItem, Model& model)
+{
+    QPoint midPoint = pItem->CurrentRect().center().toPoint();
+
+    int camX = midPoint.x() / model.GetMapInfo().mXGridSize;
+    if (camX < 0)
+    {
+        camX = 0;
+    }
+
+    if (camX >= model.GetMapInfo().mXSize)
+    {
+        camX = model.GetMapInfo().mXSize - 1;
+    }
+
+    int camY = midPoint.y() / model.GetMapInfo().mYGridSize;
+    if (camY < 0)
+    {
+        camY = 0;
+    }
+
+    if (camY >= model.GetMapInfo().mYSize)
+    {
+        camY = model.GetMapInfo().mYSize - 1;
+    }
+
+    return model.CameraAt(camX, camY);
+}
+
+
 void ItemPositionData::Save(QList<QGraphicsItem*>& items, Model& model, bool recalculateParentCamera)
 {
     mRects.clear();
@@ -294,31 +325,7 @@ void ItemPositionData::AddRect(ResizeableRectItem* pItem, Model& model, bool rec
 
     if (recalculateParentCamera)
     {
-        QPoint midPoint = pItem->CurrentRect().center().toPoint();
-
-        int camX = midPoint.x() / model.GetMapInfo().mXGridSize;
-        if (camX < 0)
-        {
-            camX = 0;
-        }
-
-        if (camX >= model.GetMapInfo().mXSize)
-        {
-            camX = model.GetMapInfo().mXSize - 1;
-        }
-
-        int camY = midPoint.y() / model.GetMapInfo().mYGridSize;
-        if (camY < 0)
-        {
-            camY = 0;
-        }
-
-        if (camY >= model.GetMapInfo().mYSize)
-        {
-            camY = model.GetMapInfo().mYSize - 1;
-        }
-
-        pContainingCamera = model.CameraAt(camX, camY);
+        pContainingCamera = CalcContainingCamera(pItem, model);
 
         model.SwapContainingCamera(pMapObject, pContainingCamera);
     }

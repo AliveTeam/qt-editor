@@ -130,6 +130,8 @@ private:
     int mMapObjectTransparency = 60;
 };
 
+Camera* CalcContainingCamera(ResizeableRectItem* pItem, Model& model);
+
 class EditorGraphicsScene final : public QGraphicsScene
 {
     Q_OBJECT
@@ -146,6 +148,7 @@ public:
 
     void SyncTransparencySettings();
     void ToggleGrid();
+
 
 signals:
     void SelectionChanged(QList<QGraphicsItem*> oldItems, QList<QGraphicsItem*> newItems);

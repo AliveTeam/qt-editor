@@ -2,13 +2,39 @@
 #include "editortab.hpp"
 #include "resizeablearrowitem.hpp"
 #include "resizeablerectitem.hpp"
-#include "CameraGraphicsItem.hpp"
 
 PasteItemsCommand::PasteItemsCommand(EditorTab* pTab, ClipBoard& clipBoard)
+    : mTab(pTab), mSelectionSaver(pTab)
 {
     setText("Paste items");
 
-    // todo: Make another deep copy of the items
+    // Make another deep copy of the items and create graphics items for them
+    mCollisions = clipBoard.CloneCollisions();
+    for (auto& obj : mCollisions)
+    {
+        // Fix collision line ids
+        obj->mId = mTab->GetModel().NextCollisionId();
+        mCollisionGraphicsObjects.emplace_back(mTab->MakeResizeableArrowItem(obj.get()));
+    }
+
+    auto clonedMapObjects = clipBoard.CloneMapObjects();
+    for (auto& obj : clonedMapObjects)
+    {
+        // Create the graphics item
+        ResizeableRectItem* mapObjectGraphicsItem = mTab->MakeResizeableRectItem(obj.get());
+
+        // Ensure map object is in the correct camera
+        Camera* containingCamera = CalcContainingCamera(mapObjectGraphicsItem, mTab->GetModel());
+
+        PastedMapObject pastedMapObject;
+        pastedMapObject.mContainingCamera = containingCamera;
+        pastedMapObject.mPastedMapObject = std::move(obj);
+
+        // Keep track of the graphics item and the camera it lives in
+        mMapObjects.emplace_back(std::move(pastedMapObject));
+        mMapGraphicsObjects.emplace_back(mapObjectGraphicsItem);
+    }
+
 }
 
 PasteItemsCommand::~PasteItemsCommand()
@@ -18,14 +44,73 @@ PasteItemsCommand::~PasteItemsCommand()
 
 void PasteItemsCommand::redo()
 {
-    // todo: Add/place items
+    // Add to scene
+    for (auto& obj : mMapGraphicsObjects)
+    {
+        mTab->GetScene().addItem(obj);
+    }
 
-    // todo: Re-calc parent camera
+    // Add to model
+    for (auto& obj : mMapObjects)
+    {
+        obj.mContainingCamera->mMapObjects.emplace_back(std::move(obj.mPastedMapObject));
+    }
+    mMapObjects.clear();
+
+    // Add to scene
+    for (auto& obj : mCollisionGraphicsObjects)
+    {
+        mTab->GetScene().addItem(obj);
+    }
+
+    // Add to model
+    for (auto& obj : mCollisions)
+    {
+        mTab->GetModel().CollisionItems().emplace_back(std::move(obj));
+    }
+    mCollisions.clear();
+
+    mTab->GetScene().clearSelection();
+
+    // Select what was pasted
+    for (auto& obj : mMapGraphicsObjects)
+    {
+        obj->setSelected(true);
+    }
+
+    for (auto& obj : mCollisionGraphicsObjects)
+    {
+        obj->setSelected(true);
+    }
+
+    mSelectionSaver.redo();
 }
 
 void PasteItemsCommand::undo()
 {
-    // todo: Remove items
+    for (auto& obj : mMapGraphicsObjects)
+    {
+        // Remove from model
+        PastedMapObject pastedMapObject;
+        pastedMapObject.mContainingCamera = mTab->GetModel().GetContainingCamera(obj->GetMapObject());
+        pastedMapObject.mPastedMapObject = mTab->GetModel().TakeFromContainingCamera(obj->GetMapObject());
+        
+        mMapObjects.emplace_back(std::move(pastedMapObject));
+
+        // Remove from scene
+        mTab->GetScene().removeItem(obj);
+    }
+
+    for (auto& obj : mCollisionGraphicsObjects)
+    {
+        // Remove from model
+        mCollisions.emplace_back(mTab->GetModel().RemoveCollisionItem(obj->GetCollisionItem()));
+
+        // Remove from scene
+        mTab->GetScene().removeItem(obj);
+    }
+
+    mSelectionSaver.undo();
 }
 
 ClipBoard::~ClipBoard()
@@ -42,22 +127,24 @@ void ClipBoard::Set(QList<QGraphicsItem*>& items, Model& model)
 
     mSourceGame = model.GetMapInfo().mGame;
 
+    mMapObjects.clear();
+    mCollisions.clear();
+
     // Deep copy the items for pasting
     for (int i = 0; i < items.count(); i++)
     {
         QGraphicsItem* obj = items.at(i);
-        auto pCameraGraphicsItem = qgraphicsitem_cast<CameraGraphicsItem*>(obj);
-        if (pCameraGraphicsItem)
+        auto pResizeableRectItem = qgraphicsitem_cast<ResizeableRectItem*>(obj);
+        if (pResizeableRectItem)
         {
-            // todo:
+            mMapObjects.emplace_back(std::make_unique<MapObject>(*pResizeableRectItem->GetMapObject()));
         }
         else
         {
             auto pResizeableArrowItem = qgraphicsitem_cast<ResizeableArrowItem*>(obj);
             if (pResizeableArrowItem)
             {
-                // todo:
-                //mMapObjectGraphicsItems.push_back(new ResizeableArrowItem());
+               mCollisions.emplace_back(std::make_unique<CollisionObject>(0, *pResizeableArrowItem->GetCollisionItem()));
             }
         }
     }
@@ -65,11 +152,35 @@ void ClipBoard::Set(QList<QGraphicsItem*>& items, Model& model)
 
 bool ClipBoard::IsEmpty() const
 {
-    // todo
-    return true;
+    return mMapObjects.empty() && mCollisions.empty();
 }
 
 const std::string& ClipBoard::SourceGame() const
 {
     return mSourceGame;
+}
+
+// TODO: Position set or offsetting
+std::vector<UP_MapObject> ClipBoard::CloneMapObjects() const
+{
+    std::vector<UP_MapObject> r;
+    for (auto& obj : mMapObjects)
+    {
+        auto copy = std::make_unique<MapObject>(*obj);
+        copy->SetXPos(copy->XPos() + 50);
+        copy->SetYPos(copy->YPos() + 50);
+        r.emplace_back(std::move(copy));
+    }
+    return r;
+}
+
+// TODO: Position set or offsetting
+std::vector<UP_CollisionObject> ClipBoard::CloneCollisions() const
+{
+    std::vector<UP_CollisionObject> r;
+    for (auto& obj : mCollisions)
+    {
+        r.emplace_back(std::make_unique<CollisionObject>(0, *obj));
+    }
+    return r;
 }

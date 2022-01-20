@@ -551,3 +551,46 @@ void Model::CreateEmptyCameras()
         }
     }
 }
+
+ObjectProperty* PropertyByName(const std::string& name, std::vector<UP_ObjectProperty>& props)
+{
+    for (auto& prop : props)
+    {
+        if (prop->mName == name)
+        {
+            return prop.get();
+        }
+    }
+    return nullptr;
+}
+
+const ObjectProperty* PropertyByName(const std::string& name, const std::vector<UP_ObjectProperty>& props)
+{
+    for (const auto& prop : props)
+    {
+        if (prop->mName == name)
+        {
+            return prop.get();
+        }
+    }
+    return nullptr;
+}
+
+MapObject::MapObject(const MapObject& rhs)
+    : mName(rhs.mName),
+      mObjectStructureType(rhs.mObjectStructureType)
+{
+    for (auto& prop : rhs.mProperties)
+    {
+        mProperties.emplace_back(std::make_unique<ObjectProperty>(*prop));
+    }
+}
+
+CollisionObject::CollisionObject(int id, const CollisionObject& rhs)
+    : mId(id)
+{
+    for (auto& prop : rhs.mProperties)
+    {
+        mProperties.emplace_back(std::make_unique<ObjectProperty>(*prop));
+    }
+}

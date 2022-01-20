@@ -680,7 +680,7 @@ void EditorMainWindow::on_actionCopy_triggered()
     EditorTab* pTab = getActiveTab(m_ui->tabWidget);
     if (pTab)
     {
-        pTab->Cut(mClipBoard);
+        pTab->Copy(mClipBoard);
     }
 }
 

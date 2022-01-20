@@ -64,6 +64,9 @@ private:
 
 struct ObjectProperty final
 {
+    ObjectProperty() = default;
+    ObjectProperty(const ObjectProperty&) = default;
+
     std::string mName;
     std::string mTypeName;
     int mBasicTypeValue = 0;
@@ -78,32 +81,16 @@ struct ObjectProperty final
 };
 using UP_ObjectProperty = std::unique_ptr<ObjectProperty>;
 
-inline ObjectProperty* PropertyByName(const std::string& name, std::vector<UP_ObjectProperty>& props)
-{
-    for (const auto& prop : props)
-    {
-        if (prop->mName == name)
-        {
-            return prop.get();
-        }
-    }
-    return nullptr;
-}
+ObjectProperty* PropertyByName(const std::string& name, std::vector<UP_ObjectProperty>& props);
 
-inline const ObjectProperty* PropertyByName(const std::string& name, const std::vector<UP_ObjectProperty>& props)
-{
-    for (const auto& prop : props)
-    {
-        if (prop->mName == name)
-        {
-            return prop.get();
-        }
-    }
-    return nullptr;
-}
+const ObjectProperty* PropertyByName(const std::string& name, const std::vector<UP_ObjectProperty>& props);
 
 struct MapObject final
 {
+    MapObject() = default;
+
+    MapObject(const MapObject& rhs);
+
     std::string mName;
     std::string mObjectStructureType;
     std::vector<UP_ObjectProperty> mProperties;
@@ -176,6 +163,10 @@ class CollisionObject final
 {
 public:
     explicit CollisionObject(int id) : mId(id) { }
+    
+    CollisionObject(const CollisionObject&) = delete;
+
+    CollisionObject(int id, const CollisionObject& rhs);
 
     std::vector<UP_ObjectProperty> mProperties;
 
