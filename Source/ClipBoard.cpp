@@ -6,10 +6,8 @@
 PasteItemsCommand::PasteItemsCommand(EditorTab* pTab, ClipBoard& clipBoard)
     : mTab(pTab), mSelectionSaver(pTab)
 {
-    setText("Paste items");
-
     // Make another deep copy of the items and create graphics items for them
-    mCollisions = clipBoard.CloneCollisions();
+    mCollisions = clipBoard.CloneCollisions(nullptr);
     for (auto& obj : mCollisions)
     {
         // Fix collision line ids
@@ -17,7 +15,7 @@ PasteItemsCommand::PasteItemsCommand(EditorTab* pTab, ClipBoard& clipBoard)
         mCollisionGraphicsObjects.emplace_back(mTab->MakeResizeableArrowItem(obj.get()));
     }
 
-    auto clonedMapObjects = clipBoard.CloneMapObjects();
+    auto clonedMapObjects = clipBoard.CloneMapObjects(nullptr);
     for (auto& obj : clonedMapObjects)
     {
         // Create the graphics item
@@ -35,11 +33,24 @@ PasteItemsCommand::PasteItemsCommand(EditorTab* pTab, ClipBoard& clipBoard)
         mMapGraphicsObjects.emplace_back(mapObjectGraphicsItem);
     }
 
+    setText("Paste " + QString::number(mCollisions.size() + mMapObjects.size()) +  " item(s)");
 }
 
 PasteItemsCommand::~PasteItemsCommand()
 {
-    // todo: delete copies if not added
+    // Delete copies if not added
+    if (!mPasted)
+    {
+        for (auto& obj : mMapGraphicsObjects)
+        {
+            delete obj;
+        }
+
+        for (auto& obj : mCollisionGraphicsObjects)
+        {
+            delete obj;
+        }
+    }
 }
 
 void PasteItemsCommand::redo()
@@ -83,6 +94,8 @@ void PasteItemsCommand::redo()
         obj->setSelected(true);
     }
 
+    mPasted = true;
+
     mSelectionSaver.redo();
 }
 
@@ -110,12 +123,9 @@ void PasteItemsCommand::undo()
         mTab->GetScene().removeItem(obj);
     }
 
-    mSelectionSaver.undo();
-}
+    mPasted = false;
 
-ClipBoard::~ClipBoard()
-{
-    // todo: delete copies
+    mSelectionSaver.undo();
 }
 
 void ClipBoard::Set(QList<QGraphicsItem*>& items, Model& model)
@@ -160,23 +170,31 @@ const std::string& ClipBoard::SourceGame() const
     return mSourceGame;
 }
 
-// TODO: Position set or offsetting
-std::vector<UP_MapObject> ClipBoard::CloneMapObjects() const
+
+std::vector<UP_MapObject> ClipBoard::CloneMapObjects(QPoint* pos) const
 {
+    QPoint offset(50, 50);
+    if (pos)
+    {
+        offset = *pos;
+    }
+
+    // TODO: Position set or offsetting via pos
     std::vector<UP_MapObject> r;
     for (auto& obj : mMapObjects)
     {
         auto copy = std::make_unique<MapObject>(*obj);
-        copy->SetXPos(copy->XPos() + 50);
-        copy->SetYPos(copy->YPos() + 50);
+        copy->SetXPos(copy->XPos() + offset.x());
+        copy->SetYPos(copy->YPos() + offset.y());
         r.emplace_back(std::move(copy));
     }
     return r;
 }
 
-// TODO: Position set or offsetting
-std::vector<UP_CollisionObject> ClipBoard::CloneCollisions() const
+std::vector<UP_CollisionObject> ClipBoard::CloneCollisions(QPoint* pos) const
 {
+    // TODO: Position set or offsetting via pos
+
     std::vector<UP_CollisionObject> r;
     for (auto& obj : mCollisions)
     {

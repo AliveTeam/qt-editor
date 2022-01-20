@@ -36,20 +36,20 @@ private:
     std::vector<ResizeableArrowItem*> mCollisionGraphicsObjects;
 
     SelectionSaver mSelectionSaver;
+
+    bool mPasted = false;
 };
 
 class ClipBoard final
 {
 public:
-    ~ClipBoard();
-
     void Set(QList<QGraphicsItem*>& items, Model& model);
     bool IsEmpty() const;
 
     const std::string& SourceGame() const;
 
-    std::vector<UP_MapObject> CloneMapObjects() const;
-    std::vector<UP_CollisionObject> CloneCollisions() const;
+    std::vector<UP_MapObject> CloneMapObjects(QPoint* pos) const;
+    std::vector<UP_CollisionObject> CloneCollisions(QPoint* pos) const;
 private:
     std::string mSourceGame;
 
