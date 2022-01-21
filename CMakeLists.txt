@@ -130,4 +130,8 @@ else()
     endif()
 endif()
 
+if (MSVC)
+target_compile_options(qt-editor PUBLIC "/permissive-")
+endif()
+
 target_link_libraries(qt-editor PUBLIC relive_api Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Multimedia modplug jsonxx)

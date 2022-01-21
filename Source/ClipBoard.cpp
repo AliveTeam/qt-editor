@@ -128,7 +128,7 @@ void PasteItemsCommand::undo()
     mSelectionSaver.undo();
 }
 
-void ClipBoard::Set(QList<QGraphicsItem*>& items, Model& model)
+void ClipBoard::Set(const QList<QGraphicsItem*>& items, Model& model)
 {
     if (items.isEmpty())
     {

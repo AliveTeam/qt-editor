@@ -43,7 +43,7 @@ private:
 class ClipBoard final
 {
 public:
-    void Set(QList<QGraphicsItem*>& items, Model& model);
+    void Set(const QList<QGraphicsItem*>& items, Model& model);
     bool IsEmpty() const;
 
     const std::string& SourceGame() const;
