@@ -230,7 +230,9 @@ public:
         QGraphicsView::wheelEvent(pEvent);
     }
 
-    void keyPressEvent(QKeyEvent* pEvent) override
+    // TODO: implement proper ScrollHandDrag mode.
+    // you should be able to move around by pressing and holding the middle mouse button.
+    /*void keyPressEvent(QKeyEvent* pEvent) override
     {
         if (pEvent->key() == Qt::Key::Key_Shift)
         {
@@ -250,7 +252,7 @@ public:
             return;
         }
         QGraphicsView::keyPressEvent(pEvent);
-    }
+    }*/
 
     void contextMenuEvent(QContextMenuEvent* pEvent) override
     {
@@ -550,7 +552,7 @@ bool EditorTab::Save()
 
 bool EditorTab::SaveAs()
 {
-    QString jsonSaveFileName = QFileDialog::getSaveFileName(this, tr("Save path json"), "", tr("Json files (*.json);;All Files (*)"));
+    QString jsonSaveFileName = QFileDialog::getSaveFileName(this, tr("Save path json"), "", tr("Json Files (*.json);;All Files (*)"));
     if (jsonSaveFileName.isEmpty())
     {
         // They didn't want to save it

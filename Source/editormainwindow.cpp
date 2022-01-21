@@ -357,7 +357,7 @@ void EditorMainWindow::on_action_about_triggered()
 void EditorMainWindow::on_action_open_path_triggered()
 {
     QString lastOpenDir = m_Settings.value("last_open_dir").toString();
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open level"), lastOpenDir, tr("Json files (*.json);;Level files (*.lvl);;All Files (*)"));
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open level"), lastOpenDir, tr("Supported Files (*.json *.lvl);; Json Files (*.json);;Level Files (*.lvl);;All Files (*)"));
     if (!fileName.isEmpty())
     {
         if (onOpenPath(fileName, false))
@@ -597,7 +597,7 @@ void EditorMainWindow::on_actionEdit_map_size_triggered()
 void EditorMainWindow::on_actionNew_path_triggered()
 {
     QString lastOpenDir = m_Settings.value("last_open_dir").toString();
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open lvl (as template for new path)"), lastOpenDir, tr("Level files (*.lvl);;All Files (*)"));
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open lvl (as template for new path)"), lastOpenDir, tr("Level Files (*.lvl);;All Files (*)"));
     if (!fileName.isEmpty())
     {
         if (onOpenPath(fileName, true))

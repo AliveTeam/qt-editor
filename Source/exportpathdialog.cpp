@@ -19,7 +19,7 @@ ExportPathDialog::~ExportPathDialog()
 
 void ExportPathDialog::on_btnSelectJson_clicked()
 {
-    QString jsonFileName = QFileDialog::getOpenFileName(this, tr("Save path json"), "", tr("Json files (*.json);;All Files (*)"));
+    QString jsonFileName = QFileDialog::getOpenFileName(this, tr("Save path json"), "", tr("Json Files (*.json);;All Files (*)"));
     if (!jsonFileName.isEmpty())
     {
         setJsonPath(jsonFileName);
@@ -28,7 +28,7 @@ void ExportPathDialog::on_btnSelectJson_clicked()
 
 void ExportPathDialog::on_btnSelectLvlFile_clicked()
 {
-    QString lvlFileName = QFileDialog::getOpenFileName(this, tr("Open level"), "", tr("Level files (*.lvl);;All Files (*)"));
+    QString lvlFileName = QFileDialog::getOpenFileName(this, tr("Open level"), "", tr("Level Files (*.lvl);;All Files (*)"));
     if (!lvlFileName.isEmpty())
     {
         setLvlName(lvlFileName);
