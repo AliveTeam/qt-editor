@@ -66,6 +66,8 @@ EditorMainWindow::EditorMainWindow(QWidget* aParent)
 
     // Not implemented so remove for now
     delete m_ui->menuSnapping;
+
+    statusBar()->showMessage(tr("Ready"));
 }
 
 EditorMainWindow::~EditorMainWindow()
@@ -292,7 +294,7 @@ bool EditorMainWindow::onOpenPath(QString fullFileName, bool createNewPath)
             fullFileName = QString(generatedName.c_str());
         }
 
-        EditorTab* view = new EditorTab(m_ui->tabWidget, std::move(model), fullFileName, isTempfile);
+        EditorTab* view = new EditorTab(m_ui->tabWidget, std::move(model), fullFileName, isTempfile, statusBar());
 
         connect(
             view, &EditorTab::CleanChanged,

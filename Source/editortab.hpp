@@ -29,7 +29,7 @@ class EditorTab final : public QMainWindow
 {
     Q_OBJECT
 public:
-    EditorTab(QTabWidget* aParent, UP_Model model, QString jsonFileName, bool isTempFile);
+    EditorTab(QTabWidget* aParent, UP_Model model, QString jsonFileName, bool isTempFile, QStatusBar* pStatusBar);
     ~EditorTab();
     void ZoomIn();
     void ZoomOut();
@@ -114,4 +114,6 @@ private:
     bool mIsTempFile = false;
 
     CameraManager* mCameraManager = nullptr;
+
+    QStatusBar* mStatusBar = nullptr;
 };
