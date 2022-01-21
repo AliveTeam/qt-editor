@@ -66,6 +66,8 @@ EditorMainWindow::EditorMainWindow(QWidget* aParent)
 
     // Not implemented so remove for now
     delete m_ui->menuSnapping;
+
+    statusBar()->showMessage(tr("Ready"));
 }
 
 EditorMainWindow::~EditorMainWindow()
@@ -292,7 +294,7 @@ bool EditorMainWindow::onOpenPath(QString fullFileName, bool createNewPath)
             fullFileName = QString(generatedName.c_str());
         }
 
-        EditorTab* view = new EditorTab(m_ui->tabWidget, std::move(model), fullFileName, isTempfile);
+        EditorTab* view = new EditorTab(m_ui->tabWidget, std::move(model), fullFileName, isTempfile, statusBar());
 
         connect(
             view, &EditorTab::CleanChanged,
@@ -664,3 +666,42 @@ void EditorMainWindow::on_action_toggle_show_grid_triggered()
     }
 }
 
+
+void EditorMainWindow::on_actionCut_triggered()
+{
+    EditorTab* pTab = getActiveTab(m_ui->tabWidget);
+    if (pTab)
+    {
+        pTab->Cut(mClipBoard);
+    }
+}
+
+
+void EditorMainWindow::on_actionCopy_triggered()
+{
+    EditorTab* pTab = getActiveTab(m_ui->tabWidget);
+    if (pTab)
+    {
+        pTab->Copy(mClipBoard);
+    }
+}
+
+
+void EditorMainWindow::on_actionPaste_triggered()
+{
+    if (!mClipBoard.IsEmpty())
+    {
+        EditorTab* pTab = getActiveTab(m_ui->tabWidget);
+        if (pTab)
+        {
+            if (mClipBoard.SourceGame() != pTab->GetModel().GetMapInfo().mGame)
+            {
+                QMessageBox::critical(this, "Error", "You can't cut/copy paste data between AO and AE");
+            }
+            else
+            {
+                pTab->Paste(mClipBoard);
+            }
+        }
+    }
+}

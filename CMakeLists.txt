@@ -44,6 +44,10 @@ export(TARGETS jsonxx FILE jsonxx.cmake)
 set_property(TARGET jsonxx PROPERTY FOLDER "3rdParty")
 
 set(PROJECT_SOURCES
+        Source/ClipBoard.cpp
+        Source/ClipBoard.hpp
+        Source/DeleteItemsCommand.cpp
+        Source/DeleteItemsCommand.hpp
         Source/progressdialog.hpp
         Source/progressdialog.cpp
         Source/progressdialog.ui
@@ -124,6 +128,10 @@ else()
     else()
         add_executable(qt-editor ${PROJECT_SOURCES} ${QM_FILES})
     endif()
+endif()
+
+if (MSVC)
+target_compile_options(qt-editor PUBLIC "/permissive-")
 endif()
 
 target_link_libraries(qt-editor PUBLIC relive_api Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Multimedia modplug jsonxx)

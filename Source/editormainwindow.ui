@@ -134,6 +134,9 @@
     <addaction name="action_copy"/>
     <addaction name="action_paste"/>
     <addaction name="separator"/>
+    <addaction name="actionCut"/>
+    <addaction name="actionCopy"/>
+    <addaction name="actionPaste"/>
     <addaction name="action_zoom_in"/>
     <addaction name="action_zoom_out"/>
     <addaction name="action_zoom_reset"/>
@@ -834,6 +837,30 @@
   <action name="actionItem_transparency">
    <property name="text">
     <string>Item transparency</string>
+   </property>
+  </action>
+  <action name="actionCut">
+   <property name="text">
+    <string>Cut</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+X</string>
+   </property>
+  </action>
+  <action name="actionCopy">
+   <property name="text">
+    <string>Copy</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+C</string>
+   </property>
+  </action>
+  <action name="actionPaste">
+   <property name="text">
+    <string>Paste</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+V</string>
    </property>
   </action>
  </widget>

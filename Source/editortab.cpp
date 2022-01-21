@@ -10,6 +10,7 @@
 #include <QUndoCommand>
 #include <QSpinBox>
 #include <QMenu>
+#include <QStatusBar>
 #include <QFileDialog>
 #include "resizeablearrowitem.hpp"
 #include "resizeablerectitem.hpp"
@@ -36,6 +37,8 @@
 #include <QFutureWatcher>
 #include <QFuture>
 #include <QtConcurrent/QtConcurrent>
+#include "DeleteItemsCommand.hpp"
+#include "ClipBoard.hpp"
 
 // Zoom by 10% each time.
 const float KZoomFactor = 0.10f;
@@ -44,7 +47,7 @@ const float KMaxZoomInLevels = 14.0f;
 
 INITIALIZE_EASYLOGGINGPP
 
-class SetSelectionCommand : public QUndoCommand
+class SetSelectionCommand final : public QUndoCommand
 {
 public:
     SetSelectionCommand(EditorTab* pTab, QGraphicsScene* pScene, QList<QGraphicsItem*>& oldSelection, QList<QGraphicsItem*>& newSelection) 
@@ -99,7 +102,7 @@ private:
 };
 
 
-class MoveItemsCommand : public QUndoCommand
+class MoveItemsCommand final : public QUndoCommand
 {
 public:
     MoveItemsCommand(QGraphicsScene* pScene, ItemPositionData oldPositions, ItemPositionData newPositions, Model& model)
@@ -181,7 +184,7 @@ private:
     bool mFirst = false;
 };
 
-class EditorGraphicsView : public QGraphicsView
+class EditorGraphicsView final : public QGraphicsView
 {
 public:
     EditorGraphicsView(EditorTab* editorTab)
@@ -270,13 +273,14 @@ private:
 };
 
 
-EditorTab::EditorTab(QTabWidget* aParent, UP_Model model, QString jsonFileName, bool isTempFile)
+EditorTab::EditorTab(QTabWidget* aParent, UP_Model model, QString jsonFileName, bool isTempFile, QStatusBar* pStatusBar)
     : QMainWindow(aParent),
     ui(new Ui::EditorTab),
     mModel(std::move(model)),
     mJsonFileName(jsonFileName),
     mParent(aParent),
-    mIsTempFile(isTempFile)
+    mIsTempFile(isTempFile),
+    mStatusBar(pStatusBar)
 {
     ui->setupUi(this);
 
@@ -403,6 +407,34 @@ void EditorTab::EditTransparency()
 {
     auto transparencyDialog = new TransparencyDialog(this, this);
     transparencyDialog->exec();
+}
+
+void EditorTab::Cut(ClipBoard& clipBoard)
+{
+    if (!mScene->selectedItems().isEmpty())
+    {
+        clipBoard.Set(mScene->selectedItems(), *mModel);
+        mUndoStack.push(new DeleteItemsCommand(this, true, mScene->selectedItems()));
+        mStatusBar->showMessage(tr("Selection cut"), 2000);
+    }
+}
+
+void EditorTab::Copy(ClipBoard& clipBoard)
+{
+    if (!mScene->selectedItems().isEmpty())
+    {
+        clipBoard.Set(mScene->selectedItems(), *mModel);
+        mStatusBar->showMessage(tr("Selection copied"), 2000);
+    }
+}
+
+void EditorTab::Paste(ClipBoard& clipBoard)
+{
+    if (!clipBoard.IsEmpty())
+    {
+        mUndoStack.push(new PasteItemsCommand(this, clipBoard));
+        mStatusBar->showMessage(tr("Items pasted"), 2000);
+    }
 }
 
 void EditorTab::cleanChanged(bool clean)
@@ -578,11 +610,13 @@ bool EditorTab::DoSave(QString fileName)
         }))
     {
         mUndoStack.setClean();
+        mStatusBar->showMessage(tr("Saved"), 2000);
         return true;
     }
     else
     {
         QMessageBox::critical(this, "Error", "Failed to save " + fileName);
+        mStatusBar->showMessage(tr("Save failed"));
         return false;
     }
 }

@@ -23,12 +23,13 @@ class CameraGraphicsItem;
 struct MapObject;
 class CollisionObject;
 class CameraManager;
+class ClipBoard;
 
 class EditorTab final : public QMainWindow
 {
     Q_OBJECT
 public:
-    EditorTab(QTabWidget* aParent, UP_Model model, QString jsonFileName, bool isTempFile);
+    EditorTab(QTabWidget* aParent, UP_Model model, QString jsonFileName, bool isTempFile, QStatusBar* pStatusBar);
     ~EditorTab();
     void ZoomIn();
     void ZoomOut();
@@ -87,6 +88,10 @@ public:
 
     void EditTransparency();
 
+    void Cut(ClipBoard& clipBoard);
+    void Copy(ClipBoard& clipBoard);
+    void Paste(ClipBoard& clipBoard);
+
 signals:
     void CleanChanged();
 
@@ -109,4 +114,6 @@ private:
     bool mIsTempFile = false;
 
     CameraManager* mCameraManager = nullptr;
+
+    QStatusBar* mStatusBar = nullptr;
 };

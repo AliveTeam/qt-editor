@@ -3,6 +3,8 @@
 #include <QMainWindow>
 #include <memory>
 #include <QSettings>
+#include "editortab.hpp"
+#include "ClipBoard.hpp"
 
 namespace Ui
 {
@@ -63,6 +65,12 @@ private slots:
 
     void on_action_toggle_show_grid_triggered();
 
+    void on_actionCut_triggered();
+
+    void on_actionCopy_triggered();
+
+    void on_actionPaste_triggered();
+
 private:
     bool onOpenPath(QString fileName, bool createNewPath);
     void UpdateWindowTitle();
@@ -71,4 +79,5 @@ private:
 private:
     Ui::EditorMainWindow* m_ui;
     QSettings m_Settings;
+    ClipBoard mClipBoard;
 };
