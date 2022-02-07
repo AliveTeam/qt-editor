@@ -92,8 +92,6 @@ bool EditorMainWindow::onOpenPath(QString fullFileName, bool createNewPath)
             {
                 // Ask the user to pick one
                 auto pathSelection = new PathSelectionDialog(this, ret);
-                // Get rid of "?"
-                pathSelection->setWindowFlags(pathSelection->windowFlags() & ~Qt::WindowContextHelpButtonHint);
                 pathSelection->exec();
 
                 selectedPath = pathSelection->SelectedPath();
@@ -442,8 +440,6 @@ void EditorMainWindow::on_actionExport_to_lvl_triggered()
     else
     {
         auto exportDialog = new ExportPathDialog(this);
-        // Get rid of "?"
-        exportDialog->setWindowFlags(exportDialog->windowFlags() & ~Qt::WindowContextHelpButtonHint);
         exportDialog->exec();
         delete exportDialog;
     }

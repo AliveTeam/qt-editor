@@ -626,8 +626,6 @@ bool EditorTab::DoSave(QString fileName)
 void EditorTab::Export()
 {
     auto exportDialog = new ExportPathDialog(this);
-    // Get rid of "?"
-    exportDialog->setWindowFlags(exportDialog->windowFlags() & ~Qt::WindowContextHelpButtonHint);
     exportDialog->setJsonPath(mJsonFileName);
 
     if (mExportedPathLvlName.isEmpty())

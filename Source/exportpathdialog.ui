@@ -6,65 +6,49 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>451</width>
-    <height>145</height>
+    <width>493</width>
+    <height>142</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Export path to lvl</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_4">
-   <item>
-    <layout class="QVBoxLayout" name="verticalLayout">
-     <item>
-      <widget class="QLabel" name="label">
-       <property name="text">
-        <string>Path json file</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout">
-       <item>
-        <widget class="QLineEdit" name="txtJsonPath"/>
-       </item>
-       <item>
-        <widget class="QPushButton" name="btnSelectJson">
-         <property name="text">
-          <string>Browse</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-    </layout>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>Path json file</string>
+     </property>
+    </widget>
    </item>
-   <item>
-    <layout class="QVBoxLayout" name="verticalLayout_3">
-     <item>
-      <widget class="QLabel" name="label_3">
-       <property name="text">
-        <string>LVL file</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_3">
-       <item>
-        <widget class="QLineEdit" name="txtLvlFilePath"/>
-       </item>
-       <item>
-        <widget class="QPushButton" name="btnSelectLvlFile">
-         <property name="text">
-          <string>Browse</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-    </layout>
+   <item row="1" column="0">
+    <widget class="QLineEdit" name="txtJsonPath"/>
    </item>
-   <item>
+   <item row="1" column="1">
+    <widget class="QPushButton" name="btnSelectJson">
+     <property name="text">
+      <string>Browse</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0">
+    <widget class="QLabel" name="label_3">
+     <property name="text">
+      <string>LVL file</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0">
+    <widget class="QLineEdit" name="txtLvlFilePath"/>
+   </item>
+   <item row="3" column="1">
+    <widget class="QPushButton" name="btnSelectLvlFile">
+     <property name="text">
+      <string>Browse</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="0" colspan="2">
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>

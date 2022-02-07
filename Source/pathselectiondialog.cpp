@@ -3,7 +3,7 @@
 #include "relive_api.hpp"
 
 PathSelectionDialog::PathSelectionDialog(QWidget *parent, ReliveAPI::EnumeratePathsResult& paths) :
-    QDialog(parent),
+    QDialog(parent, Qt::WindowMaximizeButtonHint | Qt::WindowCloseButtonHint),
     ui(new Ui::PathSelectionDialog),
     mPaths(paths)
 {

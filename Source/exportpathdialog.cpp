@@ -6,7 +6,7 @@
 #include "relive_api.hpp"
 
 ExportPathDialog::ExportPathDialog(QWidget *parent) :
-    QDialog(parent),
+    QDialog(parent, Qt::WindowMaximizeButtonHint | Qt::WindowCloseButtonHint),
     ui(new Ui::ExportPathDialog)
 {
     ui->setupUi(this);

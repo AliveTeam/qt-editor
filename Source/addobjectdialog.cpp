@@ -151,7 +151,7 @@ private:
 };
 
 AddObjectDialog::AddObjectDialog(QWidget *parent, EditorTab* pTab) :
-    QDialog(parent),
+    QDialog(parent, Qt::WindowMaximizeButtonHint | Qt::WindowCloseButtonHint),
     ui(new Ui::AddObjectDialog),
     mTab(pTab)
 {

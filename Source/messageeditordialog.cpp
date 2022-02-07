@@ -55,7 +55,7 @@ private:
 };
 
 MessageEditorDialog::MessageEditorDialog(QWidget *parent, EditorTab* pTab, Model& model, bool isLCDScreenMsgs) :
-    QDialog(parent),
+    QDialog(parent, Qt::WindowMaximizeButtonHint | Qt::WindowCloseButtonHint),
     ui(new Ui::MessageEditorDialog),
     mTab(pTab),
     mModel(model),
