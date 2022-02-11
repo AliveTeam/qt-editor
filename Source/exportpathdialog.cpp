@@ -4,6 +4,7 @@
 #include <QMessageBox>
 #include <QUuid>
 #include "relive_api.hpp"
+#include <QProcess>
 
 ExportPathDialog::ExportPathDialog(QWidget *parent) :
     QDialog(parent, Qt::WindowMaximizeButtonHint | Qt::WindowCloseButtonHint),
@@ -35,15 +36,45 @@ void ExportPathDialog::on_btnSelectLvlFile_clicked()
     }
 }
 
-void ExportPathDialog::on_buttonBox_accepted()
+void ExportPathDialog::on_btnSelectRelive_clicked()
+{
+    QString reliveExe = QFileDialog::getOpenFileName(this, tr("Select R.E.L.I.V.E executable"), "");
+    if (!reliveExe.isEmpty())
+    {
+        setRelivePath(reliveExe);
+    }
+}
+
+void ExportPathDialog::on_btnExportAndRun_clicked()
+{
+    ExportToLvl();
+
+    if (!ui->txtRelivePath->text().isEmpty())
+    {
+        QString reliveExe = ui->txtRelivePath->text();
+        QFileInfo info(reliveExe);
+
+        if (!info.isExecutable())
+        {
+            QMessageBox::critical(this, "Error", "Failed to open R.E.L.I.V.E, the selected file is not an executable");
+            return;
+        }
+        QProcess* process = new QProcess(this);
+        QDir::setCurrent(info.dir().path());
+        process->execute(reliveExe, QStringList() << "");
+        delete process;
+    }
+}
+
+void ExportPathDialog::ExportToLvl()
 {
     try
     {
         std::vector<std::string> resourceSources; // TODO: Wire into UI
-        
+
         QUuid uuid = QUuid::createUuid();
         QString tempFileFullPath = QDir::toNativeSeparators(
-            QDir::tempPath() + "/" + 
+            QDir::tempPath() + "/" +
             qApp->applicationName().replace(" ", "") +
             "_" +
             uuid.toString(QUuid::WithoutBraces) + ".lvl.tmp");
@@ -75,6 +106,11 @@ void ExportPathDialog::on_buttonBox_accepted()
     }
 }
 
+void ExportPathDialog::on_buttonBox_accepted()
+{
+    ExportToLvl();
+}
+
 void ExportPathDialog::on_buttonBox_rejected()
 {
     ui->txtLvlFilePath->clear(); // don't persist the bad path
@@ -90,7 +126,17 @@ void ExportPathDialog::setLvlName(QString path)
     ui->txtLvlFilePath->setText(path);
 }
 
+void ExportPathDialog::setRelivePath(QString path)
+{
+    ui->txtRelivePath->setText(path);
+}
+
 QString ExportPathDialog::getLvlName() const
 {
     return ui->txtLvlFilePath->text();
+}
+
+QString ExportPathDialog::getRelivePath() const
+{
+    return ui->txtRelivePath->text();
 }

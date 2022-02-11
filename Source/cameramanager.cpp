@@ -366,7 +366,7 @@ private:
 };
 
 CameraManager::CameraManager(QWidget *parent, EditorTab* pParentTab, const QPoint* openedPos) :
-    QDialog(parent),
+    QDialog(parent, Qt::WindowMaximizeButtonHint | Qt::WindowCloseButtonHint),
     ui(new Ui::CameraManager),
     mTab(pParentTab)
 {

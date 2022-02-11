@@ -409,6 +409,7 @@ void EditorTab::EditTransparency()
 {
     auto transparencyDialog = new TransparencyDialog(this, this);
     transparencyDialog->exec();
+    delete transparencyDialog;
 }
 
 void EditorTab::Cut(ClipBoard& clipBoard)
@@ -627,6 +628,7 @@ void EditorTab::Export()
 {
     auto exportDialog = new ExportPathDialog(this);
     exportDialog->setJsonPath(mJsonFileName);
+    exportDialog->setRelivePath(mReliveExePath);
 
     if (mExportedPathLvlName.isEmpty())
     {
@@ -649,30 +651,41 @@ void EditorTab::Export()
     {
         mExportedPathLvlName = exportDialog->getLvlName();
     }
+
+    if (!exportDialog->getRelivePath().isEmpty())
+    {
+        mReliveExePath = exportDialog->getRelivePath();
+    }
+
+    delete exportDialog;
 }
 
 void EditorTab::EditHintFlyMessages()
 {
     auto pDlg = new MessageEditorDialog(this, this, *mModel, false);
     pDlg->exec();
+    delete pDlg;
 }
 
 void EditorTab::EditLCDScreenMessages()
 {
     auto pDlg = new MessageEditorDialog(this, this, *mModel, true);
     pDlg->exec();
+    delete pDlg;
 }
 
 void EditorTab::EditPathData()
 {
     auto pDlg = new PathDataEditorDialog(this, this);
     pDlg->exec();
+    delete pDlg;
 }
 
 void EditorTab::EditMapSize()
 {
     auto pDlg = new ChangeMapSizeDialog(this, this);
     pDlg->exec();
+    delete pDlg;
 }
 
 void EditorTab::UpdateCleanState()
@@ -684,6 +697,7 @@ void EditorTab::AddObject()
 {
     auto pDlg = new AddObjectDialog(this, this);
     pDlg->exec();
+    delete pDlg;
 }
 
 class AddCollisionCommand final : public QUndoCommand
