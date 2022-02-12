@@ -53,7 +53,7 @@ private:
 };
 
 PathDataEditorDialog::PathDataEditorDialog(QWidget *parent, EditorTab* pTab) :
-    QDialog(parent),
+    QDialog(parent, Qt::WindowMaximizeButtonHint | Qt::WindowCloseButtonHint),
     ui(new Ui::PathDataEditorDialog),
     mTab(pTab)
 {

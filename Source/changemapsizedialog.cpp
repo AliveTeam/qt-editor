@@ -384,7 +384,7 @@ private:
 };
 
 ChangeMapSizeDialog::ChangeMapSizeDialog(QWidget *parent, EditorTab* pTab) :
-    QDialog(parent),
+    QDialog(parent, Qt::WindowMaximizeButtonHint | Qt::WindowCloseButtonHint),
     ui(new Ui::ChangeMapSizeDialog),
     mTab(pTab)
 {

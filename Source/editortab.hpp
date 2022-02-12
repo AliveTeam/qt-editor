@@ -110,6 +110,7 @@ private:
     QString mJsonFileName;
 
     QString mExportedPathLvlName;
+    QString mReliveExePath;
     QTabWidget* mParent = nullptr;
     bool mIsTempFile = false;
 

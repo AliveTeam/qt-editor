@@ -3,7 +3,7 @@
 #include "editortab.hpp"
 
 TransparencyDialog::TransparencyDialog(EditorTab* pTab, QWidget *parent) :
-    QDialog(parent),
+    QDialog(parent, Qt::WindowMaximizeButtonHint | Qt::WindowCloseButtonHint),
     ui(new Ui::TransparencyDialog),
     mTab(pTab)
 {
