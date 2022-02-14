@@ -6,7 +6,6 @@
 #include "exporter.hpp"
 #include <functional>
 #include <QtCore/qcommandlineparser.h>
-#include "main.h"
 
 void DoMapSizeTests();
 
