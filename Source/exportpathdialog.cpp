@@ -5,6 +5,7 @@
 #include <QUuid>
 #include "relive_api.hpp"
 #include <QProcess>
+#include "exporter.hpp"
 
 ExportPathDialog::ExportPathDialog(QWidget *parent) :
     QDialog(parent, Qt::WindowMaximizeButtonHint | Qt::WindowCloseButtonHint),
@@ -68,42 +69,14 @@ void ExportPathDialog::on_btnExportAndRun_clicked()
 
 void ExportPathDialog::ExportToLvl()
 {
-    try
-    {
-        std::vector<std::string> resourceSources; // TODO: Wire into UI
+    auto jsonPath = ui->txtJsonPath->text();
+    auto lvlPath = ui->txtLvlFilePath->text();
+    auto partialTemporaryFilePath = qApp->applicationName().replace(" ", "");
 
-        QUuid uuid = QUuid::createUuid();
-        QString tempFileFullPath = QDir::toNativeSeparators(
-            QDir::tempPath() + "/" +
-            qApp->applicationName().replace(" ", "") +
-            "_" +
-            uuid.toString(QUuid::WithoutBraces) + ".lvl.tmp");
-
-        // Export to a temp lvl file
-        ReliveAPI::ImportPathJsonToBinary(
-            ui->txtJsonPath->text().toStdString(),
-            ui->txtLvlFilePath->text().toStdString(),
-            tempFileFullPath.toStdString(),
-            resourceSources);
-
-        // Then overwrite the original lvl with the temp one
-        if (!QFile::remove(ui->txtLvlFilePath->text()))
+    exportJsonToLvl(jsonPath, lvlPath, partialTemporaryFilePath, [&](const QString text)
         {
-            QMessageBox::critical(this, "Error", "Failed to delete " + ui->txtLvlFilePath->text() + " in order to replace it with the updated lvl");
-            QFile::remove(tempFileFullPath);
-            return;
-        }
-
-        if (!QFile::rename(tempFileFullPath, ui->txtLvlFilePath->text()))
-        {
-            QMessageBox::critical(this, "Error", "Failed to rename from " + tempFileFullPath + " to " + ui->txtLvlFilePath->text());
-            return;
-        }
-    }
-    catch (ReliveAPI::Exception& e)
-    {
-        QMessageBox::critical(this, "Error", e.what().c_str());
-    }
+            QMessageBox::critical(this, "Error", text);
+        });
 }
 
 void ExportPathDialog::on_buttonBox_accepted()

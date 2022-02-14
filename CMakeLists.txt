@@ -72,6 +72,8 @@ set(PROJECT_SOURCES
         Source/cameramanager.ui
         Source/exportpathdialog.hpp
         Source/exportpathdialog.cpp
+        Source/exporter.hpp
+        Source/exporter.cpp
         Source/exportpathdialog.ui
         Source/pathselectiondialog.hpp
         Source/pathselectiondialog.cpp
