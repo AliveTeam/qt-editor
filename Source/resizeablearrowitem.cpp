@@ -36,7 +36,7 @@ void ResizeableArrowItem::hoverMoveEvent( QGraphicsSceneHoverEvent* aEvent )
         }
         return;
     }
-    ResizeableArrowItem::hoverMoveEvent( aEvent );
+    QGraphicsItem::hoverMoveEvent( aEvent );
 }
 
 void ResizeableArrowItem::mousePressEvent( QGraphicsSceneMouseEvent* aEvent )
@@ -55,6 +55,7 @@ void ResizeableArrowItem::mouseMoveEvent( QGraphicsSceneMouseEvent* aEvent )
     if ( m_endOfLineClicked == eLinePoints_None )
     {
         QGraphicsLineItem::mouseMoveEvent( aEvent );
+        PosOrLineChanged();
         return;
     }
 
@@ -253,10 +254,10 @@ void ResizeableArrowItem::PosOrLineChanged()
     QLineF curLine = line();
 
     // Sync the model to the graphics item
-    mLine->SetX1(static_cast<int>(pos().x() + curLine.x2()));
-    mLine->SetY1(static_cast<int>(pos().y() + curLine.y2()));
-    mLine->SetX2(static_cast<int>(pos().x() + curLine.x1()));
-    mLine->SetY2(static_cast<int>(pos().y() + curLine.y1()));
+    mLine->SetX1(static_cast<int>(curLine.x2()));
+    mLine->SetY1(static_cast<int>(curLine.y2()));
+    mLine->SetX2(static_cast<int>(curLine.x1()));
+    mLine->SetY2(static_cast<int>(curLine.y1()));
 
     // Update the property tree view
     mPropSyncer.Sync(this);
