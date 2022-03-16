@@ -39,7 +39,7 @@ jobs:
 
 - job: Windows32
   pool:
-    vmImage: 'windows-latest'
+    vmImage: 'windows-2019'
   steps:
   - script: |
         git submodule update --init --recursive
@@ -61,7 +61,7 @@ jobs:
         
 - job: Windows64
   pool:
-    vmImage: 'windows-latest'
+    vmImage: 'windows-2019'
   steps:
   - script: |
         git submodule update --init --recursive

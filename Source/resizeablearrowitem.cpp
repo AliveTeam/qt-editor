@@ -8,7 +8,7 @@
 #include "PropertyTreeWidget.hpp"
 
 ResizeableArrowItem::ResizeableArrowItem(QGraphicsView* pView, CollisionObject* pLine, ISyncPropertiesToTree& propSyncer, int transparency)
-    : QGraphicsLineItem(pLine->X1(), pLine->Y1(), pLine->X2(), pLine->Y2()), mView(pView), mLine(pLine), mPropSyncer(propSyncer)
+    : QGraphicsLineItem(pLine->X2(), pLine->Y2(), pLine->X1(), pLine->Y1()), mView(pView), mLine(pLine), mPropSyncer(propSyncer)
 {
     Init();
     setZValue(2.0);
@@ -245,7 +245,7 @@ void ResizeableArrowItem::RestoreLine(const QLineF& line)
 
 void ResizeableArrowItem::SyncToCollisionItem()
 {
-    setLine(mLine->X1(), mLine->Y1(), mLine->X2(), mLine->Y2());
+    setLine(mLine->X2(), mLine->Y2(), mLine->X1(), mLine->Y1());
 }
 
 void ResizeableArrowItem::PosOrLineChanged()
@@ -253,10 +253,10 @@ void ResizeableArrowItem::PosOrLineChanged()
     QLineF curLine = line();
 
     // Sync the model to the graphics item
-    mLine->SetX1(static_cast<int>(pos().x() + curLine.x1()));
-    mLine->SetY1(static_cast<int>(pos().y() + curLine.y1()));
-    mLine->SetX2(static_cast<int>(pos().x() + curLine.x2()));
-    mLine->SetY2(static_cast<int>(pos().y() + curLine.y2()));
+    mLine->SetX1(static_cast<int>(pos().x() + curLine.x2()));
+    mLine->SetY1(static_cast<int>(pos().y() + curLine.y2()));
+    mLine->SetX2(static_cast<int>(pos().x() + curLine.x1()));
+    mLine->SetY2(static_cast<int>(pos().y() + curLine.y1()));
 
     // Update the property tree view
     mPropSyncer.Sync(this);
