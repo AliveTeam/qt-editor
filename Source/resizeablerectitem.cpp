@@ -59,7 +59,7 @@ void ResizeableRectItem::mouseMoveEvent( QGraphicsSceneMouseEvent* aEvent )
 {
     if ( m_ResizeMode != eResize_None )
     {
-        onResize( aEvent->scenePos() );
+        onResize(mView->mapToParent(aEvent->scenePos().toPoint()));
         return;
     }
     QGraphicsItem::mouseMoveEvent( aEvent );
