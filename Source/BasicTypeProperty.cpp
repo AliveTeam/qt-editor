@@ -1,5 +1,5 @@
 #include "BasicTypeProperty.hpp"
-#include "model.hpp"
+#include "Model.hpp"
 #include "IGraphicsItem.hpp"
 #include <QDateTime>
 
