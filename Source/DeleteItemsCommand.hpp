@@ -3,7 +3,7 @@
 #include <QUndoCommand>
 #include <QList>
 #include <QGraphicsItem>
-#include "model.hpp"
+#include "Model.hpp"
 
 class EditorTab;
 

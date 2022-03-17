@@ -1,6 +1,6 @@
-#include "cameramanager.hpp"
-#include "ui_cameramanager.h"
-#include "editortab.hpp"
+#include "CameraManager.hpp"
+#include "ui_CameraManager.h"
+#include "EditorTab.hpp"
 #include "EditorGraphicsScene.hpp"
 #include <QDebug>
 #include <QFileDialog>
@@ -8,8 +8,8 @@
 #include <QBuffer>
 #include <QGraphicsItem>
 #include "CameraGraphicsItem.hpp"
-#include "selectionsaver.hpp"
-#include "resizeablerectitem.hpp"
+#include "SelectionSaver.hpp"
+#include "ResizeableRectItem.hpp"
 
 static QPixmap Base64ToPixmap(const std::string& s)
 {

@@ -3,7 +3,7 @@
 #include <QMainWindow>
 #include <memory>
 #include <QSettings>
-#include "editortab.hpp"
+#include "EditorTab.hpp"
 #include "ClipBoard.hpp"
 
 namespace Ui

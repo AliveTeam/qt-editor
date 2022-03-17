@@ -1,7 +1,7 @@
 #pragma once
 
 #include <QDialog>
-#include "modthread.hpp"
+#include "ModThread.hpp"
 
 namespace Ui
 {

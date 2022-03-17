@@ -2,7 +2,7 @@
 
 #include <QTreeWidgetItem>
 #include "PropertyTreeWidget.hpp"
-#include "bigspinbox.hpp"
+#include "BigSpinBox.hpp"
 
 class IGraphicsItem;
 

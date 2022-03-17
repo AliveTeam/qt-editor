@@ -1,6 +1,6 @@
-#include "pathdataeditordialog.hpp"
-#include "ui_pathdataeditordialog.h"
-#include "editortab.hpp"
+#include "PathDataEditorDialog.hpp"
+#include "ui_PathDataEditorDialog.h"
+#include "EditorTab.hpp"
 #include <QUndoCommand>
 
 struct UndoRedoPathData final

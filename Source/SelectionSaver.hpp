@@ -3,7 +3,7 @@
 #include <QList>
 #include <QGraphicsItem>
 #include "EditorGraphicsScene.hpp"
-#include "editortab.hpp"
+#include "EditorTab.hpp"
 
 class SelectionSaver final
 {

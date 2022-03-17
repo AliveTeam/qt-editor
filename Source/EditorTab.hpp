@@ -9,7 +9,7 @@
 #include <QTreeWidget>
 #include <QApplication>
 #include <memory>
-#include "model.hpp"
+#include "Model.hpp"
 
 namespace Ui
 {

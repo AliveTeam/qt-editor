@@ -1,4 +1,4 @@
-#include "resizeablerectitem.hpp"
+#include "ResizeableRectItem.hpp"
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsSceneMoveEvent>
 #include <QPainter>
@@ -10,7 +10,7 @@
 #include <QGraphicsScene>
 #include <QGraphicsView>
 #include <QPixmapCache>
-#include "model.hpp"
+#include "Model.hpp"
 #include "PropertyTreeWidget.hpp"
 
 const quint32 ResizeableRectItem::kMinRectSize = 10;

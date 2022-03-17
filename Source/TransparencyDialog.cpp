@@ -1,6 +1,6 @@
-#include "transparencydialog.hpp"
-#include "ui_transparencydialog.h"
-#include "editortab.hpp"
+#include "TransparencyDialog.hpp"
+#include "ui_TransparencyDialog.h"
+#include "EditorTab.hpp"
 
 TransparencyDialog::TransparencyDialog(EditorTab* pTab, QWidget *parent) :
     QDialog(parent, Qt::WindowMaximizeButtonHint | Qt::WindowCloseButtonHint),

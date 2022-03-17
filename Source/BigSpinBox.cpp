@@ -1,4 +1,4 @@
-#include "bigspinbox.hpp"
+#include "BigSpinBox.hpp"
 #include <QLineEdit>
 #include <assert.h>
 #include <limits>

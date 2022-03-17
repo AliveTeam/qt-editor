@@ -4,8 +4,8 @@
 #include <QGraphicsItem>
 #include <QUndoCommand>
 #include <string>
-#include "model.hpp"
-#include "selectionsaver.hpp"
+#include "Model.hpp"
+#include "SelectionSaver.hpp"
 #include "EditorGraphicsScene.hpp"
 
 class EditorTab;

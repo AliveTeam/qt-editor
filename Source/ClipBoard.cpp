@@ -1,7 +1,7 @@
 #include "ClipBoard.hpp"
-#include "editortab.hpp"
-#include "resizeablearrowitem.hpp"
-#include "resizeablerectitem.hpp"
+#include "EditorTab.hpp"
+#include "ResizeableArrowItem.hpp"
+#include "ResizeableRectItem.hpp"
 
 PasteItemsCommand::PasteItemsCommand(EditorTab* pTab, ClipBoard& clipBoard)
     : mTab(pTab), mSelectionSaver(pTab)
