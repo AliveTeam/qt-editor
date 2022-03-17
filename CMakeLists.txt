@@ -48,63 +48,63 @@ set(PROJECT_SOURCES
         Source/ClipBoard.hpp
         Source/DeleteItemsCommand.cpp
         Source/DeleteItemsCommand.hpp
-        Source/progressdialog.hpp
-        Source/progressdialog.cpp
-        Source/progressdialog.ui
-        Source/transparencydialog.hpp
-        Source/transparencydialog.cpp
-        Source/transparencydialog.ui
-        Source/selectionsaver.hpp
-        Source/addobjectdialog.hpp
-        Source/addobjectdialog.cpp
-        Source/addobjectdialog.ui
-        Source/changemapsizedialog.hpp
-        Source/changemapsizedialog.cpp
-        Source/changemapsizedialog.ui
-        Source/pathdataeditordialog.hpp
-        Source/pathdataeditordialog.cpp
-        Source/pathdataeditordialog.ui
-        Source/messageeditordialog.cpp
-        Source/messageeditordialog.hpp
-        Source/messageeditordialog.ui
-        Source/cameramanager.cpp
-        Source/cameramanager.hpp
-        Source/cameramanager.ui
-        Source/exportpathdialog.hpp
-        Source/exportpathdialog.cpp
-        Source/exporter.hpp
-        Source/exporter.cpp
-        Source/exportpathdialog.ui
-        Source/pathselectiondialog.hpp
-        Source/pathselectiondialog.cpp
-        Source/pathselectiondialog.ui
+        Source/ProgressDialog.hpp
+        Source/ProgressDialog.cpp
+        Source/ProgressDialog.ui
+        Source/TransparencyDialog.hpp
+        Source/TransparencyDialog.cpp
+        Source/TransparencyDialog.ui
+        Source/SelectionSaver.hpp
+        Source/AddObjectDialog.hpp
+        Source/AddObjectDialog.cpp
+        Source/AddObjectDialog.ui
+        Source/ChangeMapSizeDialog.hpp
+        Source/ChangeMapSizeDialog.cpp
+        Source/ChangeMapSizeDialog.ui
+        Source/PathDataEditorDialog.hpp
+        Source/PathDataEditorDialog.cpp
+        Source/PathDataEditorDialog.ui
+        Source/MessageEditorDialog.cpp
+        Source/MessageEditorDialog.hpp
+        Source/MessageEditorDialog.ui
+        Source/CameraManager.cpp
+        Source/CameraManager.hpp
+        Source/CameraManager.ui
+        Source/ExportPathDialog.hpp
+        Source/ExportPathDialog.cpp
+        Source/Exporter.hpp
+        Source/Exporter.cpp
+        Source/ExportPathDialog.ui
+        Source/PathSelectionDialog.hpp
+        Source/PathSelectionDialog.cpp
+        Source/PathSelectionDialog.ui
         Source/IGraphicsItem.hpp
         Source/main.cpp
-        Source/aboutdialog.ui
-        Source/editormainwindow.ui
-        Source/editortab.ui
-        Source/editormainwindow.cpp
-        Source/editormainwindow.hpp
-        Source/editortab.cpp
-        Source/editortab.hpp
-        Source/firewidget.cpp
-        Source/firewidget.hpp
-        Source/aboutdialog.cpp
-        Source/aboutdialog.hpp
-        Source/modthread.cpp
-        Source/modthread.hpp
-        Source/model.cpp
-        Source/model.hpp
-        Source/resizeablearrowitem.cpp
-        Source/resizeablearrowitem.hpp
-        Source/resizeablerectitem.cpp
-        Source/resizeablerectitem.hpp
+        Source/AboutDialog.ui
+        Source/EditorMainWindow.ui
+        Source/EditorTab.ui
+        Source/EditorMainWindow.cpp
+        Source/EditorMainWindow.hpp
+        Source/EditorTab.cpp
+        Source/EditorTab.hpp
+        Source/FireWidget.cpp
+        Source/FireWidget.hpp
+        Source/AboutDialog.cpp
+        Source/AboutDialog.hpp
+        Source/ModThread.cpp
+        Source/ModThread.hpp
+        Source/Model.cpp
+        Source/Model.hpp
+        Source/ResizeableArrowItem.cpp
+        Source/ResizeableArrowItem.hpp
+        Source/ResizeableRectItem.cpp
+        Source/ResizeableRectItem.hpp
         Source/CameraGraphicsItem.cpp
         Source/CameraGraphicsItem.hpp
         Source/EditorGraphicsScene.cpp
         Source/EditorGraphicsScene.hpp
-        Source/bigspinbox.cpp
-        Source/bigspinbox.hpp
+        Source/BigSpinBox.cpp
+        Source/BigSpinBox.hpp
         Source/PropertyTreeItemBase.hpp
         Source/StringProperty.hpp
         Source/StringProperty.cpp
