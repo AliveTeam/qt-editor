@@ -1,11 +1,11 @@
-#include "exportpathdialog.hpp"
-#include "ui_exportpathdialog.h"
+#include "ExportPathDialog.hpp"
+#include "ui_ExportPathDialog.h"
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QUuid>
 #include "relive_api.hpp"
 #include <QProcess>
-#include "exporter.hpp"
+#include "Exporter.hpp"
 
 ExportPathDialog::ExportPathDialog(QWidget *parent) :
     QDialog(parent, Qt::WindowMaximizeButtonHint | Qt::WindowCloseButtonHint),

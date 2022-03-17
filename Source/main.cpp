@@ -1,9 +1,9 @@
-#include "editormainwindow.hpp"
+#include "EditorMainWindow.hpp"
 #include <QApplication>
 #include <QFile>
 #include <QTranslator>
 #include <QDebug>
-#include "exporter.hpp"
+#include "Exporter.hpp"
 #include <functional>
 #include <QtCore/qcommandlineparser.h>
 

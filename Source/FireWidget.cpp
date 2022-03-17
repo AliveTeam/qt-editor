@@ -1,4 +1,4 @@
-#include "firewidget.hpp"
+#include "FireWidget.hpp"
 #include <QPainter>
 #include <QPaintEvent>
 #include <QTimer>

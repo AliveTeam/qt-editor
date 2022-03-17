@@ -1,6 +1,6 @@
-#include "aboutdialog.hpp"
-#include "ui_aboutdialog.h"
-#include "firewidget.hpp"
+#include "AboutDialog.hpp"
+#include "ui_AboutDialog.h"
+#include "FireWidget.hpp"
 #include <QLayout>
 #include <QTimer>
 #include "relive_api.hpp"

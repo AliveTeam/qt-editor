@@ -1,7 +1,7 @@
 #include "DeleteItemsCommand.hpp"
-#include "resizeablearrowitem.hpp"
-#include "resizeablerectitem.hpp"
-#include "editortab.hpp"
+#include "ResizeableArrowItem.hpp"
+#include "ResizeableRectItem.hpp"
+#include "EditorTab.hpp"
 #include "EditorGraphicsScene.hpp"
 
 DeleteItemsCommand::DeleteItemsCommand(EditorTab* pTab, bool isCut, QList<QGraphicsItem*> graphicsItemsToDelete)

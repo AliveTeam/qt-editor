@@ -1,11 +1,11 @@
-#include "addobjectdialog.hpp"
-#include "ui_addobjectdialog.h"
-#include "editortab.hpp"
+#include "AddObjectDialog.hpp"
+#include "ui_AddObjectDialog.h"
+#include "EditorTab.hpp"
 #include "EditorGraphicsScene.hpp"
 #include <QUndoCommand>
 #include <QGraphicsItem>
-#include "resizeablerectitem.hpp"
-#include "selectionsaver.hpp"
+#include "ResizeableRectItem.hpp"
+#include "SelectionSaver.hpp"
 
 class ObjectListItem final : public QListWidgetItem
 {

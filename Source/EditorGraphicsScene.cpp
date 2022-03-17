@@ -2,11 +2,11 @@
 #include <QPainter>
 #include <QDebug>
 #include <QGraphicsSceneMouseEvent>
-#include "resizeablearrowitem.hpp"
-#include "resizeablerectitem.hpp"
+#include "ResizeableArrowItem.hpp"
+#include "ResizeableRectItem.hpp"
 #include "CameraGraphicsItem.hpp"
-#include "editortab.hpp"
-#include "model.hpp"
+#include "EditorTab.hpp"
+#include "Model.hpp"
 #include <QUndoCommand>
 #include "DeleteItemsCommand.hpp"
 

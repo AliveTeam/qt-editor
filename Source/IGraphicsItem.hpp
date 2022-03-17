@@ -1,6 +1,6 @@
 #pragma once
 
-#include "model.hpp"
+#include "Model.hpp"
 #include <QGraphicsItem>
 
 class IGraphicsItem

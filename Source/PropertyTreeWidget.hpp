@@ -1,7 +1,7 @@
 #pragma once
 
 #include <QTreeWidget>
-#include "model.hpp"
+#include "Model.hpp"
 
 class PropertyTreeItemBase;
 class IGraphicsItem;

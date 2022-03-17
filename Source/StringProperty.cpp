@@ -1,6 +1,6 @@
 #include "StringProperty.hpp"
 #include <QComboBox>
-#include "model.hpp"
+#include "Model.hpp"
 
 ReadOnlyStringProperty::ReadOnlyStringProperty(QTreeWidgetItem* pParent, QString propertyName, int* pProperty)
     : PropertyTreeItemBase(pParent, QStringList{ propertyName, QString::number(*pProperty) }), mProperty(pProperty)

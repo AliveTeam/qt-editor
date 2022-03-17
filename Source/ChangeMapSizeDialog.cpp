@@ -1,10 +1,10 @@
-#include "changemapsizedialog.hpp"
-#include "ui_changemapsizedialog.h"
-#include "editortab.hpp"
+#include "ChangeMapSizeDialog.hpp"
+#include "ui_ChangeMapSizeDialog.h"
+#include "EditorTab.hpp"
 #include <QUndoCommand>
 #include "EditorGraphicsScene.hpp"
-#include "selectionsaver.hpp"
-#include "resizeablerectitem.hpp"
+#include "SelectionSaver.hpp"
+#include "ResizeableRectItem.hpp"
 #include "CameraGraphicsItem.hpp"
 #include <QDebug>
 

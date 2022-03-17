@@ -1,5 +1,5 @@
-#include "pathselectiondialog.hpp"
-#include "ui_pathselectiondialog.h"
+#include "PathSelectionDialog.hpp"
+#include "ui_PathSelectionDialog.h"
 #include "relive_api.hpp"
 
 PathSelectionDialog::PathSelectionDialog(QWidget *parent, ReliveAPI::EnumeratePathsResult& paths) :

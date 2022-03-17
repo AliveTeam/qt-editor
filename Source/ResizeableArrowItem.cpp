@@ -1,10 +1,10 @@
-#include "resizeablearrowitem.hpp"
+#include "ResizeableArrowItem.hpp"
 #include <QCursor>
 #include <QPainter>
 #include <QStyleOptionGraphicsItem>
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsView>
-#include "model.hpp"
+#include "Model.hpp"
 #include "PropertyTreeWidget.hpp"
 
 ResizeableArrowItem::ResizeableArrowItem(QGraphicsView* pView, CollisionObject* pLine, ISyncPropertiesToTree& propSyncer, int transparency)

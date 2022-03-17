@@ -1,7 +1,7 @@
 #include "CameraGraphicsItem.hpp"
 #include <QPen>
 #include <QPainter>
-#include "model.hpp"
+#include "Model.hpp"
 #include "IGraphicsItem.hpp"
 
 CameraGraphicsItem::CameraGraphicsItem(Camera* pCamera, int xpos, int ypos, int width, int height, int transparency) : QGraphicsRectItem(xpos, ypos, width, height), mCamera(pCamera)

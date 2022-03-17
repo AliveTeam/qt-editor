@@ -1,16 +1,16 @@
-#include "editormainwindow.hpp"
+#include "EditorMainWindow.hpp"
 #include <QMessageBox>
 #include <QPixmapCache>
-#include "editortab.hpp"
-#include "ui_editormainwindow.h"
-#include "aboutdialog.hpp"
+#include "EditorTab.hpp"
+#include "ui_EditorMainWindow.h"
+#include "AboutDialog.hpp"
 #include <QTabBar>
 #include <QFileDialog>
 #include <QInputDialog>
 #include <QUuid>
-#include "model.hpp"
-#include "pathselectiondialog.hpp"
-#include "exportpathdialog.hpp"
+#include "Model.hpp"
+#include "PathSelectionDialog.hpp"
+#include "ExportPathDialog.hpp"
 #include "relive_api.hpp"
 #include "EditorGraphicsScene.hpp"
 

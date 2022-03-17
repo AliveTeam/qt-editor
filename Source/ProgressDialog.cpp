@@ -1,5 +1,5 @@
-#include "progressdialog.hpp"
-#include "ui_progressdialog.h"
+#include "ProgressDialog.hpp"
+#include "ui_ProgressDialog.h"
 
 ProgressDialog::ProgressDialog(QWidget *parent) :
     QDialog(parent),

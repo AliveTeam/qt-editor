@@ -1,4 +1,4 @@
-#include "modthread.hpp"
+#include "ModThread.hpp"
 #include <QFile>
 
 ModThread::ModThread( QString aFileName )

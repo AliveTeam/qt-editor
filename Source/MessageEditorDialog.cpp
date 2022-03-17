@@ -1,7 +1,7 @@
-#include "messageeditordialog.hpp"
-#include "ui_messageeditordialog.h"
-#include "model.hpp"
-#include "editortab.hpp"
+#include "MessageEditorDialog.hpp"
+#include "ui_MessageEditorDialog.h"
+#include "Model.hpp"
+#include "EditorTab.hpp"
 #include <QUndoCommand>
 
 class ChangeMessagesCommand final : public QUndoCommand
