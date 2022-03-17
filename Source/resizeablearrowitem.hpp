@@ -53,6 +53,7 @@ private:
     };
     eLinePoints m_endOfLineClicked = eLinePoints_None;
     QPointF m_AnchorPoint;
+    QLineF m_MouseDownLine;
     bool m_MouseIsDown = false;
     QGraphicsView* mView = nullptr;
     CollisionObject* mLine = nullptr;
