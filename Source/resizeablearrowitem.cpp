@@ -25,6 +25,7 @@ void ResizeableArrowItem::hoverMoveEvent( QGraphicsSceneHoverEvent* aEvent )
 {
     if ( !m_MouseIsDown )
     {
+        m_MouseDownLine = line();
         CalcWhichEndOfLineClicked( aEvent->pos(), aEvent->modifiers() );
         if ( m_endOfLineClicked == eLinePoints_None )
         {
@@ -54,7 +55,15 @@ void ResizeableArrowItem::mouseMoveEvent( QGraphicsSceneMouseEvent* aEvent )
 {
     if ( m_endOfLineClicked == eLinePoints_None )
     {
-        QGraphicsLineItem::mouseMoveEvent( aEvent );
+        QGraphicsLineItem::mouseMoveEvent(aEvent);
+
+        QPointF tl = pos();
+        setPos(QPointF());
+
+        QLineF tmp = m_MouseDownLine;
+        tmp.translate(tl);
+        setLine(tmp);
+
         PosOrLineChanged();
         return;
     }
