@@ -39,6 +39,8 @@
 #include <QtConcurrent/QtConcurrent>
 #include "DeleteItemsCommand.hpp"
 #include "ClipBoard.hpp"
+#include "../../AliveLibAE/Grid.hpp"
+#include "../../AliveLibAO/Grid.hpp"
 
 // Zoom by 10% each time.
 const float KZoomFactor = 0.10f;
@@ -792,14 +794,13 @@ int EditorTab::SnapX(bool enabled, int x)
 {
     if (enabled)
     {
-        // TODO: Snap
         if (mModel->GetMapInfo().mXGridSize == 1024)
         {
-
+            x = AO::SnapToXGrid_41FAA0(FP_FromInteger(1), x);
         }
         else
         {
-
+            x = SnapToXGrid_449930(FP_FromInteger(1), x);
         }
     }
     return x;
