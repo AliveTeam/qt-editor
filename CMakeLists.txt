@@ -44,6 +44,7 @@ export(TARGETS jsonxx FILE jsonxx.cmake)
 set_property(TARGET jsonxx PROPERTY FOLDER "3rdParty")
 
 set(PROJECT_SOURCES
+        Source/SnapSettings.hpp
         Source/ClipBoard.cpp
         Source/ClipBoard.hpp
         Source/DeleteItemsCommand.cpp

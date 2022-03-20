@@ -10,6 +10,7 @@
 #include <QApplication>
 #include <memory>
 #include "Model.hpp"
+#include "SnapSettings.hpp"
 
 namespace Ui
 {
@@ -24,12 +25,13 @@ struct MapObject;
 class CollisionObject;
 class CameraManager;
 class ClipBoard;
+class SnapSettings;
 
-class EditorTab final : public QMainWindow
+class EditorTab final : public QMainWindow, public IPointSnapper
 {
     Q_OBJECT
 public:
-    EditorTab(QTabWidget* aParent, UP_Model model, QString jsonFileName, bool isTempFile, QStatusBar* pStatusBar);
+    EditorTab(QTabWidget* aParent, UP_Model model, QString jsonFileName, bool isTempFile, QStatusBar* pStatusBar, SnapSettings& snapSettings);
     ~EditorTab();
     void ZoomIn();
     void ZoomOut();
@@ -102,6 +104,9 @@ private slots:
 private:
     bool DoSave(QString fileName);
 
+    int SnapX(bool enabled, int x) override;
+    int SnapY(bool enabled, int y) override;
+
     Ui::EditorTab* ui = nullptr;
     float iZoomLevel = 1.0f;
     UP_Model mModel;
@@ -117,4 +122,6 @@ private:
     CameraManager* mCameraManager = nullptr;
 
     QStatusBar* mStatusBar = nullptr;
+
+    SnapSettings& mSnapSettings;
 };

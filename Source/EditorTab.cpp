@@ -275,14 +275,15 @@ private:
 };
 
 
-EditorTab::EditorTab(QTabWidget* aParent, UP_Model model, QString jsonFileName, bool isTempFile, QStatusBar* pStatusBar)
+EditorTab::EditorTab(QTabWidget* aParent, UP_Model model, QString jsonFileName, bool isTempFile, QStatusBar* pStatusBar, SnapSettings& snapSettings)
     : QMainWindow(aParent),
     ui(new Ui::EditorTab),
     mModel(std::move(model)),
     mJsonFileName(jsonFileName),
     mParent(aParent),
     mIsTempFile(isTempFile),
-    mStatusBar(pStatusBar)
+    mStatusBar(pStatusBar),
+    mSnapSettings(snapSettings)
 {
     ui->setupUi(this);
 
@@ -379,7 +380,7 @@ EditorTab::EditorTab(QTabWidget* aParent, UP_Model model, QString jsonFileName, 
 
 ResizeableRectItem* EditorTab::MakeResizeableRectItem(MapObject* pMapObject)
 {
-    return new ResizeableRectItem(ui->graphicsView, pMapObject, *static_cast<PropertyTreeWidget*>(ui->treeWidget), mScene->GetTransparencySettings().MapObjectTransparency());
+    return new ResizeableRectItem(ui->graphicsView, pMapObject, *static_cast<PropertyTreeWidget*>(ui->treeWidget), mScene->GetTransparencySettings().MapObjectTransparency(), mSnapSettings, *this);
 }
 
 ResizeableArrowItem* EditorTab::MakeResizeableArrowItem(CollisionObject* pCollisionObject)
@@ -785,4 +786,38 @@ private:
 void EditorTab::AddCollision()
 {
     mUndoStack.push(new AddCollisionCommand(this));
+}
+
+int EditorTab::SnapX(bool enabled, int x)
+{
+    if (enabled)
+    {
+        // TODO: Snap
+        if (mModel->GetMapInfo().mXGridSize == 1024)
+        {
+
+        }
+        else
+        {
+
+        }
+    }
+    return x;
+}
+
+int EditorTab::SnapY(bool enabled, int y)
+{
+    if (enabled)
+    {
+        // TODO: snap
+        if (mModel->GetMapInfo().mXGridSize == 1024)
+        {
+
+        }
+        else
+        {
+
+        }
+    }
+    return y;
 }

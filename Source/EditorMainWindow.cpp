@@ -64,9 +64,6 @@ EditorMainWindow::EditorMainWindow(QWidget* aParent)
     // Disable context menu on the QToolBar
     m_ui->toolBar->setContextMenuPolicy(Qt::PreventContextMenu);
 
-    // Not implemented so remove for now
-    delete m_ui->menuSnapping;
-
     statusBar()->showMessage(tr("Ready"));
 }
 
@@ -292,7 +289,7 @@ bool EditorMainWindow::onOpenPath(QString fullFileName, bool createNewPath)
             fullFileName = QString(generatedName.c_str());
         }
 
-        EditorTab* view = new EditorTab(m_ui->tabWidget, std::move(model), fullFileName, isTempfile, statusBar());
+        EditorTab* view = new EditorTab(m_ui->tabWidget, std::move(model), fullFileName, isTempfile, statusBar(), mSnapSettings);
 
         connect(
             view, &EditorTab::CleanChanged,
@@ -700,4 +697,24 @@ void EditorMainWindow::on_actionPaste_triggered()
             }
         }
     }
+}
+
+void EditorMainWindow::on_action_snap_collision_items_on_x_toggled(bool on)
+{
+    mSnapSettings.CollisionSnapping().mSnapX = on;
+}
+
+void EditorMainWindow::on_action_snap_map_objects_x_toggled(bool on)
+{
+    mSnapSettings.MapObjectSnapping().mSnapX = on;
+}
+
+void EditorMainWindow::on_action_snap_collision_objects_on_y_toggled(bool on)
+{
+    mSnapSettings.CollisionSnapping().mSnapY = on;
+}
+
+void EditorMainWindow::on_action_snap_map_objects_y_toggled(bool on)
+{
+    mSnapSettings.MapObjectSnapping().mSnapY = on;
 }

@@ -12,11 +12,12 @@
 #include <QPixmapCache>
 #include "Model.hpp"
 #include "PropertyTreeWidget.hpp"
+#include "SnapSettings.hpp"
 
 const quint32 ResizeableRectItem::kMinRectSize = 10;
 
-ResizeableRectItem::ResizeableRectItem(QGraphicsView* pView, MapObject* pMapObject, ISyncPropertiesToTree& propSyncer, int transparency)
-      : mView(pView), mMapObject(pMapObject), mPropSyncer(propSyncer)
+ResizeableRectItem::ResizeableRectItem(QGraphicsView* pView, MapObject* pMapObject, ISyncPropertiesToTree& propSyncer, int transparency, SnapSettings& snapSettings, IPointSnapper& snapper)
+      : mView(pView), mMapObject(pMapObject), mPropSyncer(propSyncer), mSnapSettings(snapSettings), mPointSnapper(snapper)
 {
     SyncFromMapObject();
 
@@ -305,7 +306,7 @@ void ResizeableRectItem::onResize( QPointF aPos )
         {
             newWidth = kMinRectSize;
         }
-        curRect.setWidth( newWidth );
+        curRect.setWidth(mPointSnapper.SnapX(mSnapSettings.MapObjectSnapping().mSnapX, newWidth));
     }
     else if ( isLeft )
     {
@@ -314,7 +315,7 @@ void ResizeableRectItem::onResize( QPointF aPos )
         {
             newx = (curRect.x()+curRect.width())-kMinRectSize;
         }
-        curRect.setX( newx );
+        curRect.setX(mPointSnapper.SnapX(mSnapSettings.MapObjectSnapping().mSnapX, newx));
     }
 
     if ( isTop )
@@ -324,7 +325,7 @@ void ResizeableRectItem::onResize( QPointF aPos )
         {
             newy = curRect.y()+curRect.height()-kMinRectSize;
         }
-        curRect.setY( newy );
+        curRect.setY(mPointSnapper.SnapY(mSnapSettings.MapObjectSnapping().mSnapY, newy));
     }
     else if ( isBottom )
     {
@@ -333,7 +334,7 @@ void ResizeableRectItem::onResize( QPointF aPos )
         {
             newHeight = kMinRectSize;
         }
-        curRect.setHeight( newHeight );
+        curRect.setHeight(mPointSnapper.SnapY(mSnapSettings.MapObjectSnapping().mSnapY, newHeight));
     }
 
     SetRect( curRect );
