@@ -55,6 +55,7 @@ EditorMainWindow::EditorMainWindow(QWidget* aParent)
         if (key == "Fusion")
         {
             connect(m_ui->menuTheme->addAction("Dark Fusion"), &QAction::triggered, this, &EditorMainWindow::enableDarkFusionTheme);
+            break;
         }
     }
 
@@ -117,10 +118,10 @@ void EditorMainWindow::setMenuActionsEnabled(bool enable)
         m_ui->menuOptions
     };
 
-    for (auto menu : menus)
+    for (auto& menu : menus)
     {
         menu->setEnabled(enable);
-        for (auto action : menu->actions())
+        for (auto& action : menu->actions())
         {
             action->setEnabled(enable);
         }
