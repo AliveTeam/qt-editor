@@ -5,6 +5,7 @@
 #include <QSettings>
 #include "EditorTab.hpp"
 #include "ClipBoard.hpp"
+#include "SnapSettings.hpp"
 
 namespace Ui
 {
@@ -71,6 +72,14 @@ private slots:
 
     void on_actionPaste_triggered();
 
+    void on_action_snap_collision_items_on_x_toggled(bool on);
+
+    void on_action_snap_map_objects_x_toggled(bool on);
+
+    void on_action_snap_collision_objects_on_y_toggled(bool on);
+
+    void on_action_snap_map_objects_y_toggled(bool on);
+
 private:
     bool onOpenPath(QString fileName, bool createNewPath);
     void UpdateWindowTitle();
@@ -80,4 +89,6 @@ private:
     Ui::EditorMainWindow* m_ui;
     QSettings m_Settings;
     ClipBoard mClipBoard;
+    // Global to all tabs
+    SnapSettings mSnapSettings;
 };

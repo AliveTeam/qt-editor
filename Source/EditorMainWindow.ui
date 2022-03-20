@@ -154,10 +154,10 @@
     <property name="title">
      <string>Snapping</string>
     </property>
-    <addaction name="action_toggle_snap_collision_items_on_x"/>
-    <addaction name="action_toggle_snap_collision_objects_on_y"/>
-    <addaction name="action_toggle_snap_map_objects_x"/>
-    <addaction name="action_toggle_snap_map_objects_y"/>
+    <addaction name="action_snap_collision_items_on_x"/>
+    <addaction name="action_snap_collision_objects_on_y"/>
+    <addaction name="action_snap_map_objects_x"/>
+    <addaction name="action_snap_map_objects_y"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -609,40 +609,40 @@
     <bool>true</bool>
    </property>
   </action>
-  <action name="action_toggle_snap_collision_items_on_x">
+  <action name="action_snap_collision_items_on_x">
    <property name="checkable">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="icon">
     <iconset>
      <normaloff>:/images/snap.png</normaloff>:/images/snap.png</iconset>
    </property>
    <property name="text">
-    <string>Toggle snap collision objects on X</string>
+    <string>Snap collision objects on X</string>
    </property>
    <property name="visible">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="iconVisibleInMenu">
     <bool>true</bool>
    </property>
   </action>
-  <action name="action_toggle_snap_map_objects_x">
+  <action name="action_snap_map_objects_x">
    <property name="checkable">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="icon">
     <iconset>
      <normaloff>:/images/snap.png</normaloff>:/images/snap.png</iconset>
    </property>
    <property name="text">
-    <string>Toggle snap map objects on X</string>
+    <string>Snap map objects on X</string>
    </property>
    <property name="visible">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="iconVisibleInMenu">
     <bool>true</bool>
@@ -732,31 +732,37 @@
     <string>Ctrl+I</string>
    </property>
   </action>
-  <action name="action_toggle_snap_collision_objects_on_y">
+  <action name="action_snap_collision_objects_on_y">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset>
      <normaloff>:/images/snap.png</normaloff>:/images/snap.png</iconset>
    </property>
    <property name="text">
-    <string>Toggle snap collision objects on Y</string>
+    <string>Snap collision objects on Y</string>
    </property>
    <property name="visible">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="iconVisibleInMenu">
     <bool>true</bool>
    </property>
   </action>
-  <action name="action_toggle_snap_map_objects_y">
+  <action name="action_snap_map_objects_y">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset>
      <normaloff>:/images/snap.png</normaloff>:/images/snap.png</iconset>
    </property>
    <property name="text">
-    <string>Toggle snap map objects on Y</string>
+    <string>Snap map objects on Y</string>
    </property>
    <property name="visible">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="iconVisibleInMenu">
     <bool>true</bool>
