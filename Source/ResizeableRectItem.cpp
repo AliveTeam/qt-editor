@@ -64,6 +64,14 @@ void ResizeableRectItem::mouseMoveEvent( QGraphicsSceneMouseEvent* aEvent )
         return;
     }
     QGraphicsItem::mouseMoveEvent( aEvent );
+
+    QRectF curRect = CurrentRect();
+    
+    auto w = curRect.width();
+    curRect.setX(mPointSnapper.SnapX(mSnapSettings.MapObjectSnapping().mSnapX, curRect.x()));
+    curRect.setWidth(w);
+    curRect = curRect.normalized();
+    SetRect(curRect);
 }
 
 void ResizeableRectItem::mouseReleaseEvent( QGraphicsSceneMouseEvent* aEvent )
