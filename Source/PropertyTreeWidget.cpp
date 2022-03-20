@@ -45,13 +45,6 @@ void PropertyTreeWidget::Populate(Model& model, QUndoStack& undoStack, QGraphics
         AddProperties(model, undoStack, items, pCollisionItem->mProperties, pLine);
     }
 
-    for (int i = 0; i < items.count(); i++)
-    {
-        const int rgb = (i % 2) == 0 ? 50 : 60;
-        items[i]->setBackground(0, QColor(rgb, rgb, rgb));
-        items[i]->setBackground(1, QColor(rgb, rgb, rgb));
-    }
-
     insertTopLevelItems(0, items);
 }
 

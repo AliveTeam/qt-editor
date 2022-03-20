@@ -159,10 +159,17 @@
     <addaction name="action_snap_map_objects_x"/>
     <addaction name="action_snap_map_objects_y"/>
    </widget>
+   <widget class="QMenu" name="menuTheme">
+    <property name="title">
+     <string>Theme</string>
+    </property>
+    <addaction name="actionDark_theme"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
    <addaction name="menuSnapping"/>
    <addaction name="menuOptions"/>
+   <addaction name="menuTheme"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -616,10 +623,6 @@
    <property name="enabled">
     <bool>true</bool>
    </property>
-   <property name="icon">
-    <iconset>
-     <normaloff>:/images/snap.png</normaloff>:/images/snap.png</iconset>
-   </property>
    <property name="text">
     <string>Snap collision objects on X</string>
    </property>
@@ -633,10 +636,6 @@
   <action name="action_snap_map_objects_x">
    <property name="checkable">
     <bool>true</bool>
-   </property>
-   <property name="icon">
-    <iconset>
-     <normaloff>:/images/snap.png</normaloff>:/images/snap.png</iconset>
    </property>
    <property name="text">
     <string>Snap map objects on X</string>
@@ -736,10 +735,6 @@
    <property name="checkable">
     <bool>true</bool>
    </property>
-   <property name="icon">
-    <iconset>
-     <normaloff>:/images/snap.png</normaloff>:/images/snap.png</iconset>
-   </property>
    <property name="text">
     <string>Snap collision objects on Y</string>
    </property>
@@ -753,10 +748,6 @@
   <action name="action_snap_map_objects_y">
    <property name="checkable">
     <bool>true</bool>
-   </property>
-   <property name="icon">
-    <iconset>
-     <normaloff>:/images/snap.png</normaloff>:/images/snap.png</iconset>
    </property>
    <property name="text">
     <string>Snap map objects on Y</string>
@@ -879,6 +870,11 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+V</string>
+   </property>
+  </action>
+  <action name="actionDark_theme">
+   <property name="text">
+    <string>Dark</string>
    </property>
   </action>
  </widget>

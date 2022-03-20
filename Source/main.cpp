@@ -44,11 +44,6 @@ int main(int argc, char *argv[])
 
     EditorMainWindow w;
 
-    QFile File(":/stylesheets/rsc/stylesheets/dark-stylesheet.qss");
-    File.open(QFile::ReadOnly);
-    QString styleSheet = QLatin1String(File.readAll());
-
-    app.setStyleSheet(styleSheet);
     app.setWindowIcon(QIcon(":/icons/rsc/icons/icon.png"));
     w.setWindowIcon(QIcon(":/icons/rsc/icons/icon.png"));
 

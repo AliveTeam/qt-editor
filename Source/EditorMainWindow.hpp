@@ -20,6 +20,8 @@ public:
     explicit EditorMainWindow( QWidget* aParent = 0 );
     ~EditorMainWindow();
 private slots:
+    void on_actionDark_theme_triggered();
+
     void on_action_about_qt_triggered();
 
     void on_action_about_triggered();
@@ -81,6 +83,8 @@ private slots:
     void on_action_snap_map_objects_y_toggled(bool on);
 
 private:
+    void enableDarkFusionTheme();
+    void setMenuActionsEnabled(bool enable);
     bool onOpenPath(QString fileName, bool createNewPath);
     void UpdateWindowTitle();
     void DisconnectTabSignals();
@@ -91,4 +95,5 @@ private:
     ClipBoard mClipBoard;
     // Global to all tabs
     SnapSettings mSnapSettings;
+    QString mUnthemedStyle;
 };
