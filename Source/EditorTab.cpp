@@ -796,11 +796,11 @@ int EditorTab::SnapX(bool enabled, int x)
     {
         if (mModel->GetMapInfo().mXGridSize == 1024)
         {
-            x = AO::SnapToXGrid_41FAA0(FP_FromInteger(1), x);
+            x = AO::SnapToXGrid_41FAA0(FP_FromInteger(1), x) + 13;
         }
         else
         {
-            x = SnapToXGrid_449930(FP_FromInteger(1), x);
+            x = SnapToXGrid_449930(FP_FromInteger(1), x) + 13;
         }
     }
     return x;
