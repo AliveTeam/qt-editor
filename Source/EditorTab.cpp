@@ -387,7 +387,7 @@ ResizeableRectItem* EditorTab::MakeResizeableRectItem(MapObject* pMapObject)
 
 ResizeableArrowItem* EditorTab::MakeResizeableArrowItem(CollisionObject* pCollisionObject)
 {
-    return new ResizeableArrowItem(ui->graphicsView, pCollisionObject, *static_cast<PropertyTreeWidget*>(ui->treeWidget), mScene->GetTransparencySettings().CollisionTransparency());
+    return new ResizeableArrowItem(ui->graphicsView, pCollisionObject, *static_cast<PropertyTreeWidget*>(ui->treeWidget), mScene->GetTransparencySettings().CollisionTransparency(), mSnapSettings, *this);
 }
 
 CameraGraphicsItem* EditorTab::MakeCameraGraphicsItem(Camera* pCamera, int x, int y, int w, int h)

@@ -6,9 +6,10 @@
 #include <QGraphicsView>
 #include "Model.hpp"
 #include "PropertyTreeWidget.hpp"
+#include "SnapSettings.hpp"
 
-ResizeableArrowItem::ResizeableArrowItem(QGraphicsView* pView, CollisionObject* pLine, ISyncPropertiesToTree& propSyncer, int transparency)
-    : QGraphicsLineItem(pLine->X2(), pLine->Y2(), pLine->X1(), pLine->Y1()), mView(pView), mLine(pLine), mPropSyncer(propSyncer)
+ResizeableArrowItem::ResizeableArrowItem(QGraphicsView* pView, CollisionObject* pLine, ISyncPropertiesToTree& propSyncer, int transparency, SnapSettings& snapSettings, IPointSnapper& snapper)
+    : QGraphicsLineItem(pLine->X2(), pLine->Y2(), pLine->X1(), pLine->Y1()), mView(pView), mLine(pLine), mPropSyncer(propSyncer), mSnapSettings(snapSettings), mSnapper(snapper)
 {
     Init();
     setZValue(2.0);
@@ -72,7 +73,7 @@ void ResizeableArrowItem::mouseMoveEvent( QGraphicsSceneMouseEvent* aEvent )
     const auto kMinLineLength = 15;
     if ( newLine.length() <= kMinLineLength )
     {
-        if (  m_endOfLineClicked == eLinePoints_P2 )
+        if ( m_endOfLineClicked == eLinePoints_P2 )
         {
             newLine.setLength( kMinLineLength );
         }
@@ -83,6 +84,22 @@ void ResizeableArrowItem::mouseMoveEvent( QGraphicsSceneMouseEvent* aEvent )
             newLine = QLineF( newLine.p2(), newLine.p1() );
         }
     }
+
+    if (m_endOfLineClicked == eLinePoints_P1)
+    {
+        QPoint tmp = newLine.p1().toPoint();
+        tmp.setX(mSnapper.SnapX(mSnapSettings.CollisionSnapping().mSnapX, tmp.x()));
+        tmp.setY(mSnapper.SnapY(mSnapSettings.CollisionSnapping().mSnapY, tmp.y()));
+        newLine.setP1(tmp);
+    }
+    else
+    {
+        QPoint tmp = newLine.p2().toPoint();
+        tmp.setX(mSnapper.SnapX(mSnapSettings.CollisionSnapping().mSnapX, tmp.x()));
+        tmp.setY(mSnapper.SnapY(mSnapSettings.CollisionSnapping().mSnapY, tmp.y()));
+        newLine.setP2(tmp);
+    }
+
     setLine( newLine );
     PosOrLineChanged();
 }

@@ -6,11 +6,13 @@
 
 class CollisionObject;
 class ISyncPropertiesToTree;
+class SnapSettings;
+class IPointSnapper;
 
 class ResizeableArrowItem final : public IGraphicsItem, public QGraphicsLineItem
 {
 public:
-    ResizeableArrowItem(QGraphicsView* pView, CollisionObject* pLine, ISyncPropertiesToTree& propSyncer, int transparency);
+    ResizeableArrowItem(QGraphicsView* pView, CollisionObject* pLine, ISyncPropertiesToTree& propSyncer, int transparency, SnapSettings& snapSettings, IPointSnapper& snapper);
     enum { Type = UserType + 2 };
     int type() const override { return Type; }
     QLineF SaveLine() const;
@@ -58,4 +60,7 @@ private:
     QGraphicsView* mView = nullptr;
     CollisionObject* mLine = nullptr;
     ISyncPropertiesToTree& mPropSyncer;
+
+    SnapSettings& mSnapSettings;
+    IPointSnapper& mSnapper;
 };

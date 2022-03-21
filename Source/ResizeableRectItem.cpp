@@ -315,39 +315,43 @@ void ResizeableRectItem::onResize( QPointF aPos )
     if ( isRight )
     {
         qreal newWidth = aPos.x() - curRect.x();
+        newWidth = mPointSnapper.SnapX(mSnapSettings.MapObjectSnapping().mSnapX, newWidth);
         if ( newWidth < kMinRectSize )
         {
             newWidth = kMinRectSize;
         }
-        curRect.setWidth(mPointSnapper.SnapX(mSnapSettings.MapObjectSnapping().mSnapX, newWidth));
+        curRect.setWidth(newWidth);
     }
     else if ( isLeft )
     {
         qreal newx = aPos.x();
+        newx = mPointSnapper.SnapX(mSnapSettings.MapObjectSnapping().mSnapX, newx);
         if ( newx > (curRect.x()+curRect.width())-kMinRectSize )
         {
             newx = (curRect.x()+curRect.width())-kMinRectSize;
         }
-        curRect.setX(mPointSnapper.SnapX(mSnapSettings.MapObjectSnapping().mSnapX, newx));
+        curRect.setX(newx);
     }
 
     if ( isTop )
     {
         qreal newy = aPos.y();
+        newy = mPointSnapper.SnapY(mSnapSettings.MapObjectSnapping().mSnapY, newy);
         if ( newy > (curRect.y()+curRect.height()-kMinRectSize))
         {
             newy = curRect.y()+curRect.height()-kMinRectSize;
         }
-        curRect.setY(mPointSnapper.SnapY(mSnapSettings.MapObjectSnapping().mSnapY, newy));
+        curRect.setY(newy);
     }
     else if ( isBottom )
     {
         qreal newHeight = aPos.y() - curRect.y();
+        newHeight = mPointSnapper.SnapY(mSnapSettings.MapObjectSnapping().mSnapY, newHeight);
         if ( newHeight < kMinRectSize )
         {
             newHeight = kMinRectSize;
         }
-        curRect.setHeight(mPointSnapper.SnapY(mSnapSettings.MapObjectSnapping().mSnapY, newHeight));
+        curRect.setHeight(newHeight);
     }
 
     SetRect( curRect );
