@@ -810,15 +810,8 @@ int EditorTab::SnapY(bool enabled, int y)
 {
     if (enabled)
     {
-        // TODO: snap
-        if (mModel->GetMapInfo().mXGridSize == 1024)
-        {
-
-        }
-        else
-        {
-
-        }
+        const auto yGridSize = 20; // 260/13
+        y = (y / yGridSize) * yGridSize;
     }
     return y;
 }
