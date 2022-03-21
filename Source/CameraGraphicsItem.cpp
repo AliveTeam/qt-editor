@@ -26,7 +26,7 @@ void CameraGraphicsItem::paint(QPainter* aPainter, const QStyleOptionGraphicsIte
         if (rect().width() >= 1024)
         {
             offX = 258;
-            offY = 124;
+            offY = 114;
         }
 
         QRect camImgRect = QRect(rect().x() + offX, rect().y() + offY, 368, 240);
