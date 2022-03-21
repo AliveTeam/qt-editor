@@ -13,11 +13,14 @@
 #include "ExportPathDialog.hpp"
 #include "relive_api.hpp"
 #include "EditorGraphicsScene.hpp"
+#include "qstylefactory.h"
+#include "qdebug.h"
 
 EditorMainWindow::EditorMainWindow(QWidget* aParent)
     : QMainWindow(aParent),
     m_ui(new Ui::EditorMainWindow),
-    m_Settings("Editor.ini", QSettings::IniFormat)
+    m_Settings("Editor.ini", QSettings::IniFormat),
+    mUnthemedStyle(QApplication::style()->objectName())
 {
     //auto p = new AudioOutputPrimer();
     //p->start();
@@ -26,6 +29,35 @@ EditorMainWindow::EditorMainWindow(QWidget* aParent)
     m_ui->setupUi(this);
 
     UpdateWindowTitle();
+    setMenuActionsEnabled(false);
+
+    if (!m_Settings.contains("theme"))
+    {
+        // Set the default theme
+        m_Settings.setValue("theme", "Dark");
+    }
+
+    if (m_Settings.value("theme") == "Dark")
+    {
+        QFile f(":/stylesheets/rsc/stylesheets/dark-stylesheet.qss");
+        if (f.open(QFile::ReadOnly | QFile::Text))
+        {
+            qApp->setStyleSheet(f.readAll());
+        }
+    }
+    else if (m_Settings.value("theme") == "DarkFusion")
+    {
+        enableDarkFusionTheme();
+    }
+
+    for (auto key : QStyleFactory::keys())
+    {
+        if (key == "Fusion")
+        {
+            connect(m_ui->menuTheme->addAction("Dark Fusion"), &QAction::triggered, this, &EditorMainWindow::enableDarkFusionTheme);
+            break;
+        }
+    }
 
     m_ui->statusbar->showMessage(tr("Ready"));
 
@@ -73,6 +105,28 @@ EditorMainWindow::~EditorMainWindow()
     delete m_ui;
 }
 
+void EditorMainWindow::setMenuActionsEnabled(bool enable)
+{
+    m_ui->action_close_path->setEnabled(enable);
+    m_ui->action_save_path->setEnabled(enable);
+    m_ui->actionSave_As->setEnabled(enable);
+    m_ui->actionExport_to_lvl->setEnabled(enable);
+
+    QList<QMenu*> menus = {
+        m_ui->menuEdit,
+        m_ui->menuSnapping,
+        m_ui->menuOptions
+    };
+
+    for (auto& menu : menus)
+    {
+        menu->setEnabled(enable);
+        for (auto& action : menu->actions())
+        {
+            action->setEnabled(enable);
+        }
+    }
+}
 
 bool EditorMainWindow::onOpenPath(QString fullFileName, bool createNewPath)
 {
@@ -306,6 +360,8 @@ bool EditorMainWindow::onOpenPath(QString fullFileName, bool createNewPath)
 
         view->UpdateTabTitle(view->IsClean());
 
+        setMenuActionsEnabled(true);
+
         return true;
     }
     catch (const ModelException&)
@@ -333,7 +389,64 @@ void EditorMainWindow::onCloseTab(int index)
         if (count == 0)
         {
             m_ui->stackedWidget->setCurrentIndex(0);
+            setMenuActionsEnabled(false);
         }
+    }
+}
+
+void EditorMainWindow::enableDarkFusionTheme()
+{
+    m_Settings.setValue("theme", "DarkFusion");
+    qApp->setStyle(QStyleFactory::create("Fusion"));
+
+    const QColor lighterGray(75, 75, 75);
+    const QColor darkGray(53, 53, 53);
+    const QColor gray(128, 128, 128);
+    const QColor black(25, 25, 25);
+    const QColor blue(198, 238, 255);
+
+    QPalette darkPalette;
+    darkPalette.setColor(QPalette::Window, darkGray);
+    darkPalette.setColor(QPalette::WindowText, Qt::white);
+    darkPalette.setColor(QPalette::Base, black);
+    darkPalette.setColor(QPalette::AlternateBase, darkGray);
+    darkPalette.setColor(QPalette::ToolTipBase, darkGray);
+    darkPalette.setColor(QPalette::ToolTipText, Qt::white);
+    darkPalette.setColor(QPalette::Text, Qt::white);
+    darkPalette.setColor(QPalette::Button, darkGray);
+    darkPalette.setColor(QPalette::ButtonText, Qt::white);
+    darkPalette.setColor(QPalette::Link, blue);
+    darkPalette.setColor(QPalette::Highlight, lighterGray);
+    darkPalette.setColor(QPalette::HighlightedText, Qt::white);
+
+    darkPalette.setColor(QPalette::Active, QPalette::Button, gray.darker());
+    darkPalette.setColor(QPalette::Disabled, QPalette::ButtonText, gray);
+    darkPalette.setColor(QPalette::Disabled, QPalette::WindowText, gray);
+    darkPalette.setColor(QPalette::Disabled, QPalette::Text, gray);
+    darkPalette.setColor(QPalette::Disabled, QPalette::Light, darkGray);
+
+    qApp->setPalette(darkPalette);
+
+    qApp->setStyleSheet("QToolTip { color: #ffffff; background-color: #2a82da; border: 1px solid white; }");
+}
+
+void EditorMainWindow::on_actionDark_theme_triggered()
+{
+    m_Settings.setValue("theme", "Dark");
+
+    qApp->setPalette(QApplication::style()->standardPalette());
+    qApp->setStyle(mUnthemedStyle);
+
+    QFile File(":/stylesheets/rsc/stylesheets/dark-stylesheet.qss");
+    if (!File.exists())
+    {
+        qDebug() << "Unable to set stylesheet, file not found";
+    }
+    else
+    {
+        File.open(QFile::ReadOnly | QFile::Text);
+        QTextStream ts(&File);
+        qApp->setStyleSheet(ts.readAll());
     }
 }
 

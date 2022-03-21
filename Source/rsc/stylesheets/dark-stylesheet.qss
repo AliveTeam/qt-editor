@@ -80,7 +80,7 @@ background-color: rgb(30, 30, 30);
 }
 
 QListView::item:hover, QTreeView::item:hover, QMenu::item:selected
-, QMenuBar::item:selected, QPushButton:hover {
+, QMenuBar::item:selected, QPushButton:hover, QToolButton:hover {
 color: white;
 background-color: rgb(80, 80, 80);
 }
@@ -125,10 +125,19 @@ border: none;
 background-color: rgb(50, 50, 50);
 }
 
-QTreeWidget, QUndoView, QListWidget {
+QTreeView {
+border: 1px solid rgb(80, 80, 80);
+alternate-background-color: rgb(60, 60, 60);
+}
+
+QUndoView, QListWidget {
 border: 1px solid rgb(80, 80, 80);
 }
 
 QWidget {
 color: white;
+}
+
+QWidget:disabled {
+color: grey;
 }
