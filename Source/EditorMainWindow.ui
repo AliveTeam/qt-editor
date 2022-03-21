@@ -163,7 +163,9 @@
     <property name="title">
      <string>Theme</string>
     </property>
+    <addaction name="actionDefault_theme"/>
     <addaction name="actionDark_theme"/>
+    <addaction name="actionDark_Fusion_theme"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -873,8 +875,27 @@
    </property>
   </action>
   <action name="actionDark_theme">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Dark</string>
+   </property>
+  </action>
+  <action name="actionDefault_theme">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Default</string>
+   </property>
+  </action>
+  <action name="actionDark_Fusion_theme">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Dark Fusion</string>
    </property>
   </action>
  </widget>

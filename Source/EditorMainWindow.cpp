@@ -15,6 +15,7 @@
 #include "EditorGraphicsScene.hpp"
 #include "qstylefactory.h"
 #include "qdebug.h"
+#include "qactiongroup.h"
 
 EditorMainWindow::EditorMainWindow(QWidget* aParent)
     : QMainWindow(aParent),
@@ -31,32 +32,36 @@ EditorMainWindow::EditorMainWindow(QWidget* aParent)
     UpdateWindowTitle();
     setMenuActionsEnabled(false);
 
+    auto themeActionGroup = new QActionGroup(this);
+    themeActionGroup->addAction(m_ui->actionDefault_theme);
+    themeActionGroup->addAction(m_ui->actionDark_theme);
+
+    if (QStyleFactory::keys().contains("Fusion"))
+    {
+        themeActionGroup->addAction(m_ui->actionDark_Fusion_theme);
+    }
+    else
+    {
+        m_ui->actionDark_Fusion_theme->setVisible(false);
+    }
+
     if (!m_Settings.contains("theme"))
     {
         // Set the default theme
-        m_Settings.setValue("theme", "Dark");
+        m_Settings.setValue("theme", "Default");
     }
 
     if (m_Settings.value("theme") == "Dark")
     {
-        QFile f(":/stylesheets/rsc/stylesheets/dark-stylesheet.qss");
-        if (f.open(QFile::ReadOnly | QFile::Text))
-        {
-            qApp->setStyleSheet(f.readAll());
-        }
+        on_actionDark_theme_triggered();
     }
     else if (m_Settings.value("theme") == "DarkFusion")
     {
-        enableDarkFusionTheme();
+        on_actionDark_Fusion_theme_triggered();
     }
-
-    for (auto key : QStyleFactory::keys())
+    else
     {
-        if (key == "Fusion")
-        {
-            connect(m_ui->menuTheme->addAction("Dark Fusion"), &QAction::triggered, this, &EditorMainWindow::enableDarkFusionTheme);
-            break;
-        }
+        on_actionDefault_theme_triggered();
     }
 
     m_ui->statusbar->showMessage(tr("Ready"));
@@ -394,8 +399,18 @@ void EditorMainWindow::onCloseTab(int index)
     }
 }
 
-void EditorMainWindow::enableDarkFusionTheme()
+void EditorMainWindow::on_actionDefault_theme_triggered()
 {
+    m_ui->actionDefault_theme->setChecked(true);
+    m_Settings.setValue("theme", "Default");
+    qApp->setPalette(QApplication::style()->standardPalette());
+    qApp->setStyleSheet(QString());
+    qApp->setStyle(mUnthemedStyle);
+}
+
+void EditorMainWindow::on_actionDark_Fusion_theme_triggered()
+{
+    m_ui->actionDark_Fusion_theme->setChecked(true);
     m_Settings.setValue("theme", "DarkFusion");
     qApp->setStyle(QStyleFactory::create("Fusion"));
 
@@ -432,6 +447,7 @@ void EditorMainWindow::enableDarkFusionTheme()
 
 void EditorMainWindow::on_actionDark_theme_triggered()
 {
+    m_ui->actionDark_theme->setChecked(true);
     m_Settings.setValue("theme", "Dark");
 
     qApp->setPalette(QApplication::style()->standardPalette());
