@@ -103,6 +103,7 @@
     <addaction name="action_save_path_as"/>
     <addaction name="action_run_level"/>
     <addaction name="action_exit_application"/>
+    <addaction name="actionSave_all"/>
     <addaction name="actionSave_As"/>
     <addaction name="actionExport_to_lvl"/>
    </widget>
@@ -896,6 +897,11 @@
    </property>
    <property name="text">
     <string>Dark Fusion</string>
+   </property>
+  </action>
+  <action name="actionSave_all">
+   <property name="text">
+    <string>Save all</string>
    </property>
   </action>
  </widget>

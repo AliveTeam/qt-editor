@@ -556,6 +556,15 @@ void EditorMainWindow::on_action_save_path_triggered()
     }
 }
 
+void EditorMainWindow::on_actionSave_all_triggered()
+{
+    for (int i = 0; i < m_ui->tabWidget->count(); i++)
+    {
+        EditorTab* pTab = static_cast<EditorTab*>(m_ui->tabWidget->widget(i));
+        pTab->Save();
+    }
+}
+
 void EditorMainWindow::on_actionExport_to_lvl_triggered()
 {
     EditorTab* pTab = getActiveTab(m_ui->tabWidget);

@@ -46,6 +46,8 @@ private slots:
 
     void on_action_save_path_triggered();
 
+    void on_actionSave_all_triggered();
+
     void on_actionExport_to_lvl_triggered();
 
     void on_tabWidget_currentChanged(int index);
