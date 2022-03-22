@@ -32,7 +32,7 @@ EditorMainWindow::EditorMainWindow(QWidget* aParent)
     UpdateWindowTitle();
     setMenuActionsEnabled(false);
 
-    auto themeActionGroup = new QActionGroup(this);
+    auto themeActionGroup = new QActionGroup(m_ui->menuTheme);
     themeActionGroup->addAction(m_ui->actionDefault_theme);
     themeActionGroup->addAction(m_ui->actionDark_theme);
 
@@ -114,6 +114,7 @@ void EditorMainWindow::setMenuActionsEnabled(bool enable)
 {
     m_ui->action_close_path->setEnabled(enable);
     m_ui->action_save_path->setEnabled(enable);
+    m_ui->actionSave_all->setEnabled(enable);
     m_ui->actionSave_As->setEnabled(enable);
     m_ui->actionExport_to_lvl->setEnabled(enable);
 
