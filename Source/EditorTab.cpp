@@ -629,23 +629,47 @@ bool EditorTab::DoSave(QString fileName)
 
 void EditorTab::Export()
 {
+    if (!IsClean())
+    {
+        Save();
+    }
+
     auto exportDialog = new ExportPathDialog(this);
     exportDialog->setJsonPath(mJsonFileName);
     exportDialog->setRelivePath(mReliveExePath);
 
+    QFileInfo json(mJsonFileName);
     if (mExportedPathLvlName.isEmpty())
     {
         // will be XXPATH.BND, extract XX
-        QString lvlName = QString::fromStdString(mModel->GetMapInfo().mPathBnd);
+        QString lvlName = QString::fromStdString(mModel->GetMapInfo().mPathBnd).toLower();
         if (lvlName.length() > 2)
         {
             lvlName = lvlName.left(2) + ".lvl";
+        }
+
+        if (json.exists())
+        {
+            lvlName.insert(0, json.path() + "/");
         }
         exportDialog->setLvlName(lvlName);
     }
     else
     {
         exportDialog->setLvlName(mExportedPathLvlName);
+    }
+
+    if (mReliveExePath.isEmpty() && json.exists())
+    {
+        #ifdef Q_OS_WINDOWS
+            exportDialog->setRelivePath(json.path() + "/relive.exe");
+        #else
+            exportDialog->setRelivePath(json.path());
+        #endif
+    }
+    else
+    {
+        exportDialog->setRelivePath(mReliveExePath);
     }
 
     exportDialog->exec();
