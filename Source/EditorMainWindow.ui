@@ -103,6 +103,7 @@
     <addaction name="action_save_path_as"/>
     <addaction name="action_run_level"/>
     <addaction name="action_exit_application"/>
+    <addaction name="actionSave_all"/>
     <addaction name="actionSave_As"/>
     <addaction name="actionExport_to_lvl"/>
    </widget>
@@ -163,7 +164,9 @@
     <property name="title">
      <string>Theme</string>
     </property>
+    <addaction name="actionDefault_theme"/>
     <addaction name="actionDark_theme"/>
+    <addaction name="actionDark_Fusion_theme"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -873,8 +876,32 @@
    </property>
   </action>
   <action name="actionDark_theme">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Dark</string>
+   </property>
+  </action>
+  <action name="actionDefault_theme">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Default</string>
+   </property>
+  </action>
+  <action name="actionDark_Fusion_theme">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Dark Fusion</string>
+   </property>
+  </action>
+  <action name="actionSave_all">
+   <property name="text">
+    <string>Save all</string>
    </property>
   </action>
  </widget>

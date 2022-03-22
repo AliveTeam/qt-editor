@@ -29,9 +29,9 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>10</y>
+     <y>9</y>
      <width>201</width>
-     <height>280</height>
+     <height>281</height>
     </rect>
    </property>
   </widget>
@@ -246,9 +246,9 @@
   <widget class="QSpinBox" name="spnCameraId">
    <property name="geometry">
     <rect>
-     <x>780</x>
+     <x>550</x>
      <y>300</y>
-     <width>81</width>
+     <width>41</width>
      <height>22</height>
     </rect>
    </property>
@@ -256,7 +256,7 @@
   <widget class="QPushButton" name="btnSetCameraId">
    <property name="geometry">
     <rect>
-     <x>670</x>
+     <x>440</x>
      <y>300</y>
      <width>101</width>
      <height>23</height>
@@ -266,7 +266,37 @@
     <string>Set camera id</string>
    </property>
   </widget>
+  <widget class="QDialogButtonBox" name="buttonBox">
+   <property name="geometry">
+    <rect>
+     <x>700</x>
+     <y>300</y>
+     <width>156</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="standardButtons">
+    <set>QDialogButtonBox::Close</set>
+   </property>
+  </widget>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>CameraManager</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>777</x>
+     <y>311</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>447</x>
+     <y>165</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>
