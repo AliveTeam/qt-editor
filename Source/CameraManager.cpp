@@ -485,11 +485,7 @@ void CameraManager::CreateCamera(bool dropEvent, QPixmap img)
         const std::string newCamName = CameraNameFromId(mTab->GetModel(), camId);
         mTab->AddCommand(new NewCameraCommand(pCameraGraphicsItem, img, mTab, newCamName, camId));
 
-        if (dropEvent)
-        {
-            SetTabImage(TabImageIdx::Main, pCameraGraphicsItem->GetImage());
-        }
-        else
+        if (!dropEvent)
         {
             UpdateTabImages(pCameraGraphicsItem);
         }
