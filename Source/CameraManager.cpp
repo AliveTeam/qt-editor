@@ -438,59 +438,72 @@ void CameraManager::OnCameraIdChanged(Camera* pCam)
     }
 }
 
+void CameraManager::CreateCamera(bool dropEvent, QPixmap img)
+{
+    auto pItem = static_cast<CameraListItem*>(ui->lstCameras->selectedItems()[0]);
+    CameraGraphicsItem* pCameraGraphicsItem = CameraGraphicsItemByModelPtr(pItem->GetCamera());
+
+    if (img.isNull())
+    {
+        QMessageBox::critical(this, "Error", "Failed to load image");
+        return;
+    }
+
+    if (img.width() != 640 || img.height() != 240)
+    {
+        img = img.scaled(640, 240);
+        if (img.isNull())
+        {
+            QMessageBox::critical(this, "Error", "Failed to resize image");
+            return;
+        }
+    }
+
+    if (!pItem->GetCamera()->mName.empty())
+    {
+        // Update image of existing camera
+        auto index = dropEvent ? TabImageIdx::Main : static_cast<TabImageIdx>(ui->tabWidget->currentIndex());
+        mTab->AddCommand(new ChangeCameraImageCommand(pCameraGraphicsItem, img, index, mTab));
+        UpdateTabImages(pCameraGraphicsItem);
+    }
+    else
+    {
+        // Create new camera
+        const int camId = NextFreeCamId();
+        if (camId == -1)
+        {
+            QMessageBox::critical(this, "Error", "No more free camera Ids (only 0-99 is valid)");
+            return;
+        }
+
+        if (ui->tabWidget->currentIndex() != TabImageIdx::Main)
+        {
+            QMessageBox::critical(this, "Error", "You need to set the main image first when creating a new camera");
+            return;
+        }
+
+        const std::string newCamName = CameraNameFromId(mTab->GetModel(), camId);
+        mTab->AddCommand(new NewCameraCommand(pCameraGraphicsItem, img, mTab, newCamName, camId));
+
+        if (dropEvent)
+        {
+            SetTabImage(TabImageIdx::Main, pCameraGraphicsItem->GetImage());
+        }
+        else
+        {
+            UpdateTabImages(pCameraGraphicsItem);
+        }
+    }
+}
+
 void CameraManager::on_btnSelectImage_clicked()
 {
     if (!ui->lstCameras->selectedItems().empty())
     {
-        auto pItem = static_cast<CameraListItem*>(ui->lstCameras->selectedItems()[0]);
-        CameraGraphicsItem* pCameraGraphicsItem = CameraGraphicsItemByModelPtr(pItem->GetCamera());
-
         QString fileName = QFileDialog::getOpenFileName(this, tr("Open level"), "", tr("PNG image files (*.png);;"));
         if (!fileName.isEmpty())
         {
-            QPixmap img(fileName);
-            if (img.isNull())
-            {
-                QMessageBox::critical(this, "Error", "Failed to load image");
-                return;
-            }
-
-            if (img.width() != 640 || img.height() != 240)
-            {
-                img = img.scaled(640, 240);
-                if (img.isNull())
-                {
-                    QMessageBox::critical(this, "Error", "Failed to resize image");
-                    return;
-                }
-            }
-
-            if (!pItem->GetCamera()->mName.empty())
-            {
-                // Update image of existing camera
-                mTab->AddCommand(new ChangeCameraImageCommand(pCameraGraphicsItem, img, static_cast<TabImageIdx>(ui->tabWidget->currentIndex()), mTab));
-                UpdateTabImages(pCameraGraphicsItem);
-            }
-            else
-            {
-                // Create new camera
-                const int camId = NextFreeCamId();
-                if (camId == -1)
-                {
-                    QMessageBox::critical(this, "Error", "No more free camera Ids (only 0-99 is valid)");
-                    return;
-                }
-
-                if (ui->tabWidget->currentIndex() != TabImageIdx::Main)
-                {
-                    QMessageBox::critical(this, "Error", "You need to set the main image first when creating a new camera");
-                    return;
-                }
-
-                const std::string newCamName = CameraNameFromId(mTab->GetModel(), camId);
-                mTab->AddCommand(new NewCameraCommand(pCameraGraphicsItem, img, mTab, newCamName, camId));
-                UpdateTabImages(pCameraGraphicsItem);
-            }
+            CreateCamera(false, QPixmap(fileName));
         }
     }
 }
