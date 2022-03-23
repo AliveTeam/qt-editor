@@ -290,12 +290,10 @@ public:
 
     void dropEvent(QDropEvent* pEvent) override
     {
-        QUrl path = pEvent->mimeData()->text();
-        QFileInfo info(path.toLocalFile());
-        QPixmap image(path.toLocalFile());
+        QUrl imgPath = pEvent->mimeData()->text();
         const QPoint scenePos = mapToScene(pEvent->pos()).toPoint();
         CameraManager cameraManager(this, mEditorTab, &scenePos);
-        cameraManager.CreateCamera(true, image);
+        cameraManager.CreateCamera(true, QPixmap(imgPath.toLocalFile()));
         pEvent->acceptProposedAction();
     }
 
