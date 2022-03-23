@@ -22,6 +22,7 @@ public:
 
     void OnCameraSwapped(Camera* pOld, Camera* pNew);
     void OnCameraIdChanged(Camera* pCam);
+    void CreateCamera(bool dropEvent, QPixmap img);
 
 private slots:
     void on_btnSelectImage_clicked();

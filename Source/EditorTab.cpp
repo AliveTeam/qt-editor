@@ -192,7 +192,7 @@ public:
     EditorGraphicsView(EditorTab* editorTab)
         : mEditorTab(editorTab)
     {
-
+        setAcceptDrops(true);
     }
 
     void mousePressEvent(QMouseEvent* pEvent) override
@@ -270,6 +270,31 @@ public:
             });
         menu.addAction(pAction);
         menu.exec(pEvent->globalPos());
+    }
+
+    void dragEnterEvent(QDragEnterEvent* pEvent) override
+    {
+        QUrl path = pEvent->mimeData()->text();
+        QFileInfo info(path.toLocalFile());
+        if (info.completeSuffix() == "png" ||
+            info.completeSuffix() == "jpg")
+        {
+            pEvent->acceptProposedAction();
+        }
+    }
+
+    void dragMoveEvent(QDragMoveEvent* pEvent) override
+    {
+        pEvent->acceptProposedAction();
+    }
+
+    void dropEvent(QDropEvent* pEvent) override
+    {
+        QUrl imgPath = pEvent->mimeData()->text();
+        const QPoint scenePos = mapToScene(pEvent->pos()).toPoint();
+        CameraManager cameraManager(this, mEditorTab, &scenePos);
+        cameraManager.CreateCamera(true, QPixmap(imgPath.toLocalFile()));
+        pEvent->acceptProposedAction();
     }
 
 private:
@@ -629,23 +654,47 @@ bool EditorTab::DoSave(QString fileName)
 
 void EditorTab::Export()
 {
+    if (!IsClean())
+    {
+        Save();
+    }
+
     auto exportDialog = new ExportPathDialog(this);
     exportDialog->setJsonPath(mJsonFileName);
     exportDialog->setRelivePath(mReliveExePath);
 
+    QFileInfo json(mJsonFileName);
     if (mExportedPathLvlName.isEmpty())
     {
         // will be XXPATH.BND, extract XX
-        QString lvlName = QString::fromStdString(mModel->GetMapInfo().mPathBnd);
+        QString lvlName = QString::fromStdString(mModel->GetMapInfo().mPathBnd).toLower();
         if (lvlName.length() > 2)
         {
             lvlName = lvlName.left(2) + ".lvl";
+        }
+
+        if (json.exists())
+        {
+            lvlName.insert(0, json.path() + "/");
         }
         exportDialog->setLvlName(lvlName);
     }
     else
     {
         exportDialog->setLvlName(mExportedPathLvlName);
+    }
+
+    if (mReliveExePath.isEmpty() && json.exists())
+    {
+        #ifdef Q_OS_WINDOWS
+            exportDialog->setRelivePath(json.path() + "/relive.exe");
+        #else
+            exportDialog->setRelivePath(json.path());
+        #endif
+    }
+    else
+    {
+        exportDialog->setRelivePath(mReliveExePath);
     }
 
     exportDialog->exec();
