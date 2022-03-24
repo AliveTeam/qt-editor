@@ -62,6 +62,8 @@ MessageEditorDialog::MessageEditorDialog(QWidget *parent, EditorTab* pTab, Model
     mIsLCDScreenMsgs(isLCDScreenMsgs)
 {
     ui->setupUi(this);
+    ui->listWidget->setAlternatingRowColors(true);
+    ui->listWidget->setWordWrap(true);
 
     const auto& msgs = GetMsgs();
     for (const auto& msg : msgs)
@@ -137,6 +139,7 @@ void MessageEditorDialog::on_listWidget_itemSelectionChanged()
     if (!ui->listWidget->selectedItems().empty())
     {
         ui->txtMessage->setText(ui->listWidget->selectedItems().at(0)->text());
+        ui->lblSelectedMsgId->setText("Selected message id: " + QString::number(ui->listWidget->currentRow()));
     }
 }
 

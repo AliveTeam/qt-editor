@@ -6,16 +6,54 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>453</width>
-    <height>336</height>
+    <width>670</width>
+    <height>415</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Message Editor</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_3">
+   <item row="1" column="0">
+    <layout class="QGridLayout" name="gridLayout_2">
+     <item row="0" column="0">
+      <widget class="QDialogButtonBox" name="buttonBox">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="standardButtons">
+        <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
    <item row="0" column="0">
     <layout class="QGridLayout" name="gridLayout">
+     <item row="2" column="0">
+      <widget class="QPushButton" name="btnAdd">
+       <property name="text">
+        <string>Add new</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0" colspan="4">
+      <widget class="QTextEdit" name="txtMessage"/>
+     </item>
+     <item row="2" column="2">
+      <widget class="QPushButton" name="btnDeleteSelected">
+       <property name="text">
+        <string>Delete selected</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="3">
+      <widget class="QPushButton" name="btnDeleteAll">
+       <property name="text">
+        <string>Delete all</string>
+       </property>
+      </widget>
+     </item>
      <item row="0" column="0">
       <widget class="QLabel" name="label">
        <property name="text">
@@ -23,10 +61,10 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="2">
-      <widget class="QPushButton" name="btnDeleteSelected">
+     <item row="2" column="1">
+      <widget class="QPushButton" name="btnUpdate">
        <property name="text">
-        <string>Delete selected</string>
+        <string>Update selected</string>
        </property>
       </widget>
      </item>
@@ -40,41 +78,10 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="3">
-      <widget class="QPushButton" name="btnDeleteAll">
+     <item row="3" column="0">
+      <widget class="QLabel" name="lblSelectedMsgId">
        <property name="text">
-        <string>Delete all</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="0">
-      <widget class="QPushButton" name="btnAdd">
-       <property name="text">
-        <string>Add new</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="1">
-      <widget class="QPushButton" name="btnUpdate">
-       <property name="text">
-        <string>Update selected</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="0" colspan="4">
-      <widget class="QTextEdit" name="txtMessage"/>
-     </item>
-    </layout>
-   </item>
-   <item row="1" column="0">
-    <layout class="QGridLayout" name="gridLayout_2">
-     <item row="0" column="0">
-      <widget class="QDialogButtonBox" name="buttonBox">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="standardButtons">
-        <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+        <string>Selected message id: none</string>
        </property>
       </widget>
      </item>
