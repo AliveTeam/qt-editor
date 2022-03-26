@@ -234,11 +234,12 @@ public:
 
     // TODO: implement proper ScrollHandDrag mode.
     // you should be able to move around by pressing and holding the middle mouse button.
-    /*void keyPressEvent(QKeyEvent* pEvent) override
+    void keyPressEvent(QKeyEvent* pEvent) override
     {
         if (pEvent->key() == Qt::Key::Key_Shift)
         {
             setDragMode(DragMode::ScrollHandDrag);
+            setInteractive(false);
             pEvent->ignore();
             return;
         }
@@ -250,11 +251,23 @@ public:
         if (pEvent->key() == Qt::Key::Key_Shift)
         {
             setDragMode(DragMode::RubberBandDrag);
+            setInteractive(true);
             pEvent->ignore();
             return;
         }
         QGraphicsView::keyPressEvent(pEvent);
-    }*/
+    }
+
+    void focusOutEvent(QFocusEvent* pEvent) override
+    {
+        if (pEvent->lostFocus())
+        {
+            // prevents ScrollHandDrag getting "stuck" when losing focus while holding shift
+            setDragMode(DragMode::RubberBandDrag);
+            setInteractive(true);
+        }
+        QGraphicsView::focusOutEvent(pEvent);
+    }
 
     void contextMenuEvent(QContextMenuEvent* pEvent) override
     {
