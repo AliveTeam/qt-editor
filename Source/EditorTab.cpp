@@ -44,7 +44,7 @@
 
 // Zoom by 10% each time.
 const float KZoomFactor = 0.10f;
-const float KMaxZoomOutLevels = 5.0f;
+const float KMaxZoomOutLevels = 6.0f;
 const float KMaxZoomInLevels = 14.0f;
 
 INITIALIZE_EASYLOGGINGPP
@@ -516,7 +516,7 @@ void EditorTab::ZoomIn()
     {
         iZoomLevel += KZoomFactor;
         ui->graphicsView->resetTransform();
-        ui->graphicsView->scale(iZoomLevel, iZoomLevel);
+        ui->graphicsView->setTransform(QTransform::fromScale(iZoomLevel, iZoomLevel), true);
     }
 }
 
@@ -526,7 +526,7 @@ void EditorTab::ZoomOut()
     {
         iZoomLevel -= KZoomFactor;
         ui->graphicsView->resetTransform();
-        ui->graphicsView->scale(iZoomLevel, iZoomLevel);
+        ui->graphicsView->setTransform(QTransform::fromScale(iZoomLevel, iZoomLevel), true);
     }
 }
 
@@ -534,7 +534,7 @@ void EditorTab::ResetZoom()
 {
     iZoomLevel = 1.0f;
     ui->graphicsView->resetTransform();
-    ui->graphicsView->scale(iZoomLevel, iZoomLevel);
+    ui->graphicsView->setTransform(QTransform::fromScale(iZoomLevel, iZoomLevel), true);
 }
 
 EditorTab::~EditorTab()
