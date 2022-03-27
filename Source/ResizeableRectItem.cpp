@@ -45,12 +45,12 @@ qreal ResizeableRectItem::CalcZPos() const
 
 void ResizeableRectItem::mousePressEvent( QGraphicsSceneMouseEvent* aEvent )
 {
-    if ( aEvent->button() == Qt::LeftButton )
+    if (aEvent->button() == Qt::LeftButton && QGraphicsItem::isSelected())
     {
-        m_ResizeMode = getResizeLocation( aEvent->pos(), boundingRect() );
-        if ( m_ResizeMode == eResize_None )
+        m_ResizeMode = getResizeLocation(aEvent->pos(), boundingRect());
+        if (m_ResizeMode == eResize_None)
         {
-            SetViewCursor( Qt::ClosedHandCursor );
+            SetViewCursor(Qt::ClosedHandCursor);
         }
     }
     QGraphicsItem::mousePressEvent( aEvent );
@@ -146,7 +146,7 @@ QRectF ResizeableRectItem::boundingRect() const
 void ResizeableRectItem::hoverMoveEvent( QGraphicsSceneHoverEvent* aEvent )
 { 
     //qDebug("Resize mode = %d", m_ResizeMode);
-    if ( !( flags() & QGraphicsItem::ItemIsSelectable ) )
+    if (!(flags() & QGraphicsItem::ItemIsSelectable) || !QGraphicsItem::isSelected())
     {
         SetViewCursor( Qt::OpenHandCursor );
         return;
