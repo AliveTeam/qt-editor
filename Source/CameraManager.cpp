@@ -497,6 +497,12 @@ void CameraManager::on_btnExportImage_clicked()
     if (!ui->lstCameras->selectedItems().empty())
     {
         auto pItem = static_cast<CameraListItem*>(ui->lstCameras->selectedItems()[0]);
+        if (pItem->GetCamera()->mName.empty())
+        {
+            QMessageBox::critical(this, "Error", "The selected camera has no image");
+            return;
+        }
+
         CameraGraphicsItem* pCameraGraphicsItem = CameraGraphicsItemByModelPtr(pItem->GetCamera());
         QByteArray camName = QString::fromStdString(pItem->GetCamera()->mName).toLocal8Bit();
         QString cameraSaveFileName = QFileDialog::getSaveFileName(this, tr("Export camera image"), camName, tr("PNG Files (*.png);;All Files (*)"));
