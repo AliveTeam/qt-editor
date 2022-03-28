@@ -33,11 +33,12 @@ EditorMainWindow::EditorMainWindow(QWidget* aParent)
     setMenuActionsEnabled(false);
 
     auto themeActionGroup = new QActionGroup(m_ui->menuTheme);
-    themeActionGroup->addAction(m_ui->actionDefault_theme);
     themeActionGroup->addAction(m_ui->actionDark_theme);
+    bool bFusionFound = false;
 
     if (QStyleFactory::keys().contains("Fusion"))
     {
+        bFusionFound = true;
         themeActionGroup->addAction(m_ui->actionDark_Fusion_theme);
     }
     else
@@ -45,34 +46,40 @@ EditorMainWindow::EditorMainWindow(QWidget* aParent)
         m_ui->actionDark_Fusion_theme->setVisible(false);
     }
 
+    // Set the default theme
     if (!m_Settings.contains("theme"))
     {
-        // Set the default theme
-        m_Settings.setValue("theme", "Default");
+        if (bFusionFound)
+        {
+            m_Settings.setValue("theme", "DarkFusion");
+        }
+        else
+        {
+            m_Settings.setValue("theme", "Dark");
+        }
     }
 
-    if (m_Settings.value("theme") == "Dark")
-    {
-        on_actionDark_theme_triggered();
-    }
-    else if (m_Settings.value("theme") == "DarkFusion")
+    if (m_Settings.value("theme") == "DarkFusion")
     {
         on_actionDark_Fusion_theme_triggered();
     }
     else
     {
-        on_actionDefault_theme_triggered();
+        on_actionDark_theme_triggered();
     }
 
     m_ui->statusbar->showMessage(tr("Ready"));
 
     // Add short cuts to the tool bar.
+    m_ui->toolBar->setIconSize(QSize(24, 24));
     m_ui->toolBar->addAction(m_ui->action_open_path);
-    m_ui->toolBar->addAction(m_ui->action_undo);
-    m_ui->toolBar->addAction(m_ui->action_redo);
     m_ui->toolBar->addAction(m_ui->action_zoom_reset);
     m_ui->toolBar->addAction(m_ui->action_zoom_in);
     m_ui->toolBar->addAction(m_ui->action_zoom_out);
+    m_ui->toolBar->addAction(m_ui->action_snap_collision_items_on_x);
+    m_ui->toolBar->addAction(m_ui->action_snap_collision_objects_on_y);
+    m_ui->toolBar->addAction(m_ui->action_snap_map_objects_x);
+    m_ui->toolBar->addAction(m_ui->action_snap_map_objects_y);
 
     connect(m_ui->tabWidget, &QTabWidget::tabCloseRequested, this, &EditorMainWindow::onCloseTab);
 
@@ -400,15 +407,6 @@ void EditorMainWindow::onCloseTab(int index)
     }
 }
 
-void EditorMainWindow::on_actionDefault_theme_triggered()
-{
-    m_ui->actionDefault_theme->setChecked(true);
-    m_Settings.setValue("theme", "Default");
-    qApp->setPalette(QApplication::style()->standardPalette());
-    qApp->setStyleSheet(QString());
-    qApp->setStyle(mUnthemedStyle);
-}
-
 void EditorMainWindow::on_actionDark_Fusion_theme_triggered()
 {
     m_ui->actionDark_Fusion_theme->setChecked(true);
@@ -425,7 +423,7 @@ void EditorMainWindow::on_actionDark_Fusion_theme_triggered()
     darkPalette.setColor(QPalette::Window, darkGray);
     darkPalette.setColor(QPalette::WindowText, Qt::white);
     darkPalette.setColor(QPalette::Base, black);
-    darkPalette.setColor(QPalette::AlternateBase, darkGray);
+    darkPalette.setColor(QPalette::AlternateBase, black.lighter());
     darkPalette.setColor(QPalette::ToolTipBase, darkGray);
     darkPalette.setColor(QPalette::ToolTipText, Qt::white);
     darkPalette.setColor(QPalette::Text, Qt::white);

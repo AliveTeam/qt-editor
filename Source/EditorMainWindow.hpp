@@ -20,8 +20,6 @@ public:
     explicit EditorMainWindow( QWidget* aParent = 0 );
     ~EditorMainWindow();
 private slots:
-    void on_actionDefault_theme_triggered();
-
     void on_actionDark_Fusion_theme_triggered();
 
     void on_actionDark_theme_triggered();
