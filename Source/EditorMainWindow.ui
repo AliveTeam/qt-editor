@@ -164,7 +164,6 @@
     <property name="title">
      <string>Theme</string>
     </property>
-    <addaction name="actionDefault_theme"/>
     <addaction name="actionDark_theme"/>
     <addaction name="actionDark_Fusion_theme"/>
    </widget>
@@ -626,6 +625,10 @@
    <property name="enabled">
     <bool>true</bool>
    </property>
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/rsc/icons/Snap_Line_X.png</normaloff>:/icons/rsc/icons/Snap_Line_X.png</iconset>
+   </property>
    <property name="text">
     <string>Snap collision objects on X</string>
    </property>
@@ -639,6 +642,10 @@
   <action name="action_snap_map_objects_x">
    <property name="checkable">
     <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/rsc/icons/Snap_Object_X.png</normaloff>:/icons/rsc/icons/Snap_Object_X.png</iconset>
    </property>
    <property name="text">
     <string>Snap map objects on X</string>
@@ -738,6 +745,10 @@
    <property name="checkable">
     <bool>true</bool>
    </property>
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/rsc/icons/Snap_Line_Y.png</normaloff>:/icons/rsc/icons/Snap_Line_Y.png</iconset>
+   </property>
    <property name="text">
     <string>Snap collision objects on Y</string>
    </property>
@@ -751,6 +762,10 @@
   <action name="action_snap_map_objects_y">
    <property name="checkable">
     <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/rsc/icons/Snap_Object_Y.png</normaloff>:/icons/rsc/icons/Snap_Object_Y.png</iconset>
    </property>
    <property name="text">
     <string>Snap map objects on Y</string>

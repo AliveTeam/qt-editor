@@ -105,8 +105,8 @@ void EditorGraphicsScene::CreateBackgroundBrush()
     int gridSizeY = 20;
 
     // Paint a single grid background onto a pixmap.
-    QImage singleGrid(gridSizeX, gridSizeY, QImage::Format_ARGB32);
-    singleGrid.fill(qRgba(0,0,0,0));
+    QImage singleGrid(gridSizeX, gridSizeY, QImage::Format_RGB32);
+    singleGrid.fill(QColor(50, 50, 50));
     {
         QPainter painter(&singleGrid);
 
