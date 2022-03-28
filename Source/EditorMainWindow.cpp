@@ -71,7 +71,7 @@ EditorMainWindow::EditorMainWindow(QWidget* aParent)
     m_ui->statusbar->showMessage(tr("Ready"));
 
     // Add short cuts to the tool bar.
-    m_ui->toolBar->setIconSize(QSize(24, 24));
+    m_ui->toolBar->setIconSize(QSize(32, 32));
     m_ui->toolBar->addAction(m_ui->action_open_path);
     m_ui->toolBar->addAction(m_ui->action_zoom_reset);
     m_ui->toolBar->addAction(m_ui->action_zoom_in);
