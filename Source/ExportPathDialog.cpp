@@ -48,32 +48,35 @@ void ExportPathDialog::on_btnSelectRelive_clicked()
 
 void ExportPathDialog::on_btnExportAndRun_clicked()
 {
-    ExportToLvl();
-
-    if (!ui->txtRelivePath->text().isEmpty())
+    if (ExportToLvl())
     {
-        QString reliveExe = ui->txtRelivePath->text();
-        QFileInfo info(reliveExe);
-
-        if (!info.isExecutable())
+        if (!ui->txtRelivePath->text().isEmpty())
         {
-            QMessageBox::critical(this, "Error", "Failed to open R.E.L.I.V.E, the selected file is not an executable");
-            return;
+            QString reliveExe = ui->txtRelivePath->text();
+            QFileInfo info(reliveExe);
+
+            if (!info.isExecutable())
+            {
+                QMessageBox::critical(this, "Error", "Failed to open R.E.L.I.V.E, the selected file is not an executable");
+                return;
+            }
+            QProcess* process = new QProcess(this);
+            process->setWorkingDirectory(info.dir().path());
+            process->setProgram(reliveExe);
+            process->setArguments(QStringList{});
+            process->startDetached();
+            delete process;
         }
-        QProcess* process = new QProcess(this);
-        QDir::setCurrent(info.dir().path());
-        process->execute(reliveExe, QStringList() << "");
-        delete process;
     }
 }
 
-void ExportPathDialog::ExportToLvl()
+bool ExportPathDialog::ExportToLvl()
 {
     auto jsonPath = ui->txtJsonPath->text();
     auto lvlPath = ui->txtLvlFilePath->text();
     auto partialTemporaryFilePath = qApp->applicationName().replace(" ", "");
 
-    exportJsonToLvl(jsonPath, lvlPath, partialTemporaryFilePath, [&](const QString text)
+    return exportJsonToLvl(jsonPath, lvlPath, partialTemporaryFilePath, [&](const QString text)
         {
             QMessageBox::critical(this, "Error", text);
         });

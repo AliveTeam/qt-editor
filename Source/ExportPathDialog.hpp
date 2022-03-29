@@ -35,7 +35,7 @@ private slots:
 
 private:
     Ui::ExportPathDialog *ui;
-    void ExportToLvl();
+    bool ExportToLvl();
 };
 
 #endif // EXPORTPATHDIALOG_HPP
