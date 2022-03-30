@@ -59,20 +59,13 @@ EditorMainWindow::EditorMainWindow(QWidget* aParent)
         }
     }
 
-    if (m_Settings.value("theme") == "DarkFusion")
-    {
-        on_actionDark_Fusion_theme_triggered();
-    }
-    else
-    {
-        on_actionDark_theme_triggered();
-    }
-
-    m_ui->statusbar->showMessage(tr("Ready"));
+    readSettings();
 
     // Add short cuts to the tool bar.
     m_ui->toolBar->setIconSize(QSize(32, 32));
     m_ui->toolBar->addAction(m_ui->action_open_path);
+    m_ui->toolBar->addAction(m_ui->action_save_path);
+    m_ui->toolBar->addAction(m_ui->actionSave_all);
     m_ui->toolBar->addAction(m_ui->action_zoom_reset);
     m_ui->toolBar->addAction(m_ui->action_zoom_in);
     m_ui->toolBar->addAction(m_ui->action_zoom_out);
@@ -80,10 +73,8 @@ EditorMainWindow::EditorMainWindow(QWidget* aParent)
     m_ui->toolBar->addAction(m_ui->action_snap_collision_objects_on_y);
     m_ui->toolBar->addAction(m_ui->action_snap_map_objects_x);
     m_ui->toolBar->addAction(m_ui->action_snap_map_objects_y);
-
+    
     connect(m_ui->tabWidget, &QTabWidget::tabCloseRequested, this, &EditorMainWindow::onCloseTab);
-
-    this->m_ui->toolBar->setMovable(false);
 
     QPixmapCache::setCacheLimit(1024 * 50);
 
@@ -115,6 +106,23 @@ EditorMainWindow::~EditorMainWindow()
 {
     m_Settings.sync();
     delete m_ui;
+}
+
+void EditorMainWindow::readSettings()
+{
+    if (m_Settings.value("theme") == "DarkFusion")
+    {
+        on_actionDark_Fusion_theme_triggered();
+    }
+    else
+    {
+        on_actionDark_theme_triggered();
+    }
+
+    if (m_Settings.contains("windowState"))
+    {
+        restoreState(m_Settings.value("windowState").toByteArray());
+    }
 }
 
 void EditorMainWindow::setMenuActionsEnabled(bool enable)
@@ -671,6 +679,7 @@ void EditorMainWindow::closeEvent(QCloseEvent* pEvent)
     {
         pEvent->accept();
     }
+    m_Settings.setValue("windowState", saveState());
 }
 
 void EditorMainWindow::DisconnectTabSignals()

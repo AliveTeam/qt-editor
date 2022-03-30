@@ -9,12 +9,13 @@
         <file>rsc/icons/zoom_out.png</file>
         <file>rsc/icons/zoom_reset.png</file>
         <file>rsc/icons/open.png</file>
-        <file>rsc/icons/arrow_undo.png</file>
-        <file>rsc/icons/arrow_redo.png</file>
         <file>rsc/icons/Snap_Line_X.png</file>
         <file>rsc/icons/Snap_Line_Y.png</file>
         <file>rsc/icons/Snap_Object_X.png</file>
         <file>rsc/icons/Snap_Object_Y.png</file>
+        <file>rsc/icons/Save.png</file>
+        <file>rsc/icons/Save_All.png</file>
+        <file>rsc/icons/Save_Export_Play.png</file>
     </qresource>
 
     <qresource prefix="/object_images">

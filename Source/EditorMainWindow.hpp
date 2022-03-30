@@ -87,6 +87,7 @@ private slots:
     void on_action_snap_map_objects_y_toggled(bool on);
 
 private:
+    void readSettings();
     void setMenuActionsEnabled(bool enable);
     bool onOpenPath(QString fileName, bool createNewPath);
     void UpdateWindowTitle();
