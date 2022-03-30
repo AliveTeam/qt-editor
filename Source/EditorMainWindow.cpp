@@ -60,7 +60,6 @@ EditorMainWindow::EditorMainWindow(QWidget* aParent)
     }
 
     readSettings();
-
     // Add short cuts to the tool bar.
     m_ui->toolBar->setIconSize(QSize(32, 32));
     m_ui->toolBar->addAction(m_ui->action_open_path);
@@ -69,11 +68,14 @@ EditorMainWindow::EditorMainWindow(QWidget* aParent)
     m_ui->toolBar->addAction(m_ui->action_zoom_reset);
     m_ui->toolBar->addAction(m_ui->action_zoom_in);
     m_ui->toolBar->addAction(m_ui->action_zoom_out);
+    m_ui->toolBar->addAction(m_ui->actionAdd_collision);
+    m_ui->toolBar->addAction(m_ui->actionAdd_object);
+    m_ui->toolBar->addSeparator();
     m_ui->toolBar->addAction(m_ui->action_snap_collision_items_on_x);
     m_ui->toolBar->addAction(m_ui->action_snap_collision_objects_on_y);
     m_ui->toolBar->addAction(m_ui->action_snap_map_objects_x);
     m_ui->toolBar->addAction(m_ui->action_snap_map_objects_y);
-    
+
     connect(m_ui->tabWidget, &QTabWidget::tabCloseRequested, this, &EditorMainWindow::onCloseTab);
 
     QPixmapCache::setCacheLimit(1024 * 50);
@@ -374,7 +376,7 @@ bool EditorMainWindow::onOpenPath(QString fullFileName, bool createNewPath)
         QFileInfo fileInfo(fullFileName);
         const int tabIdx = m_ui->tabWidget->addTab(view, fileInfo.fileName());
         m_ui->tabWidget->setTabToolTip(tabIdx, fullFileName);
-        m_ui->tabWidget->setTabIcon(tabIdx, m_ui->action_open_path->icon());
+        m_ui->tabWidget->setTabIcon(tabIdx, QIcon(":/icons/rsc/icons/Well.png"));
         m_ui->tabWidget->setCurrentIndex(tabIdx);
 
         m_ui->stackedWidget->setCurrentIndex(1);
