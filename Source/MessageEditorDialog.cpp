@@ -95,11 +95,15 @@ void MessageEditorDialog::on_btnDeleteSelected_clicked()
 
 void MessageEditorDialog::on_btnUpdate_clicked()
 {
-    if (!ui->txtMessage->toPlainText().isEmpty() && MsgContainsValidChars())
+    if (!ui->txtMessage->toPlainText().isEmpty())
     {
         if (!ui->listWidget->selectedItems().empty())
         {
-            ui->listWidget->selectedItems().at(0)->setText(ui->txtMessage->toPlainText());
+            ui->txtMessage->setText(ui->txtMessage->toPlainText().toUpper());
+            if (MsgContainsValidChars())
+            {
+                ui->listWidget->selectedItems().at(0)->setText(ui->txtMessage->toPlainText());
+            }
         }
     }
 }
@@ -118,7 +122,7 @@ bool MessageEditorDialog::MsgContainsValidChars()
         bool ok = message.find_first_not_of(validCharacters) == std::string::npos;
         if (!ok)
         {
-            QMessageBox::critical(this, "Error", QString("Your message contains unsupported characters or uses lowercase characters. Supported characters are: ") + validCharacters.c_str());
+            QMessageBox::critical(this, "Error", QString("Your message contains unsupported characters. Supported characters are: ") + validCharacters.c_str());
             return false;
         }
         return true;
@@ -127,9 +131,13 @@ bool MessageEditorDialog::MsgContainsValidChars()
 
 void MessageEditorDialog::on_btnAdd_clicked()
 {
-    if (!ui->txtMessage->toPlainText().isEmpty() && MsgContainsValidChars())
+    if (!ui->txtMessage->toPlainText().isEmpty())
     {
-        ui->listWidget->addItem(ui->txtMessage->toPlainText());
+        ui->txtMessage->setText(ui->txtMessage->toPlainText().toUpper());
+        if (MsgContainsValidChars())
+        {
+            ui->listWidget->addItem(ui->txtMessage->toPlainText());
+        }
     }
 }
 
