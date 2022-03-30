@@ -16,6 +16,7 @@
 #include "qstylefactory.h"
 #include "qdebug.h"
 #include "qactiongroup.h"
+#include "ReliveApiWrapper.hpp"
 
 EditorMainWindow::EditorMainWindow(QWidget* aParent)
     : QMainWindow(aParent),
@@ -146,7 +147,8 @@ bool EditorMainWindow::onOpenPath(QString fullFileName, bool createNewPath)
     int newPathId = 0;
     bool isTempfile = false;
     std::optional<int> selectedPath;
-    try
+    
+    auto fnOpenPath = [&]()
     {
         if (fullFileName.endsWith(".lvl", Qt::CaseInsensitive))
         {
@@ -203,120 +205,16 @@ bool EditorMainWindow::onOpenPath(QString fullFileName, bool createNewPath)
             // And continue to load the newly saved json file
             fullFileName = tempFileFullPath;
         }
-    }
-    catch (const ReliveAPI::IOReadException& e)
+        return true;
+    };
+
+    auto fnOnError = [&](QString err)
     {
-        QMessageBox::critical(this, "Error", QString("IO read failure: ") + e.what().c_str());
-        return false;
-    }
-    catch (const ReliveAPI::IOWriteException& e)
+        QMessageBox::critical(this, "Error", err);
+    };
+
+    if (!ExecApiCall(fnOpenPath, fnOnError))
     {
-        QMessageBox::critical(this, "Error", QString("IO write failure: ") + e.what().c_str());
-        return false;
-    }
-    catch (const ReliveAPI::UnknownEnumValueException& e)
-    {
-        QMessageBox::critical(this, "Error", QString("Unknown enum value: ") + e.what().c_str());
-        return false;
-    }
-    catch (const ReliveAPI::IOReadPastEOFException& e)
-    {
-        QMessageBox::critical(this, "Error", QString("IO read past EOF: ") + e.what().c_str());
-        return false;
-    }
-    catch (const ReliveAPI::EmptyPropertyNameException& e)
-    {
-        QMessageBox::critical(this, "Error", QString("Empty property name: ") + e.what().c_str());
-        return false;
-    }
-    catch (const ReliveAPI::EmptyTypeNameException& e)
-    {
-        QMessageBox::critical(this, "Error", QString("Empty type name: ") + e.what().c_str());
-        return false;
-    }
-    catch (const ReliveAPI::DuplicatePropertyKeyException& e)
-    {
-        QMessageBox::critical(this, "Error", QString("Duplicated property key: ") + e.what().c_str());
-        return false;
-    }
-    catch (const ReliveAPI::DuplicatePropertyNameException& e)
-    {
-        QMessageBox::critical(this, "Error", QString("Duplicated property name: ") + e.what().c_str());
-        return false;
-    }
-    catch (const ReliveAPI::DuplicateEnumNameException& e)
-    {
-        QMessageBox::critical(this, "Error", QString("Duplicated enum name: ") + e.what().c_str());
-        return false;
-    }
-    catch (const ReliveAPI::PropertyNotFoundException& e)
-    {
-        QMessageBox::critical(this, "Error", QString("Property not found: ") + e.what().c_str());
-        return false;
-    }
-    catch (const ReliveAPI::InvalidGameException& e)
-    {
-        QMessageBox::critical(this, "Error", QString("Invalid game name: ") + e.what().c_str());
-        return false;
-    }
-    catch (const ReliveAPI::InvalidJsonException& e)
-    {
-        QMessageBox::critical(this, "Error", QString("Invalid json, can't parse: ") + e.what().c_str());
-        return false;
-    }
-    catch (const ReliveAPI::JsonVersionTooNew& e)
-    {
-        QMessageBox::critical(this, "Error", QString("Json version too new: ") + e.what().c_str());
-        return false;
-    }
-    catch (const ReliveAPI::JsonVersionTooOld& e)
-    {
-        QMessageBox::critical(this, "Error", QString("Json version too old: ") + e.what().c_str());
-        return false;
-    }
-    catch (const ReliveAPI::BadCameraNameException& e)
-    {
-        QMessageBox::critical(this, "Error", QString("Bad camera name: ") + e.what().c_str());
-        return false;
-    }
-    catch (const ReliveAPI::JsonNeedsUpgradingException& e)
-    {
-        QMessageBox::critical(this, "Error", QString("Json needs upgrading: ") + e.what().c_str());
-        return false;
-    }
-    catch (const ReliveAPI::OpenPathException& e)
-    {
-        QMessageBox::critical(this, "Error", QString("Open path failure: ") + e.what().c_str());
-        return false;
-    }
-    catch (const ReliveAPI::CollisionsCountChangedException& e)
-    {
-        QMessageBox::critical(this, "Error", QString("Collision count changed: ") + e.what().c_str());
-        return false;
-    }
-    catch (const ReliveAPI::CameraOutOfBoundsException& e)
-    {
-        QMessageBox::critical(this, "Error", QString("Camera out of bounds: ") + e.what().c_str());
-        return false;
-    }
-    catch (const ReliveAPI::UnknownStructureTypeException& e)
-    {
-        QMessageBox::critical(this, "Error", QString("Unknown structure record: ") + e.what().c_str());
-        return false;
-    }
-    catch (const ReliveAPI::WrongTLVLengthException& e)
-    {
-        QMessageBox::critical(this, "Error", QString("TLV length is wrong: ") + e.what().c_str());
-        return false;
-    }
-    catch (const ReliveAPI::JsonKeyNotFoundException& e)
-    {
-        QMessageBox::critical(this, "Error", QString("Missing json key: ") + e.Key().c_str());
-        return false;
-    }
-    catch (const ReliveAPI::Exception& e)
-    {
-        QMessageBox::critical(this, "Error", e.what().c_str());
         return false;
     }
 
@@ -376,6 +274,11 @@ bool EditorMainWindow::onOpenPath(QString fullFileName, bool createNewPath)
         setMenuActionsEnabled(true);
 
         return true;
+    }
+    catch (const JsonKeyNotFoundException& e)
+    {
+        QMessageBox::critical(this, "Error", QString("Key missing from json: ") + e.Key().c_str());
+        return false;
     }
     catch (const ModelException&)
     {
