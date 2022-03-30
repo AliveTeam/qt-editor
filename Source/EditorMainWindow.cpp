@@ -66,6 +66,7 @@ EditorMainWindow::EditorMainWindow(QWidget* aParent)
     m_ui->toolBar->addAction(m_ui->action_open_path);
     m_ui->toolBar->addAction(m_ui->action_save_path);
     m_ui->toolBar->addAction(m_ui->actionSave_all);
+    m_ui->toolBar->addAction(m_ui->actionExport_and_play);
     m_ui->toolBar->addAction(m_ui->action_zoom_reset);
     m_ui->toolBar->addAction(m_ui->action_zoom_in);
     m_ui->toolBar->addAction(m_ui->action_zoom_out);
@@ -133,6 +134,7 @@ void EditorMainWindow::setMenuActionsEnabled(bool enable)
     m_ui->action_close_path->setEnabled(enable);
     m_ui->action_save_path->setEnabled(enable);
     m_ui->actionSave_all->setEnabled(enable);
+    m_ui->actionExport_and_play->setEnabled(enable);
     m_ui->actionSave_As->setEnabled(enable);
     m_ui->actionExport_to_lvl->setEnabled(enable);
 
@@ -414,6 +416,15 @@ static EditorTab* getActiveTab(QTabWidget* pTabWidget)
     return nullptr;
 }
 
+void EditorMainWindow::on_actionExport_and_play_triggered()
+{
+    EditorTab* pTab = getActiveTab(m_ui->tabWidget);
+    if (pTab)
+    {
+        pTab->Export(true);
+    }
+}
+
 void EditorMainWindow::on_action_zoom_reset_triggered()
 {
     EditorTab* pTab = getActiveTab(m_ui->tabWidget);
@@ -482,7 +493,7 @@ void EditorMainWindow::on_actionExport_to_lvl_triggered()
     EditorTab* pTab = getActiveTab(m_ui->tabWidget);
     if (pTab)
     {
-        pTab->Export();
+        pTab->Export(false);
     }
     else
     {
