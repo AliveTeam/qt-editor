@@ -34,6 +34,7 @@ private slots:
     void on_listWidget_itemSelectionChanged();
 
 private:
+    bool MsgContainsValidChars();
     std::vector<std::string>& GetMsgs();
 
     Ui::MessageEditorDialog *ui;
