@@ -107,7 +107,6 @@ void MessageEditorDialog::on_btnUpdate_clicked()
 bool MessageEditorDialog::MsgContainsValidChars()
 {
     const std::string message = ui->txtMessage->toPlainText().toStdString();
-    const std::string validCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
     if (mIsLCDScreenMsgs)
     {
         // TODO: validate LCD letters
@@ -115,10 +114,11 @@ bool MessageEditorDialog::MsgContainsValidChars()
     }
     else
     {
+        const std::string validCharacters = " ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         bool ok = message.find_first_not_of(validCharacters) == std::string::npos;
         if (!ok)
         {
-            QMessageBox::critical(this, "Error", QString("Your message contains unsupported characters. Supported characters are: ") + validCharacters.c_str());
+            QMessageBox::critical(this, "Error", QString("Your message contains unsupported characters or uses lowercase characters. Supported characters are: ") + validCharacters.c_str());
             return false;
         }
         return true;
