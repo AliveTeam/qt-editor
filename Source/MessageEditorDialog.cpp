@@ -3,6 +3,7 @@
 #include "Model.hpp"
 #include "EditorTab.hpp"
 #include <QUndoCommand>
+#include <QMessageBox>
 
 class ChangeMessagesCommand final : public QUndoCommand
 {
@@ -94,7 +95,7 @@ void MessageEditorDialog::on_btnDeleteSelected_clicked()
 
 void MessageEditorDialog::on_btnUpdate_clicked()
 {
-    if (!ui->txtMessage->toPlainText().isEmpty())
+    if (!ui->txtMessage->toPlainText().isEmpty() && MsgContainsValidChars())
     {
         if (!ui->listWidget->selectedItems().empty())
         {
@@ -103,10 +104,30 @@ void MessageEditorDialog::on_btnUpdate_clicked()
     }
 }
 
+bool MessageEditorDialog::MsgContainsValidChars()
+{
+    const std::string message = ui->txtMessage->toPlainText().toStdString();
+    if (mIsLCDScreenMsgs)
+    {
+        // TODO: validate LCD letters
+        return true;
+    }
+    else
+    {
+        const std::string validCharacters = " ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        bool ok = message.find_first_not_of(validCharacters) == std::string::npos;
+        if (!ok)
+        {
+            QMessageBox::critical(this, "Error", QString("Your message contains unsupported characters or uses lowercase characters. Supported characters are: ") + validCharacters.c_str());
+            return false;
+        }
+        return true;
+    }
+}
 
 void MessageEditorDialog::on_btnAdd_clicked()
 {
-    if (!ui->txtMessage->toPlainText().isEmpty())
+    if (!ui->txtMessage->toPlainText().isEmpty() && MsgContainsValidChars())
     {
         ui->listWidget->addItem(ui->txtMessage->toPlainText());
     }

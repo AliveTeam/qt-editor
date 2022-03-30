@@ -98,14 +98,16 @@
     </property>
     <addaction name="actionNew_path"/>
     <addaction name="action_open_path"/>
-    <addaction name="action_close_path"/>
+    <addaction name="separator"/>
     <addaction name="action_save_path"/>
     <addaction name="action_save_path_as"/>
     <addaction name="action_run_level"/>
     <addaction name="action_exit_application"/>
-    <addaction name="actionSave_all"/>
     <addaction name="actionSave_As"/>
+    <addaction name="actionSave_all"/>
     <addaction name="actionExport_to_lvl"/>
+    <addaction name="separator"/>
+    <addaction name="action_close_path"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -138,16 +140,19 @@
     <addaction name="actionCut"/>
     <addaction name="actionCopy"/>
     <addaction name="actionPaste"/>
+    <addaction name="separator"/>
     <addaction name="action_zoom_in"/>
     <addaction name="action_zoom_out"/>
     <addaction name="action_zoom_reset"/>
     <addaction name="action_add_new_collision_item"/>
     <addaction name="action_add_new_map_object"/>
     <addaction name="action_delete_selected_items"/>
+    <addaction name="separator"/>
     <addaction name="actionEdit_HintFly_messages"/>
     <addaction name="actionEdit_LCDScreen_messages"/>
     <addaction name="actionEdit_path_data"/>
     <addaction name="actionEdit_map_size"/>
+    <addaction name="separator"/>
     <addaction name="actionAdd_object"/>
     <addaction name="actionAdd_collision"/>
    </widget>
@@ -218,8 +223,8 @@
   </action>
   <action name="action_close_path">
    <property name="icon">
-    <iconset>
-     <normaloff>:/images/door.png</normaloff>:/images/door.png</iconset>
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/rsc/icons/Close.png</normaloff>:/icons/rsc/icons/Close.png</iconset>
    </property>
    <property name="text">
     <string>Close path</string>
@@ -251,8 +256,8 @@
   </action>
   <action name="action_save_path">
    <property name="icon">
-    <iconset>
-     <normaloff>:/images/page_save.png</normaloff>:/images/page_save.png</iconset>
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/rsc/icons/Save.png</normaloff>:/icons/rsc/icons/Save.png</iconset>
    </property>
    <property name="text">
     <string>Save</string>
@@ -382,10 +387,6 @@
    <property name="enabled">
     <bool>true</bool>
    </property>
-   <property name="icon">
-    <iconset resource="resources.qrc">
-     <normaloff>:/icons/rsc/icons/arrow_undo.png</normaloff>:/icons/rsc/icons/arrow_undo.png</iconset>
-   </property>
    <property name="text">
     <string>Undo</string>
    </property>
@@ -399,10 +400,6 @@
   <action name="action_redo">
    <property name="enabled">
     <bool>true</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="resources.qrc">
-     <normaloff>:/icons/rsc/icons/arrow_redo.png</normaloff>:/icons/rsc/icons/arrow_redo.png</iconset>
    </property>
    <property name="text">
     <string>Redo</string>
@@ -842,10 +839,14 @@
   </action>
   <action name="actionSave_As">
    <property name="text">
-    <string>Save As</string>
+    <string>Save As...</string>
    </property>
   </action>
   <action name="actionAdd_object">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/rsc/icons/New_Object.png</normaloff>:/icons/rsc/icons/New_Object.png</iconset>
+   </property>
    <property name="text">
     <string>Add object</string>
    </property>
@@ -854,6 +855,10 @@
    </property>
   </action>
   <action name="actionAdd_collision">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/rsc/icons/New_Line.png</normaloff>:/icons/rsc/icons/New_Line.png</iconset>
+   </property>
    <property name="text">
     <string>Add collision</string>
    </property>
@@ -915,6 +920,10 @@
    </property>
   </action>
   <action name="actionSave_all">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/rsc/icons/Save_All.png</normaloff>:/icons/rsc/icons/Save_All.png</iconset>
+   </property>
    <property name="text">
     <string>Save all</string>
    </property>
