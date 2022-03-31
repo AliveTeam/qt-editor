@@ -99,7 +99,11 @@ void MessageEditorDialog::on_btnUpdate_clicked()
     {
         if (!ui->listWidget->selectedItems().empty())
         {
-            ui->txtMessage->setText(ui->txtMessage->toPlainText().toUpper());
+            if (!mIsLCDScreenMsgs)
+            {
+                ui->txtMessage->setText(ui->txtMessage->toPlainText().toUpper());
+            }
+
             if (MsgContainsValidChars())
             {
                 ui->listWidget->selectedItems().at(0)->setText(ui->txtMessage->toPlainText());
@@ -133,7 +137,11 @@ void MessageEditorDialog::on_btnAdd_clicked()
 {
     if (!ui->txtMessage->toPlainText().isEmpty())
     {
-        ui->txtMessage->setText(ui->txtMessage->toPlainText().toUpper());
+        if (!mIsLCDScreenMsgs)
+        {
+            ui->txtMessage->setText(ui->txtMessage->toPlainText().toUpper());
+        }
+
         if (MsgContainsValidChars())
         {
             ui->listWidget->addItem(ui->txtMessage->toPlainText());
