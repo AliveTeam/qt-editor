@@ -54,17 +54,13 @@
    </item>
    <item row="1" column="0">
     <layout class="QGridLayout" name="gridLayout">
-     <item row="1" column="0">
-      <widget class="QLineEdit" name="txtRelivePath">
+     <item row="1" column="1">
+      <widget class="QPushButton" name="btnSelectRelive">
        <property name="enabled">
         <bool>true</bool>
        </property>
-      </widget>
-     </item>
-     <item row="1" column="2">
-      <widget class="QPushButton" name="btnExportAndRun">
        <property name="text">
-        <string>Export &amp;&amp; Run</string>
+        <string>Browse</string>
        </property>
       </widget>
      </item>
@@ -78,13 +74,10 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="1">
-      <widget class="QPushButton" name="btnSelectRelive">
+     <item row="1" column="0">
+      <widget class="QLineEdit" name="txtRelivePath">
        <property name="enabled">
         <bool>true</bool>
-       </property>
-       <property name="text">
-        <string>Browse</string>
        </property>
       </widget>
      </item>

@@ -15,19 +15,19 @@ public:
     explicit ExportPathDialog(QWidget *parent = nullptr);
     ~ExportPathDialog();
 
+    void ExportAndPlay();
     void setJsonPath(QString path);
     void setLvlName(QString path);
     void setRelivePath(QString path);
     QString getLvlName() const;
     QString getRelivePath() const;
+    QString getJsonPath() const;
 private slots:
     void on_btnSelectJson_clicked();
 
     void on_btnSelectLvlFile_clicked();
 
     void on_btnSelectRelive_clicked();
-
-    void on_btnExportAndRun_clicked();
 
     void on_buttonBox_accepted();
 

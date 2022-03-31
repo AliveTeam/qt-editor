@@ -46,7 +46,7 @@ void ExportPathDialog::on_btnSelectRelive_clicked()
     }
 }
 
-void ExportPathDialog::on_btnExportAndRun_clicked()
+void ExportPathDialog::ExportAndPlay()
 {
     if (ExportToLvl())
     {
@@ -115,4 +115,9 @@ QString ExportPathDialog::getLvlName() const
 QString ExportPathDialog::getRelivePath() const
 {
     return ui->txtRelivePath->text();
+}
+
+QString ExportPathDialog::getJsonPath() const
+{
+    return ui->txtJsonPath->text();
 }

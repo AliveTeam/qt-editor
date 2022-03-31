@@ -38,7 +38,7 @@ public:
     void ResetZoom();
     bool Save();
     bool SaveAs();
-    void Export();
+    void Export(bool exportAndPlay);
     QString GetJsonFileName() const { return mJsonFileName; }
     Model& GetModel() const { return *mModel; }
     void ClearPropertyEditor();
