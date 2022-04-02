@@ -287,12 +287,22 @@ public:
 
     void dragEnterEvent(QDragEnterEvent* pEvent) override
     {
-        QUrl path = pEvent->mimeData()->text();
-        QFileInfo info(path.toLocalFile());
-        if (info.completeSuffix() == "png" ||
-            info.completeSuffix() == "jpg")
+        if (pEvent->mimeData()->hasImage())
         {
             pEvent->acceptProposedAction();
+        }
+        else if (pEvent->mimeData()->hasUrls())
+        {
+            QUrl      fileUrl = pEvent->mimeData()->urls().first();
+            QMimeType mimeType = QMimeDatabase().mimeTypeForUrl(fileUrl);
+
+            qDebug() << fileUrl;
+            qDebug() << mimeType.name();
+
+            if (mimeType.name().startsWith("image"))
+            {
+                pEvent->acceptProposedAction();
+            }
         }
     }
 
@@ -303,7 +313,7 @@ public:
 
     void dropEvent(QDropEvent* pEvent) override
     {
-        QUrl imgPath = pEvent->mimeData()->text();
+        QUrl imgPath = pEvent->mimeData()->urls().first();
         const QPoint scenePos = mapToScene(pEvent->pos()).toPoint();
         CameraManager cameraManager(this, mEditorTab, &scenePos);
         cameraManager.CreateCamera(true, QPixmap(imgPath.toLocalFile()));
