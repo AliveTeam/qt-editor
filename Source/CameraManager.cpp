@@ -512,6 +512,12 @@ void CameraManager::on_btnExportImage_clicked()
             return;
         }
 
+        // Append .png file ext if not specified
+        if (!cameraSaveFileName.endsWith(".png", Qt::CaseInsensitive))
+        {
+            cameraSaveFileName += ".png";
+        }
+
         auto image = pCameraGraphicsItem->GetImage();
         if (ui->radioButton_640x480->isChecked())
         {
