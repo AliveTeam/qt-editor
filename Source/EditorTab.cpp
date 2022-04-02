@@ -287,13 +287,7 @@ public:
 
     void dragEnterEvent(QDragEnterEvent* pEvent) override
     {
-        QUrl path = pEvent->mimeData()->text();
-        QFileInfo info(path.toLocalFile());
-        if (info.completeSuffix() == "png" ||
-            info.completeSuffix() == "jpg")
-        {
-            pEvent->acceptProposedAction();
-        }
+        pEvent->acceptProposedAction();
     }
 
     void dragMoveEvent(QDragMoveEvent* pEvent) override
@@ -303,10 +297,26 @@ public:
 
     void dropEvent(QDropEvent* pEvent) override
     {
-        QUrl imgPath = pEvent->mimeData()->text();
+        // Attempt to load the dropped image
+        QUrl imgUrl = pEvent->mimeData()->urls().first();
+        QPixmap img;
+
+        if (!imgUrl.isLocalFile())
+        {
+            QMessageBox::critical(this, "Error", "Reading from remote file systems is unsupported.");
+            return;
+        }
+
+        if (!img.load(imgUrl.toLocalFile()))
+        {
+            QMessageBox::critical(this, "Error", "The file dropped could not be understood as an image.");
+            return;
+        }
+
+        // Image is valid, continue
         const QPoint scenePos = mapToScene(pEvent->pos()).toPoint();
         CameraManager cameraManager(this, mEditorTab, &scenePos);
-        cameraManager.CreateCamera(true, QPixmap(imgPath.toLocalFile()));
+        cameraManager.CreateCamera(true, img);
         pEvent->acceptProposedAction();
     }
 
