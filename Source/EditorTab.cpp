@@ -298,39 +298,25 @@ public:
     void dropEvent(QDropEvent* pEvent) override
     {
         // Attempt to load the dropped image
-        //
-        QUrl    imgUrl = pEvent->mimeData()->urls().first();
+        QUrl imgUrl = pEvent->mimeData()->urls().first();
         QPixmap img;
 
         if (!imgUrl.isLocalFile())
         {
-            QMessageBox::critical(
-                this,
-                "Error",
-                "Reading from remote file systems is unsupported."
-            );
-
+            QMessageBox::critical(this, "Error", "Reading from remote file systems is unsupported.");
             return;
         }
 
         if (!img.load(imgUrl.toLocalFile()))
         {
-            QMessageBox::critical(
-                this,
-                "Error",
-                "The file dropped could not be understood as an image."
-            );
-
+            QMessageBox::critical(this, "Error", "The file dropped could not be understood as an image.");
             return;
         }
 
         // Image is valid, continue
-        //
         const QPoint scenePos = mapToScene(pEvent->pos()).toPoint();
-
         CameraManager cameraManager(this, mEditorTab, &scenePos);
         cameraManager.CreateCamera(true, img);
-
         pEvent->acceptProposedAction();
     }
 
