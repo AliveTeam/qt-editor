@@ -10,7 +10,7 @@ bool ExecApiCall(ApiCall apiCall, std::function<void(const QString)> onFailure)
 {
     try
     {
-        apiCall();
+        return apiCall();
     }
     catch (const ReliveAPI::IOReadException& e)
     {
