@@ -4,7 +4,11 @@
 #include <QDialog>
 
 namespace Ui {
-class ExportPathDialog;
+    class ExportPathDialog;
+}
+
+namespace ReliveAPI {
+    class Context;
 }
 
 class ExportPathDialog : public QDialog
@@ -35,7 +39,7 @@ private slots:
 
 private:
     Ui::ExportPathDialog *ui;
-    bool ExportToLvl();
+    bool ExportToLvl(ReliveAPI::Context& context);
 };
 
 #endif // EXPORTPATHDIALOG_HPP

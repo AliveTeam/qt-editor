@@ -6,6 +6,7 @@
 #include "relive_api.hpp"
 #include <QProcess>
 #include "Exporter.hpp"
+#include "ShowContext.hpp"
 
 ExportPathDialog::ExportPathDialog(QWidget *parent) :
     QDialog(parent, Qt::WindowMaximizeButtonHint | Qt::WindowCloseButtonHint),
@@ -48,8 +49,14 @@ void ExportPathDialog::on_btnSelectRelive_clicked()
 
 void ExportPathDialog::ExportAndPlay()
 {
-    if (ExportToLvl())
+    ReliveAPI::Context context;
+    if (ExportToLvl(context))
     {
+        if (!context.Ok())
+        {
+            ShowContext(context);
+        }
+
         if (!ui->txtRelivePath->text().isEmpty())
         {
             QString reliveExe = ui->txtRelivePath->text();
@@ -70,7 +77,7 @@ void ExportPathDialog::ExportAndPlay()
     }
 }
 
-bool ExportPathDialog::ExportToLvl()
+bool ExportPathDialog::ExportToLvl(ReliveAPI::Context& context)
 {
     auto jsonPath = ui->txtJsonPath->text();
     auto lvlPath = ui->txtLvlFilePath->text();
@@ -79,12 +86,19 @@ bool ExportPathDialog::ExportToLvl()
     return exportJsonToLvl(jsonPath, lvlPath, partialTemporaryFilePath, [&](const QString text)
         {
             QMessageBox::critical(this, "Error", text);
-        });
+        }, context);
 }
 
 void ExportPathDialog::on_buttonBox_accepted()
 {
-    ExportToLvl();
+    ReliveAPI::Context context;
+    if (ExportToLvl(context))
+    {
+        if (!context.Ok())
+        {
+            ShowContext(context);
+        }
+    }
 }
 
 void ExportPathDialog::on_buttonBox_rejected()

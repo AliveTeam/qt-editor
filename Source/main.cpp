@@ -6,6 +6,7 @@
 #include "Exporter.hpp"
 #include <functional>
 #include <QtCore/qcommandlineparser.h>
+#include "ReliveApiWrapper.hpp"
 
 void DoMapSizeTests();
 
@@ -61,10 +62,23 @@ int exportJsonToLvl(const QStringList& args)
     const QString source = args.at(0);
     const QString destination = args.at(1);
     int runResult = 0;
+    ReliveAPI::Context context;
     exportJsonToLvl(source, destination, "relive_export", [&runResult](const QString& text) mutable
         {
             std::cerr << "Exporting failed. " << text << std::endl;
             runResult = 1;
-        });
+        }, context);
+    if (!context.Ok())
+    {
+        for (const auto& remapped : context.RemappedEnumValues())
+        {
+            std::cout << "Enum value " << remapped.mEnumValueInJson << " remapped to " << remapped.mValueUsed << " for enum type " << remapped.mEnumTypeName << std::endl;
+        }
+
+        for (const auto& missingProperty : context.MissingJsonProperties())
+        {
+            std::cout << "Property " << missingProperty.mPropertyName << " was not found in type " << missingProperty.mStructureTypeName << std::endl;
+        }
+    }
     return runResult;
 }

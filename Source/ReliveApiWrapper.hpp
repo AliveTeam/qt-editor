@@ -1,8 +1,11 @@
 #pragma once
 
 #include "relive_api.hpp"
+#include "file_api.hpp"
 #include <functional>
 #include <QString>
+
+// TODO: Implement ReliveAPI::FileIO override that supports unicode from utf8 on windows
 
 // TODO: Add more context to each of these errors
 template<typename ApiCall>
@@ -12,119 +15,109 @@ bool ExecApiCall(ApiCall apiCall, std::function<void(const QString)> onFailure)
     {
         return apiCall();
     }
-    catch (const ReliveAPI::IOReadException& e)
+    catch (const ReliveAPI::IOReadException&)
     {
-        onFailure(QString("IO read failure: ") + e.what().c_str());
+        onFailure(QString("IO read failure"));
         return false;
     }
-    catch (const ReliveAPI::IOWriteException& e)
+    catch (const ReliveAPI::IOWriteException&)
     {
-        onFailure(QString("IO write failure: ") + e.what().c_str());
+        onFailure(QString("IO write failure"));
         return false;
     }
-    catch (const ReliveAPI::UnknownEnumValueException& e)
+    catch (const ReliveAPI::IOReadPastEOFException&)
     {
-        onFailure(QString("Unknown enum value: ") + e.what().c_str());
+        onFailure(QString("IO read past EOF"));
         return false;
     }
-    catch (const ReliveAPI::IOReadPastEOFException& e)
+    catch (const ReliveAPI::EmptyPropertyNameException&)
     {
-        onFailure(QString("IO read past EOF: ") + e.what().c_str());
+        onFailure(QString("Empty property name"));
         return false;
     }
-    catch (const ReliveAPI::EmptyPropertyNameException& e)
+    catch (const ReliveAPI::EmptyTypeNameException&)
     {
-        onFailure(QString("Empty property name: ") + e.what().c_str());
+        onFailure(QString("Empty type name"));
         return false;
     }
-    catch (const ReliveAPI::EmptyTypeNameException& e)
+    catch (const ReliveAPI::DuplicatePropertyKeyException&)
     {
-        onFailure(QString("Empty type name: ") + e.what().c_str());
-        return false;
-    }
-    catch (const ReliveAPI::DuplicatePropertyKeyException& e)
-    {
-        onFailure(QString("Duplicated property key: ") + e.what().c_str());
+        onFailure(QString("Duplicated property key"));
         return false;
     }
     catch (const ReliveAPI::DuplicatePropertyNameException& e)
     {
-        onFailure(QString("Duplicated property name: ") + e.what().c_str());
+        onFailure(QString("Duplicated property name: ") + e.PropertyName().c_str());
         return false;
     }
     catch (const ReliveAPI::DuplicateEnumNameException& e)
     {
-        onFailure(QString("Duplicated enum name: ") + e.what().c_str());
+        onFailure(QString("Duplicated enum name: ") + e.EnumTypeName().c_str());
         return false;
     }
-    catch (const ReliveAPI::PropertyNotFoundException& e)
+    catch (const ReliveAPI::PropertyNotFoundException&)
     {
-        onFailure(QString("Property not found: ") + e.what().c_str());
+        onFailure(QString("Property not found"));
         return false;
     }
     catch (const ReliveAPI::InvalidGameException& e)
     {
-        onFailure(QString("Invalid game name: ") + e.what().c_str());
+        onFailure(QString("Invalid game name: ") + e.GameName().c_str());
         return false;
     }
-    catch (const ReliveAPI::InvalidJsonException& e)
+    catch (const ReliveAPI::InvalidJsonException&)
     {
-        onFailure(QString("Invalid json, can't parse: ") + e.what().c_str());
+        onFailure(QString("Invalid json, can't parse"));
         return false;
     }
-    catch (const ReliveAPI::JsonVersionTooNew& e)
+    catch (const ReliveAPI::JsonVersionTooNew&)
     {
-        onFailure(QString("Json version too new: ") + e.what().c_str());
+        onFailure(QString("Json version too new"));
         return false;
     }
-    catch (const ReliveAPI::JsonVersionTooOld& e)
+    catch (const ReliveAPI::JsonVersionTooOld&)
     {
-        onFailure(QString("Json version too old: ") + e.what().c_str());
+        onFailure(QString("Json version too old"));
         return false;
     }
     catch (const ReliveAPI::BadCameraNameException& e)
     {
-        onFailure(QString("Bad camera name: ") + e.what().c_str());
+        onFailure(QString("Bad camera name: ") + e.CameraName().c_str());
         return false;
     }
     catch (const ReliveAPI::JsonNeedsUpgradingException& e)
     {
-        onFailure(QString("Json needs upgrading: ") + e.what().c_str());
+        onFailure(QString("Json needs upgrading from ") + QString::number(e.YourJsonVersion()) + " to " + QString::number(e.CurrentApiVersion()) + " you can export with the previous editor to .lvl and re export to json with this version to fix this");
         return false;
     }
-    catch (const ReliveAPI::OpenPathException& e)
+    catch (const ReliveAPI::OpenPathException&)
     {
-        onFailure(QString("Open path failure: ") + e.what().c_str());
+        onFailure(QString("Open path failure"));
         return false;
     }
-    catch (const ReliveAPI::CollisionsCountChangedException& e)
+    catch (const ReliveAPI::CameraOutOfBoundsException&)
     {
-        onFailure(QString("Collision count changed: ") + e.what().c_str());
-        return false;
-    }
-    catch (const ReliveAPI::CameraOutOfBoundsException& e)
-    {
-        onFailure(QString("Camera out of bounds: ") + e.what().c_str());
+        onFailure(QString("Camera out of bounds"));
         return false;
     }
     catch (const ReliveAPI::UnknownStructureTypeException& e)
     {
-        onFailure(QString("Unknown structure record: ") + e.what().c_str());
+        onFailure(QString("Unknown structure record: ") + e.StructureTypeName().c_str());
         return false;
     }
-    catch (const ReliveAPI::WrongTLVLengthException& e)
+    catch (const ReliveAPI::WrongTLVLengthException&)
     {
-        onFailure(QString("TLV length is wrong: ") + e.what().c_str());
+        onFailure(QString("TLV length is wrong"));
         return false;
     }
     catch (const ReliveAPI::JsonKeyNotFoundException& e)
     {
-        onFailure(QString("Missing json key: ") + e.what().c_str());
+        onFailure(QString("Missing json key: ") + e.Key().c_str());
         return false;
     }
-    catch (const ReliveAPI::Exception& e)
+    catch (const ReliveAPI::Exception&)
     {
-        onFailure(QString("Error: ") + e.what().c_str());
+        onFailure(QString("Unknown API exception"));
         return false;
     }
     return true;
