@@ -17,6 +17,13 @@
 #include "qdebug.h"
 #include "qactiongroup.h"
 #include "ReliveApiWrapper.hpp"
+#include "ShowContext.hpp"
+
+static void FatalError(const char* msg)
+{
+    QMessageBox::critical(nullptr, "Unrecoverable error", msg);
+    QApplication::exit(1);
+}
 
 EditorMainWindow::EditorMainWindow(QWidget* aParent)
     : QMainWindow(aParent),
@@ -24,6 +31,8 @@ EditorMainWindow::EditorMainWindow(QWidget* aParent)
     m_Settings("Editor.ini", QSettings::IniFormat),
     mUnthemedStyle(QApplication::style()->objectName())
 {
+    ReliveAPI::SetAliveFatalCallBack(FatalError);
+
     //auto p = new AudioOutputPrimer();
     //p->start();
 
@@ -159,13 +168,16 @@ bool EditorMainWindow::onOpenPath(QString fullFileName, bool createNewPath)
     int newPathId = 0;
     bool isTempfile = false;
     std::optional<int> selectedPath;
-    
+
+    ReliveAPI::FileIO fileIo;
+    ReliveAPI::Context context;
+
     auto fnOpenPath = [&]()
     {
         if (fullFileName.endsWith(".lvl", Qt::CaseInsensitive))
         {
             // Get the paths in the LVL
-            ReliveAPI::EnumeratePathsResult ret = ReliveAPI::EnumeratePaths(fullFileName.toStdString());
+            ReliveAPI::EnumeratePathsResult ret = ReliveAPI::EnumeratePaths(fileIo, fullFileName.toStdString());
             if (!createNewPath)
             {
                 // Ask the user to pick one
@@ -210,7 +222,7 @@ bool EditorMainWindow::onOpenPath(QString fullFileName, bool createNewPath)
                 uuid.toString(QUuid::WithoutBraces) + ".json");
 
             // Convert the binary lvl path to json
-            ReliveAPI::ExportPathBinaryToJson(tempFileFullPath.toStdString(), fullFileName.toStdString(), selectedPath.value());
+            ReliveAPI::ExportPathBinaryToJson(fileIo, tempFileFullPath.toStdString(), fullFileName.toStdString(), selectedPath.value(), context);
 
             isTempfile = true;
 
@@ -228,6 +240,11 @@ bool EditorMainWindow::onOpenPath(QString fullFileName, bool createNewPath)
     if (!ExecApiCall(fnOpenPath, fnOnError))
     {
         return false;
+    }
+
+    if (!context.Ok())
+    {
+        ShowContext(context);
     }
 
     // First check if we already have this json file open

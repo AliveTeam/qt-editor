@@ -2,9 +2,11 @@
 #include <QFileDialog>
 #include <QUuid>
 #include "ReliveApiWrapper.hpp"
+#include "file_api.hpp"
 
-bool exportJsonToLvl(QString jsonPath, QString lvlPath, QString partialTemporaryFilePath, std::function<void(const QString)> onFailure)
+bool exportJsonToLvl(QString jsonPath, QString lvlPath, QString partialTemporaryFilePath, std::function<void(const QString)> onFailure, ReliveAPI::Context& context)
 {
+    ReliveAPI::FileIO fileIo;
     auto fnExport = [&]()
     {
         std::vector<std::string> resourceSources; // TODO: Wire into UI
@@ -18,10 +20,12 @@ bool exportJsonToLvl(QString jsonPath, QString lvlPath, QString partialTemporary
 
         // Export to a temp lvl file
         ReliveAPI::ImportPathJsonToBinary(
+            fileIo,
             jsonPath.toStdString(),
             lvlPath.toStdString(),
             tempFileFullPath.toStdString(),
-            resourceSources);
+            resourceSources,
+            context);
 
         // Then overwrite the original lvl with the temp one
         if (!QFile::remove(lvlPath))
