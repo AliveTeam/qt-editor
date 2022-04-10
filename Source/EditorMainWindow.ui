@@ -157,6 +157,9 @@
     <addaction name="actionAdd_object"/>
     <addaction name="actionAdd_collision"/>
     <addaction name="separator"/>
+    <addaction name="actionHide_selected"/>
+    <addaction name="actionUnhide_selected"/>
+    <addaction name="separator"/>
     <addaction name="actionConnect_collisions"/>
    </widget>
    <widget class="QMenu" name="menuSnapping">
@@ -875,6 +878,22 @@
    </property>
    <property name="shortcut">
     <string>CTRL+J</string>
+   </property>
+  </action>
+  <action name="actionHide_selected">
+   <property name="text">
+    <string>Hide selected</string>
+   </property>
+   <property name="shortcut">
+    <string>H</string>
+   </property>
+  </action>
+  <action name="actionUnhide_selected">
+   <property name="text">
+    <string>Unhide all objects</string>
+   </property>
+   <property name="shortcut">
+    <string>ALT+H</string>
    </property>
   </action>
   <action name="actionItem_transparency">
