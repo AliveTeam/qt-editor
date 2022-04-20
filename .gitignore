@@ -80,3 +80,7 @@ build
 
 .vs
 CMakeSettings.json
+
+# Ignore translations until someone translates things
+qt-editor_German.ts
+qt-editor_en_GB.ts
