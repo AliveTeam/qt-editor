@@ -153,6 +153,35 @@
         <file>rsc/object_images/TimedMine.png</file>
         <file>rsc/object_images/TrapDoor.png</file>
         <file>rsc/object_images/ZBall.png</file>
+        
+        <!-- Dynamic graphics -->
+        <file>rsc/object_images/Drill/Drill_1_1.png</file>
+        <file>rsc/object_images/Drill/Drill_2_1.png</file>
+        <file>rsc/object_images/Drill/Drill_3_1.png</file>
+        <file>rsc/object_images/Drill/Drill_4_1.png</file>
+        <file>rsc/object_images/Drill/Drill_5_1.png</file>
+        <file>rsc/object_images/Drill/Drill_6_1.png</file>
+        <file>rsc/object_images/Drill/Drill_7_1.png</file>
+        <file>rsc/object_images/Drill/Drill_8_1.png</file>
+        <file>rsc/object_images/Drill/Drill_9_1.png</file>
+        <file>rsc/object_images/Drill/Drill_1_2.png</file>
+        <file>rsc/object_images/Drill/Drill_1_3.png</file>
+        <file>rsc/object_images/Drill/Drill_1_4.png</file>
+        <file>rsc/object_images/Drill/Drill_1_5.png</file>
+        <file>rsc/object_images/Drill/Drill_1_6.png</file>
+        <file>rsc/object_images/Drill/Drill_1_7.png</file>
+        <file>rsc/object_images/Drill/Drill_1_8.png</file>
+        <file>rsc/object_images/Drill/Drill_1_9.png</file>
+        <file>rsc/object_images/Mudokon/MudAngry.png</file>
+        <file>rsc/object_images/Mudokon/MudAngryB.png</file>
+        <file>rsc/object_images/Mudokon/MudNormal.png</file>
+        <file>rsc/object_images/Mudokon/MudNormalB.png</file>
+        <file>rsc/object_images/Mudokon/MudSad.png</file>
+        <file>rsc/object_images/Mudokon/MudSadB.png</file>
+        <file>rsc/object_images/Mudokon/MudSick.png</file>
+        <file>rsc/object_images/Mudokon/MudSickB.png</file>
+        <file>rsc/object_images/Mudokon/MudWired.png</file>
+        <file>rsc/object_images/Mudokon/MudWiredB.png</file>
      </qresource>
 
     <qresource prefix="/stylesheets">

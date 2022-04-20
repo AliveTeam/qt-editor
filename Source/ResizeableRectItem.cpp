@@ -10,14 +10,15 @@
 #include <QGraphicsScene>
 #include <QGraphicsView>
 #include <QPixmapCache>
+#include "EditorTab.hpp"
 #include "Model.hpp"
 #include "PropertyTreeWidget.hpp"
 #include "SnapSettings.hpp"
 
 const quint32 ResizeableRectItem::kMinRectSize = 10;
 
-ResizeableRectItem::ResizeableRectItem(QGraphicsView* pView, MapObject* pMapObject, ISyncPropertiesToTree& propSyncer, int transparency, SnapSettings& snapSettings, IPointSnapper& snapper)
-      : mView(pView), mMapObject(pMapObject), mPropSyncer(propSyncer), mSnapSettings(snapSettings), mPointSnapper(snapper)
+ResizeableRectItem::ResizeableRectItem(QGraphicsView* pView, MapObject* pMapObject, ISyncPropertiesToTree& propSyncer, int transparency, SnapSettings& snapSettings, IPointSnapper& snapper, EditorTab* pTab)
+      : mView(pView), mMapObject(pMapObject), mPropSyncer(propSyncer), mSnapSettings(snapSettings), mPointSnapper(snapper), mTab(pTab)
 {
     SyncFromMapObject();
 
@@ -220,12 +221,7 @@ void ResizeableRectItem::Init()
     // Allow select and move.
     setFlags( ItemSendsScenePositionChanges | ItemSendsGeometryChanges | ItemIsMovable | ItemIsSelectable );
 
-    QString images_path = ":/object_images/rsc/object_images/";
-    if ( !QPixmapCache::find(images_path + mMapObject->mObjectStructureType.c_str() + ".png", &m_Pixmap ) )
-    {
-        m_Pixmap = QPixmap(images_path + mMapObject->mObjectStructureType.c_str() + ".png");
-        QPixmapCache::insert(images_path + mMapObject->mObjectStructureType.c_str() + ".png", m_Pixmap );
-    }
+    UpdateIcon();
 }
 
 ResizeableRectItem::eResize ResizeableRectItem::getResizeLocation( QPointF aPos, QRectF aRect )
@@ -355,6 +351,8 @@ void ResizeableRectItem::onResize( QPointF aPos )
     }
 
     SetRect( curRect );
+    
+    UpdateIcon();
 }
 
 void ResizeableRectItem::SetViewCursor(Qt::CursorShape cursor)
@@ -374,6 +372,7 @@ void ResizeableRectItem::SetRect(const QRectF& rect)
     setY(rect.y());
     setHeight(rect.height());
     PosOrRectChanged();
+    UpdateIcon();
 }
 
 void ResizeableRectItem::SyncFromMapObject()
@@ -382,6 +381,7 @@ void ResizeableRectItem::SyncFromMapObject()
     setY(mMapObject->YPos());
     setWidth(mMapObject->Width());
     setHeight(mMapObject->Height());
+    UpdateIcon();
 }
 
 void ResizeableRectItem::SyncToMapObject()
@@ -390,6 +390,7 @@ void ResizeableRectItem::SyncToMapObject()
     mMapObject->SetYPos(static_cast<int>(pos().y()));
     mMapObject->SetWidth(mWidth);
     mMapObject->SetHeight(mHeight);
+    UpdateIcon();
 }
 
 void ResizeableRectItem::PosOrRectChanged()
@@ -398,4 +399,65 @@ void ResizeableRectItem::PosOrRectChanged()
 
     // Update the property tree view
     mPropSyncer.Sync(this);
+}
+
+void ResizeableRectItem::UpdateIcon()
+{
+    QString images_path = ":/object_images/rsc/object_images/";
+    QString object_name = mMapObject->mObjectStructureType.c_str();
+    
+    if( mTab->GetModel().GetMapInfo().mGame == "AE" )
+    {
+        if( object_name == "Drill" )
+        {
+            images_path = images_path + object_name + "/";
+            object_name = "Drill_";
+            
+            if( mWidth > 25 )
+            {
+                object_name += QString::number(std::min( mWidth / 25, 9)) + "_1";
+            }
+            else
+            {
+                object_name += "1_" + QString::number(std::min( mHeight / 20, 9));
+            }
+        }
+        else if( object_name == "Mudokon" )
+        {
+            images_path = images_path + object_name + "/";
+            object_name = "Mud";
+            
+            if( PropertyByName( "Emotion", mMapObject->mProperties )->mEnumValue == "Angry" )
+            {
+                object_name += "Angry";
+            }
+            else if( PropertyByName( "Emotion", mMapObject->mProperties )->mEnumValue == "Sad" )
+            {
+                object_name += "Sad";
+            }
+            else if( PropertyByName( "Emotion", mMapObject->mProperties )->mEnumValue == "Sick" )
+            {
+                object_name += "Sick";
+            }
+            else if( PropertyByName( "Emotion", AmMapObject->mProperties )->mEnumValue == "Wired" )
+            {
+                object_name += "Wired";
+            }
+            else
+            {
+                object_name += "Normal";
+            }
+            
+            if(PropertyByName("Blind",mMapObject->mProperties)->mEnumValue == "Yes")
+            {
+                object_name += "B";
+            }
+        }
+    }
+    
+    if ( !QPixmapCache::find(images_path + object_name + ".png", &m_Pixmap ) )
+    {
+        m_Pixmap = QPixmap(images_path + object_name + ".png");
+        QPixmapCache::insert(images_path + object_name + ".png", m_Pixmap );
+    }
 }
