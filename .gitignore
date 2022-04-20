@@ -77,3 +77,10 @@ build
 /build_vs2017
 /vs2019
 /todo.txt
+
+.vs
+CMakeSettings.json
+
+# Ignore translations until someone translates things
+qt-editor_German.ts
+qt-editor_en_GB.ts
