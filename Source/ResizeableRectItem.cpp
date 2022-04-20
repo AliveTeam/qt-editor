@@ -439,7 +439,7 @@ void ResizeableRectItem::UpdateIcon()
             {
                 object_name += "Sick";
             }
-            else if( PropertyByName( "Emotion", AmMapObject->mProperties )->mEnumValue == "Wired" )
+            else if( PropertyByName( "Emotion", mMapObject->mProperties )->mEnumValue == "Wired" )
             {
                 object_name += "Wired";
             }
