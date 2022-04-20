@@ -77,3 +77,6 @@ build
 /build_vs2017
 /vs2019
 /todo.txt
+
+.vs
+CMakeSettings.json
