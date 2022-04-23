@@ -405,7 +405,21 @@ void ResizeableRectItem::UpdateIcon()
     QString images_path = ":/object_images/rsc/object_images/";
     QString object_name = mMapObject->mObjectStructureType.c_str();
     
-    if( object_name == "Drill" )
+    if( object_name == "BirdPortal" )
+    {
+        if( PropertyByName( "Portal Type", mMapObject->mProperties ))
+        {
+            if(PropertyByName("Portal Type",mMapObject->mProperties)->mEnumValue == "Abe")
+            {
+                object_name += "Abe";
+            }
+            else if(PropertyByName("Portal Type",mMapObject->mProperties)->mEnumValue == "Shrykull")
+            {
+                object_name += "Shrykull";
+            }
+        }
+    }
+    else if( object_name == "Drill" )
     {
         images_path = images_path + object_name + "/";
         object_name += "_";
@@ -455,6 +469,16 @@ void ResizeableRectItem::UpdateIcon()
             if(PropertyByName("Blind",mMapObject->mProperties)->mEnumValue == "Yes")
             {
                 object_name += "B";
+            }
+        }
+    }
+    else if( object_name == "UXB" )
+    {
+        if( PropertyByName( "Start State", mMapObject->mProperties ))
+        {
+            if(PropertyByName("Start State",mMapObject->mProperties)->mEnumValue == "Off")
+            {
+                object_name += "disarmed";
             }
         }
     }

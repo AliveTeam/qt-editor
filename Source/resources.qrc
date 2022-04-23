@@ -155,6 +155,8 @@
         <file>rsc/object_images/ZBall.png</file>
         
         <!-- Dynamic graphics -->
+        <file>rsc/object_images/BirdPortalAbe.png</file>
+        <file>rsc/object_images/BirdPortalShrykull.png</file>
         <file>rsc/object_images/Drill/Drill_1_1.png</file>
         <file>rsc/object_images/Drill/Drill_2_1.png</file>
         <file>rsc/object_images/Drill/Drill_3_1.png</file>
@@ -193,6 +195,7 @@
         <file>rsc/object_images/Mudokon/MudSickB.png</file>
         <file>rsc/object_images/Mudokon/MudWired.png</file>
         <file>rsc/object_images/Mudokon/MudWiredB.png</file>
+        <file>rsc/object_images/UXBdisarmed.png</file>
      </qresource>
 
     <qresource prefix="/stylesheets">
