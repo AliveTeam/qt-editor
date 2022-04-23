@@ -711,6 +711,14 @@ void EditorMainWindow::on_actionAdd_collision_triggered()
     }
 }
 
+void EditorMainWindow::on_actionConnect_collisions_triggered()
+{
+    EditorTab* pTab = getActiveTab(m_ui->tabWidget);
+    if (pTab)
+    {
+        pTab->ConnectCollisions();
+    }
+}
 
 void EditorMainWindow::on_action_close_path_triggered()
 {
