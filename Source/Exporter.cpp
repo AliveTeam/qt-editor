@@ -10,6 +10,7 @@ bool exportJsonToLvl(QString jsonPath, QString lvlPath, QString partialTemporary
     auto fnExport = [&]()
     {
         std::vector<std::string> resourceSources; // TODO: Wire into UI
+        resourceSources.emplace_back(lvlPath.toStdString());
 
         QUuid uuid = QUuid::createUuid();
         QString tempFileFullPath = QDir::toNativeSeparators(

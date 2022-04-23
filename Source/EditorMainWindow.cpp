@@ -22,7 +22,7 @@
 static void FatalError(const char* msg)
 {
     QMessageBox::critical(nullptr, "Unrecoverable error", msg);
-    QApplication::exit(1);
+    exit(EXIT_FAILURE);
 }
 
 EditorMainWindow::EditorMainWindow(QWidget* aParent)
