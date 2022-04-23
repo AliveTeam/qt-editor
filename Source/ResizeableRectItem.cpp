@@ -10,15 +10,14 @@
 #include <QGraphicsScene>
 #include <QGraphicsView>
 #include <QPixmapCache>
-#include "EditorTab.hpp"
 #include "Model.hpp"
 #include "PropertyTreeWidget.hpp"
 #include "SnapSettings.hpp"
 
 const quint32 ResizeableRectItem::kMinRectSize = 10;
 
-ResizeableRectItem::ResizeableRectItem(QGraphicsView* pView, MapObject* pMapObject, ISyncPropertiesToTree& propSyncer, int transparency, SnapSettings& snapSettings, IPointSnapper& snapper, EditorTab* pTab)
-      : mView(pView), mMapObject(pMapObject), mPropSyncer(propSyncer), mSnapSettings(snapSettings), mPointSnapper(snapper), mTab(pTab)
+ResizeableRectItem::ResizeableRectItem(QGraphicsView* pView, MapObject* pMapObject, ISyncPropertiesToTree& propSyncer, int transparency, SnapSettings& snapSettings, IPointSnapper& snapper)
+      : mView(pView), mMapObject(pMapObject), mPropSyncer(propSyncer), mSnapSettings(snapSettings), mPointSnapper(snapper)
 {
     SyncFromMapObject();
 
@@ -406,23 +405,28 @@ void ResizeableRectItem::UpdateIcon()
     QString images_path = ":/object_images/rsc/object_images/";
     QString object_name = mMapObject->mObjectStructureType.c_str();
     
-    if( mTab->GetModel().GetMapInfo().mGame == "AE" )
+    if( object_name == "Drill" )
     {
-        if( object_name == "Drill" )
+        images_path = images_path + object_name + "/";
+        object_name += "_";
+        
+        if( mWidth > 25 )
         {
-            images_path = images_path + object_name + "/";
-            object_name = "Drill_";
-            
-            if( mWidth > 25 )
-            {
-                object_name += QString::number(std::min( mWidth / 25, 9)) + "_1";
-            }
-            else
-            {
-                object_name += "1_" + QString::number(std::min( mHeight / 20, 9));
-            }
+            object_name += QString::number(std::min( mWidth / 25, 9)) + "_1";
         }
-        else if( object_name == "Mudokon" )
+        else
+        {
+            object_name += "1_" + QString::number(std::min( mHeight / 20, 9));
+        }
+    }
+    else if( object_name == "MotionDetector" )
+    {
+        images_path = images_path + object_name + "/";
+        object_name = QString::number(std::max(std::min((mWidth / 26), 10), 0));
+    }
+    else if( object_name == "Mudokon" )
+    {
+        if( PropertyByName( "Emotion", mMapObject->mProperties ))
         {
             images_path = images_path + object_name + "/";
             object_name = "Mud";

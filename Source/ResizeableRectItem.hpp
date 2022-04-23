@@ -8,12 +8,11 @@ struct MapObject;
 class ISyncPropertiesToTree;
 class SnapSettings;
 class IPointSnapper;
-class EditorTab;
 
 class ResizeableRectItem final : public IGraphicsItem, public QGraphicsItem
 {
 public:
-    ResizeableRectItem(QGraphicsView* pView, MapObject* pMapObject, ISyncPropertiesToTree& propSyncer, int transparency, SnapSettings& snapSettings, IPointSnapper& snapper, EditorTab* pTab);
+    ResizeableRectItem(QGraphicsView* pView, MapObject* pMapObject, ISyncPropertiesToTree& propSyncer, int transparency, SnapSettings& snapSettings, IPointSnapper& snapper);
     enum { Type = UserType + 1 };
     int type() const override { return Type; }
     QRectF CurrentRect() const;
@@ -88,7 +87,6 @@ private:
     QPixmap m_Pixmap;
     QGraphicsView* mView = nullptr;
     MapObject* mMapObject = nullptr;
-    EditorTab* mTab = nullptr;
     ISyncPropertiesToTree& mPropSyncer;
     int mWidth = 0;
     int mHeight = 0;

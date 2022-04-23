@@ -430,7 +430,7 @@ EditorTab::EditorTab(QTabWidget* aParent, UP_Model model, QString jsonFileName, 
 
 ResizeableRectItem* EditorTab::MakeResizeableRectItem(MapObject* pMapObject)
 {
-    return new ResizeableRectItem(ui->graphicsView, pMapObject, *static_cast<PropertyTreeWidget*>(ui->treeWidget), mScene->GetTransparencySettings().MapObjectTransparency(), mSnapSettings, *this, this);
+    return new ResizeableRectItem(ui->graphicsView, pMapObject, *static_cast<PropertyTreeWidget*>(ui->treeWidget), mScene->GetTransparencySettings().MapObjectTransparency(), mSnapSettings, *this);
 }
 
 ResizeableArrowItem* EditorTab::MakeResizeableArrowItem(CollisionObject* pCollisionObject)
