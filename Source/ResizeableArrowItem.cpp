@@ -171,7 +171,7 @@ QPainterPath ResizeableArrowItem::shape() const
     // Calc arrow head lines based on the angle of the current line
     QLineF cLine = line();
 
-    const auto kArrowHeadLength = 13;
+    const auto kArrowHeadLength = 8;
     const auto kArrowHeadAngle = 32;
 
     const qreal cLineAngle = cLine.angle();
