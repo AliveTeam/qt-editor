@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>493</width>
-    <height>189</height>
+    <height>234</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,8 +16,22 @@
   <layout class="QGridLayout" name="gridLayout_3">
    <item row="0" column="0">
     <layout class="QGridLayout" name="gridLayout_2">
-     <item row="1" column="0">
-      <widget class="QLineEdit" name="txtJsonPath"/>
+     <item row="2" column="0">
+      <widget class="QLabel" name="label_3">
+       <property name="text">
+        <string>LVL file</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QPushButton" name="btnSelectLvlFile">
+       <property name="text">
+        <string>Browse</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="0">
+      <widget class="QLineEdit" name="txtExtraLvlsLocation"/>
      </item>
      <item row="1" column="1">
       <widget class="QPushButton" name="btnSelectJson">
@@ -26,6 +40,12 @@
        </property>
       </widget>
      </item>
+     <item row="1" column="0">
+      <widget class="QLineEdit" name="txtJsonPath"/>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLineEdit" name="txtLvlFilePath"/>
+     </item>
      <item row="0" column="0">
       <widget class="QLabel" name="label">
        <property name="text">
@@ -33,18 +53,15 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="0">
-      <widget class="QLabel" name="label_3">
+     <item row="4" column="0">
+      <widget class="QLabel" name="label_4">
        <property name="text">
-        <string>LVL file</string>
+        <string>Location of extra LVLs to find resources in</string>
        </property>
       </widget>
      </item>
-     <item row="3" column="0">
-      <widget class="QLineEdit" name="txtLvlFilePath"/>
-     </item>
-     <item row="3" column="1">
-      <widget class="QPushButton" name="btnSelectLvlFile">
+     <item row="5" column="1">
+      <widget class="QPushButton" name="btnSelectExtraLvlsDir">
        <property name="text">
         <string>Browse</string>
        </property>

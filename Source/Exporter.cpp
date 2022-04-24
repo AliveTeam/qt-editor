@@ -4,13 +4,17 @@
 #include "ReliveApiWrapper.hpp"
 #include "file_api.hpp"
 
-bool exportJsonToLvl(QString jsonPath, QString lvlPath, QString partialTemporaryFilePath, std::function<void(const QString)> onFailure, ReliveAPI::Context& context)
+bool exportJsonToLvl(QString jsonPath, QString lvlPath, QString partialTemporaryFilePath, std::function<void(const QString)> onFailure, std::set<std::string>& resourceSources, ReliveAPI::Context& context)
 {
     ReliveAPI::FileIO fileIo;
     auto fnExport = [&]()
     {
-        std::vector<std::string> resourceSources; // TODO: Wire into UI
-        resourceSources.emplace_back(lvlPath.toStdString());
+        resourceSources.insert(lvlPath.toStdString());
+        std::vector<std::string> resourceSourcesVec;
+        for (const auto& src : resourceSources)
+        {
+            resourceSourcesVec.emplace_back(src);
+        }
 
         QUuid uuid = QUuid::createUuid();
         QString tempFileFullPath = QDir::toNativeSeparators(
@@ -25,7 +29,7 @@ bool exportJsonToLvl(QString jsonPath, QString lvlPath, QString partialTemporary
             jsonPath.toStdString(),
             lvlPath.toStdString(),
             tempFileFullPath.toStdString(),
-            resourceSources,
+            resourceSourcesVec,
             context);
 
         // Then overwrite the original lvl with the temp one

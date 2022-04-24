@@ -688,7 +688,7 @@ void EditorTab::Export(bool exportAndPlay)
         Save();
     }
 
-    auto exportDialog = new ExportPathDialog(this);
+    auto exportDialog = new ExportPathDialog(this, exportAndPlay);
     exportDialog->setJsonPath(mJsonFileName);
     exportDialog->setRelivePath(mReliveExePath);
 
@@ -726,34 +726,7 @@ void EditorTab::Export(bool exportAndPlay)
         exportDialog->setRelivePath(mReliveExePath);
     }
 
-    bool showDialog = true;
-    if (exportAndPlay)
-    {
-        QFileInfo lvl(exportDialog->getLvlName());
-        QFileInfo relive(exportDialog->getRelivePath());
-        // skip the dialog and run the game if we already have valid paths
-        if (json.exists() && lvl.exists() && relive.exists())
-        {
-            exportDialog->ExportAndPlay();
-        }
-        else
-        {
-            // open the dialog and run the game if the user has entered valid paths
-            exportDialog->exec();
-            lvl = exportDialog->getLvlName();
-            relive = exportDialog->getRelivePath();
-            json = exportDialog->getJsonPath();
-
-            if (json.exists() && lvl.exists() && relive.exists())
-            {
-                exportDialog->ExportAndPlay();
-            }
-        }
-    }
-    else
-    {
-        exportDialog->exec();
-    }
+    exportDialog->exec();
 
     if (!exportDialog->getLvlName().isEmpty())
     {
