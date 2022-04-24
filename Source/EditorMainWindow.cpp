@@ -514,7 +514,7 @@ void EditorMainWindow::on_actionExport_to_lvl_triggered()
     }
     else
     {
-        auto exportDialog = new ExportPathDialog(this);
+        auto exportDialog = new ExportPathDialog(this, false);
         exportDialog->exec();
         delete exportDialog;
     }

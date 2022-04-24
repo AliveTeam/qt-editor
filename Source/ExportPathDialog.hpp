@@ -16,7 +16,7 @@ class ExportPathDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit ExportPathDialog(QWidget *parent = nullptr);
+    explicit ExportPathDialog(QWidget *parent, bool exportAndPlay);
     ~ExportPathDialog();
 
     void ExportAndPlay();
@@ -37,9 +37,13 @@ private slots:
 
     void on_buttonBox_rejected();
 
+    void on_btnSelectExtraLvlsDir_clicked();
+
 private:
-    Ui::ExportPathDialog *ui;
     bool ExportToLvl(ReliveAPI::Context& context);
+    
+    Ui::ExportPathDialog *ui;
+    bool mExportAndPlay = false;
 };
 
 #endif // EXPORTPATHDIALOG_HPP

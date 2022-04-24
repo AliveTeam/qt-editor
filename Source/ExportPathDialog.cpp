@@ -8,11 +8,22 @@
 #include "Exporter.hpp"
 #include "ShowContext.hpp"
 
-ExportPathDialog::ExportPathDialog(QWidget *parent) :
+ExportPathDialog::ExportPathDialog(QWidget *parent, bool exportAndPlay) :
     QDialog(parent, Qt::WindowMaximizeButtonHint | Qt::WindowCloseButtonHint),
-    ui(new Ui::ExportPathDialog)
+    ui(new Ui::ExportPathDialog),
+    mExportAndPlay(exportAndPlay)
 {
     ui->setupUi(this);
+
+    // If the dialog is being called for export & play then do it without any user interaction if the json/lvl/exe paths seem valid
+    if (mExportAndPlay)
+    {
+        if (QFileInfo(getJsonPath()).exists() && QFileInfo(getLvlName()).exists() && QFileInfo(getRelivePath()).exists())
+        {
+            ExportAndPlay();
+            close();
+        }
+    }
 }
 
 ExportPathDialog::~ExportPathDialog()
@@ -83,10 +94,23 @@ bool ExportPathDialog::ExportToLvl(ReliveAPI::Context& context)
     auto lvlPath = ui->txtLvlFilePath->text();
     auto partialTemporaryFilePath = qApp->applicationName().replace(" ", "");
 
+    QFileInfoList lvls;
+    if (!ui->txtExtraLvlsLocation->text().isEmpty())
+    {
+        QDir directory(ui->txtExtraLvlsLocation->text());
+        lvls = directory.entryInfoList(QStringList() << "*.lvl" << "*.LVL", QDir::Files);
+    }
+
+    std::set<std::string> stdLvls;
+    for (auto i = 0; i < lvls.size(); i++)
+    {
+        stdLvls.insert(lvls[i].absoluteFilePath().toStdString());
+    }
+
     return exportJsonToLvl(jsonPath, lvlPath, partialTemporaryFilePath, [&](const QString text)
         {
             QMessageBox::critical(this, "Error", text);
-        }, context);
+        }, stdLvls, context);
 }
 
 void ExportPathDialog::on_buttonBox_accepted()
@@ -97,6 +121,13 @@ void ExportPathDialog::on_buttonBox_accepted()
         if (!context.Ok())
         {
             ShowContext(context);
+        }
+        else
+        {
+            if (mExportAndPlay)
+            {
+                ExportAndPlay();
+            }
         }
     }
 }
@@ -114,6 +145,10 @@ void ExportPathDialog::setJsonPath(QString path)
 void ExportPathDialog::setLvlName(QString path)
 {
     ui->txtLvlFilePath->setText(path);
+    if (ui->txtExtraLvlsLocation->text().isEmpty())
+    {
+        ui->txtExtraLvlsLocation->setText(QFileInfo(path).absoluteDir().path());
+    }
 }
 
 void ExportPathDialog::setRelivePath(QString path)
@@ -135,3 +170,16 @@ QString ExportPathDialog::getJsonPath() const
 {
     return ui->txtJsonPath->text();
 }
+
+void ExportPathDialog::on_btnSelectExtraLvlsDir_clicked()
+{
+    QString dir = QFileDialog::getExistingDirectory(this, tr("Select LVLs source dir"),
+        "",
+        QFileDialog::ShowDirsOnly
+        | QFileDialog::DontResolveSymlinks);
+    if (!dir.isEmpty())
+    {
+        ui->txtExtraLvlsLocation->setText(dir);
+    }
+}
+
