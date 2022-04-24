@@ -6,7 +6,7 @@
 
 bool exportJsonToLvl(QString jsonPath, QString lvlPath, QString partialTemporaryFilePath, std::function<void(const QString)> onFailure, std::set<std::string>& resourceSources, ReliveAPI::Context& context)
 {
-    ReliveAPI::FileIO fileIo;
+    EditorFileIO fileIo;
     auto fnExport = [&]()
     {
         resourceSources.insert(lvlPath.toStdString());

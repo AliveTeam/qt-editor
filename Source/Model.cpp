@@ -1,22 +1,19 @@
 #include "Model.hpp"
+#include "ReliveApiWrapper.hpp"
 #include <optional>
 #include <fstream>
 
 static std::optional<std::string> LoadFileToString(const std::string& fileName)
 {
-    std::ifstream fileStream(fileName.c_str());
-    if (!fileStream)
+    EditorFileIO fileIo;
+    auto file = fileIo.Open(fileName, ReliveAPI::IFileIO::Mode::ReadBinary);
+    if (!file->IsOpen())
     {
         return {};
     }
-    std::string outputStr;
-
-    fileStream.seekg(0, std::ios::end);
-    outputStr.reserve(static_cast<size_t>(fileStream.tellg()));
-    fileStream.seekg(0, std::ios::beg);
-
-    outputStr.assign((std::istreambuf_iterator<char>(fileStream)), std::istreambuf_iterator<char>());
-    return outputStr;
+    std::string s;
+    file->ReadInto(s);
+    return { s };
 }
 
 static jsonxx::Array ReadArray(jsonxx::Object& o, const std::string& key)
