@@ -22,10 +22,12 @@ public:
     void ExportAndPlay();
     void setJsonPath(QString path);
     void setLvlName(QString path);
+    void setExtraLvlsPath(QString path);
     void setRelivePath(QString path);
     QString getLvlName() const;
     QString getRelivePath() const;
     QString getJsonPath() const;
+    QString getExtraLvlsPath() const;
 private slots:
     void on_btnSelectJson_clicked();
 

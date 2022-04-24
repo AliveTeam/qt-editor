@@ -151,6 +151,11 @@ void ExportPathDialog::setLvlName(QString path)
     }
 }
 
+void ExportPathDialog::setExtraLvlsPath(QString path)
+{
+    ui->txtExtraLvlsLocation->setText(path);
+}
+
 void ExportPathDialog::setRelivePath(QString path)
 {
     ui->txtRelivePath->setText(path);
@@ -169,6 +174,11 @@ QString ExportPathDialog::getRelivePath() const
 QString ExportPathDialog::getJsonPath() const
 {
     return ui->txtJsonPath->text();
+}
+
+QString ExportPathDialog::getExtraLvlsPath() const
+{
+    return ui->txtExtraLvlsLocation->text();
 }
 
 void ExportPathDialog::on_btnSelectExtraLvlsDir_clicked()

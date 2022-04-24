@@ -116,6 +116,7 @@ private:
 
     QString mExportedPathLvlName;
     QString mReliveExePath;
+    QString mExtraLvlsPath;
     QTabWidget* mParent = nullptr;
     bool mIsTempFile = false;
 
