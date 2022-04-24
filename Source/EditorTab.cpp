@@ -691,6 +691,7 @@ void EditorTab::Export(bool exportAndPlay)
     auto exportDialog = new ExportPathDialog(this, exportAndPlay);
     exportDialog->setJsonPath(mJsonFileName);
     exportDialog->setRelivePath(mReliveExePath);
+    exportDialog->setExtraLvlsPath(mExtraLvlsPath);
 
     QFileInfo json(mJsonFileName);
     if (mExportedPathLvlName.isEmpty())
@@ -736,6 +737,11 @@ void EditorTab::Export(bool exportAndPlay)
     if (!exportDialog->getRelivePath().isEmpty())
     {
         mReliveExePath = exportDialog->getRelivePath();
+    }
+
+    if (!exportDialog->getExtraLvlsPath().isEmpty())
+    {
+        mExtraLvlsPath = exportDialog->getExtraLvlsPath();
     }
 
     delete exportDialog;
