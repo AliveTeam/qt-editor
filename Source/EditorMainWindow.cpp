@@ -171,7 +171,7 @@ bool EditorMainWindow::onOpenPath(QString fullFileName, bool createNewPath)
     bool isTempfile = false;
     std::optional<int> selectedPath;
 
-    ReliveAPI::FileIO fileIo;
+    EditorFileIO fileIo;
     ReliveAPI::Context context;
 
     auto fnOpenPath = [&]()
