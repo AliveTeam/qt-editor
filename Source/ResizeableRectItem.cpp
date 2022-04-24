@@ -220,12 +220,7 @@ void ResizeableRectItem::Init()
     // Allow select and move.
     setFlags( ItemSendsScenePositionChanges | ItemSendsGeometryChanges | ItemIsMovable | ItemIsSelectable );
 
-    QString images_path = ":/object_images/rsc/object_images/";
-    if ( !QPixmapCache::find(images_path + mMapObject->mObjectStructureType.c_str() + ".png", &m_Pixmap ) )
-    {
-        m_Pixmap = QPixmap(images_path + mMapObject->mObjectStructureType.c_str() + ".png");
-        QPixmapCache::insert(images_path + mMapObject->mObjectStructureType.c_str() + ".png", m_Pixmap );
-    }
+    UpdateIcon();
 }
 
 ResizeableRectItem::eResize ResizeableRectItem::getResizeLocation( QPointF aPos, QRectF aRect )
@@ -355,6 +350,8 @@ void ResizeableRectItem::onResize( QPointF aPos )
     }
 
     SetRect( curRect );
+    
+    UpdateIcon();
 }
 
 void ResizeableRectItem::SetViewCursor(Qt::CursorShape cursor)
@@ -374,6 +371,7 @@ void ResizeableRectItem::SetRect(const QRectF& rect)
     setY(rect.y());
     setHeight(rect.height());
     PosOrRectChanged();
+    UpdateIcon();
 }
 
 void ResizeableRectItem::SyncFromMapObject()
@@ -382,6 +380,7 @@ void ResizeableRectItem::SyncFromMapObject()
     setY(mMapObject->YPos());
     setWidth(mMapObject->Width());
     setHeight(mMapObject->Height());
+    UpdateIcon();
 }
 
 void ResizeableRectItem::SyncToMapObject()
@@ -390,6 +389,7 @@ void ResizeableRectItem::SyncToMapObject()
     mMapObject->SetYPos(static_cast<int>(pos().y()));
     mMapObject->SetWidth(mWidth);
     mMapObject->SetHeight(mHeight);
+    UpdateIcon();
 }
 
 void ResizeableRectItem::PosOrRectChanged()
@@ -398,4 +398,94 @@ void ResizeableRectItem::PosOrRectChanged()
 
     // Update the property tree view
     mPropSyncer.Sync(this);
+}
+
+void ResizeableRectItem::UpdateIcon()
+{
+    QString images_path = ":/object_images/rsc/object_images/";
+    QString object_name = mMapObject->mObjectStructureType.c_str();
+    
+    if( object_name == "BirdPortal" )
+    {
+        if( PropertyByName( "Portal Type", mMapObject->mProperties ))
+        {
+            if(PropertyByName("Portal Type",mMapObject->mProperties)->mEnumValue == "Abe")
+            {
+                object_name += "Abe";
+            }
+            else if(PropertyByName("Portal Type",mMapObject->mProperties)->mEnumValue == "Shrykull")
+            {
+                object_name += "Shrykull";
+            }
+        }
+    }
+    else if( object_name == "Drill" )
+    {
+        images_path = images_path + object_name + "/";
+        object_name += "_";
+        
+        if( mWidth > 25 )
+        {
+            object_name += QString::number(std::min( mWidth / 25, 9)) + "_1";
+        }
+        else
+        {
+            object_name += "1_" + QString::number(std::min( mHeight / 20, 9));
+        }
+    }
+    else if( object_name == "MotionDetector" )
+    {
+        images_path = images_path + object_name + "/";
+        object_name = QString::number(std::max(std::min((mWidth / 26), 10), 0));
+    }
+    else if( object_name == "Mudokon" )
+    {
+        if( PropertyByName( "Emotion", mMapObject->mProperties ))
+        {
+            images_path = images_path + object_name + "/";
+            object_name = "Mud";
+            
+            if( PropertyByName( "Emotion", mMapObject->mProperties )->mEnumValue == "Angry" )
+            {
+                object_name += "Angry";
+            }
+            else if( PropertyByName( "Emotion", mMapObject->mProperties )->mEnumValue == "Sad" )
+            {
+                object_name += "Sad";
+            }
+            else if( PropertyByName( "Emotion", mMapObject->mProperties )->mEnumValue == "Sick" )
+            {
+                object_name += "Sick";
+            }
+            else if( PropertyByName( "Emotion", mMapObject->mProperties )->mEnumValue == "Wired" )
+            {
+                object_name += "Wired";
+            }
+            else
+            {
+                object_name += "Normal";
+            }
+            
+            if(PropertyByName("Blind",mMapObject->mProperties)->mEnumValue == "Yes")
+            {
+                object_name += "B";
+            }
+        }
+    }
+    else if( object_name == "UXB" )
+    {
+        if( PropertyByName( "Start State", mMapObject->mProperties ))
+        {
+            if(PropertyByName("Start State",mMapObject->mProperties)->mEnumValue == "Off")
+            {
+                object_name += "disarmed";
+            }
+        }
+    }
+    
+    if ( !QPixmapCache::find(images_path + object_name + ".png", &m_Pixmap ) )
+    {
+        m_Pixmap = QPixmap(images_path + object_name + ".png");
+        QPixmapCache::insert(images_path + object_name + ".png", m_Pixmap );
+    }
 }

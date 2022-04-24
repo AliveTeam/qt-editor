@@ -76,9 +76,11 @@ EditorMainWindow::EditorMainWindow(QWidget* aParent)
     m_ui->toolBar->addAction(m_ui->action_save_path);
     m_ui->toolBar->addAction(m_ui->actionSave_all);
     m_ui->toolBar->addAction(m_ui->actionExport_and_play);
+    m_ui->toolBar->addSeparator();
     m_ui->toolBar->addAction(m_ui->action_zoom_reset);
     m_ui->toolBar->addAction(m_ui->action_zoom_in);
     m_ui->toolBar->addAction(m_ui->action_zoom_out);
+    m_ui->toolBar->addSeparator();
     m_ui->toolBar->addAction(m_ui->actionAdd_collision);
     m_ui->toolBar->addAction(m_ui->actionAdd_object);
     m_ui->toolBar->addSeparator();

@@ -52,6 +52,7 @@ private:
         eResize_Bottom
     };
     void Init();
+    void UpdateIcon();
     eResize getResizeLocation( QPointF aPos, QRectF aRect );
     bool IsNear( qreal xP1, qreal xP2 );
     void onResize( QPointF aPos );

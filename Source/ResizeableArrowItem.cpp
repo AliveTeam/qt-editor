@@ -119,8 +119,36 @@ void ResizeableArrowItem::paint( QPainter* aPainter, const QStyleOptionGraphicsI
 
     // Only draw what is required
     aPainter->setClipRect( aOption->exposedRect );
-
-    aPainter->setBrush( Qt::yellow );
+    std::string prop_id = PropertyByName("Type",mLine->mProperties)->mEnumValue;
+    
+    if(prop_id == "Art")
+    {
+        aPainter->setBrush( QColor(100, 100, 100, 255) );
+    }
+    else if(prop_id.find("Background") != std::string::npos)
+    {
+        aPainter->setBrush( QColor(150, 150, 75, 255) );
+    }
+    else if(prop_id == "Bullet Wall")
+    {
+        aPainter->setBrush( QColor(255, 70, 70, 255) );
+    }
+    else if(prop_id.find("Flying Slig") != std::string::npos)
+    {
+        aPainter->setBrush( QColor(30, 200, 15, 255) );
+    }
+    else if(prop_id.find("Mine Car") != std::string::npos)
+    {
+        aPainter->setBrush( QColor(190, 70, 255, 255) );
+    }
+    else if(prop_id == "Track Line")
+    {
+        aPainter->setBrush( QColor(0, 215, 215, 255) );
+    }
+    else
+    {
+        aPainter->setBrush( QColor(255, 255, 100, 255) );
+    }
 
     // Change the pen depending on selection
     if ( isSelected() )
@@ -143,7 +171,7 @@ QPainterPath ResizeableArrowItem::shape() const
     // Calc arrow head lines based on the angle of the current line
     QLineF cLine = line();
 
-    const auto kArrowHeadLength = 13;
+    const auto kArrowHeadLength = 8;
     const auto kArrowHeadAngle = 32;
 
     const qreal cLineAngle = cLine.angle();
