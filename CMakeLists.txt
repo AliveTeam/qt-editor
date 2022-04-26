@@ -72,6 +72,8 @@ set(PROJECT_SOURCES
         Source/CameraManager.cpp
         Source/CameraManager.hpp
         Source/CameraManager.ui
+        Source/CollisionConnect.cpp
+        Source/CollisionConnect.hpp
         Source/ExportPathDialog.hpp
         Source/ExportPathDialog.cpp
         Source/Exporter.hpp

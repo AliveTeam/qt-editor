@@ -68,6 +68,8 @@ private slots:
 
     void on_actionAdd_collision_triggered();
 
+    void on_actionConnect_collisions_triggered();
+
     void on_action_close_path_triggered();
 
     void on_actionItem_transparency_triggered();

@@ -156,6 +156,8 @@
     <addaction name="separator"/>
     <addaction name="actionAdd_object"/>
     <addaction name="actionAdd_collision"/>
+    <addaction name="separator"/>
+    <addaction name="actionConnect_collisions"/>
    </widget>
    <widget class="QMenu" name="menuSnapping">
     <property name="title">
@@ -865,6 +867,14 @@
    </property>
    <property name="shortcut">
     <string>Shift+C</string>
+   </property>
+  </action>
+  <action name="actionConnect_collisions">
+   <property name="text">
+    <string>Connect collisions</string>
+   </property>
+   <property name="shortcut">
+    <string>CTRL+J</string>
    </property>
   </action>
   <action name="actionItem_transparency">

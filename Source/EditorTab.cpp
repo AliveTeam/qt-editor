@@ -41,6 +41,7 @@
 #include "ClipBoard.hpp"
 #include "../../AliveLibAE/Grid.hpp"
 #include "../../AliveLibAO/Grid.hpp"
+#include "CollisionConnect.hpp"
 
 // Zoom by 10% each time.
 const float KZoomFactor = 0.10f;
@@ -272,8 +273,8 @@ public:
     void contextMenuEvent(QContextMenuEvent* pEvent) override
     {
         QMenu menu(this);
-        auto pAction = new QAction("Edit camera", &menu);
-        connect(pAction, &QAction::triggered, this, [&]()
+        auto pEditCameraAction = new QAction("Edit camera", &menu);
+        connect(pEditCameraAction, &QAction::triggered, this, [&]()
             {
                 const QPoint scenePos = mapToScene(pEvent->pos()).toPoint();
                 CameraManager cameraManager(this, mEditorTab, &scenePos);
@@ -281,7 +282,14 @@ public:
                 cameraManager.exec();
                 mEditorTab->SetCameraManagerDialog(nullptr);
             });
-        menu.addAction(pAction);
+        menu.addAction(pEditCameraAction);
+        auto pConnectCollisionsAction = new QAction("Connect collisions", &menu);
+        connect(pConnectCollisionsAction, &QAction::triggered, this, [&]()
+            {
+                mEditorTab->ConnectCollisions();
+            }
+        );
+        menu.addAction(pConnectCollisionsAction);
         menu.exec(pEvent->globalPos());
     }
 
@@ -872,6 +880,32 @@ private:
 void EditorTab::AddCollision()
 {
     mUndoStack.push(new AddCollisionCommand(this));
+}
+
+void EditorTab::ConnectCollisions()
+{
+    if (!mScene->selectedItems().isEmpty())
+    {
+        std::vector<ResizeableArrowItem*> collisions;
+
+        for (auto& selectedItem : mScene->selectedItems())
+        {
+            auto asResizableArrowItem = qgraphicsitem_cast<ResizeableArrowItem*>(selectedItem);
+            if (asResizableArrowItem != nullptr)
+            {
+                collisions.push_back(asResizableArrowItem);
+            }
+        }
+
+        std::vector<CollisionConnectData> collisionConnectData = CollisionConnectCommand::getConnectCollisionsChanges(collisions);
+
+        if (!collisionConnectData.empty())
+        {
+            mUndoStack.push(new CollisionConnectCommand(collisionConnectData));
+            mStatusBar->showMessage(tr("Connected collisions"));
+        }
+    }
+
 }
 
 int EditorTab::SnapX(bool enabled, int x)

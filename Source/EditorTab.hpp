@@ -72,6 +72,8 @@ public:
     void AddObject();
     void AddCollision();
 
+    void ConnectCollisions();
+
     ResizeableRectItem* MakeResizeableRectItem(MapObject* pMapObject);
     ResizeableArrowItem* MakeResizeableArrowItem(CollisionObject* pCollisionObject);
     CameraGraphicsItem* MakeCameraGraphicsItem(Camera* pCamera, int x, int y, int w, int h);

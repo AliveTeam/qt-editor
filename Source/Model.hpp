@@ -214,6 +214,16 @@ public:
     {
         PropertyByName("y2", mProperties)->mBasicTypeValue = y2;
     }
+
+    int Next() const
+    {
+        return PropertyByName("Next", mProperties)->mBasicTypeValue;
+    }
+
+    int Previous() const
+    {
+        return PropertyByName("Previous", mProperties)->mBasicTypeValue;
+    }
 };
 using UP_CollisionObject = std::unique_ptr<CollisionObject>;
 
