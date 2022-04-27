@@ -280,13 +280,14 @@ bool EditorMainWindow::onOpenPath(QString fullFileName, bool createNewPath)
             // The json API level is lower than what we support - but we can upgrade it
             std::string upgradedJson = ReliveAPI::UpgradePathJson(fileIo, fullFileName.toStdString());
             {
+                /*
                 QString filename = "upgrade_test.json";
                 QFile file(filename);
                 if (file.open(QIODevice::ReadWrite)) 
                 {
                     QTextStream stream(&file);
                     stream << upgradedJson.c_str() << endl;
-                }
+                }*/
             }
             model = std::make_unique<Model>();
             model->LoadJsonFromString(upgradedJson);
