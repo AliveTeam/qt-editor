@@ -433,6 +433,22 @@ void ResizeableRectItem::UpdateIcon()
             object_name += "1_" + QString::number(std::min( mHeight / 20, 9));
         }
     }
+    else if( object_name == "Edge" || object_name == "Hoist" )
+    {
+        images_path = images_path + object_name + "/";
+        
+        if( PropertyByName( "Grab Direction", mMapObject->mProperties ))
+        {
+            if( PropertyByName( "Grab Direction", mMapObject->mProperties )->mEnumValue == "Facing Right" )
+            {
+                object_name = "Right";
+            }
+            else
+            {
+                object_name = "Left";
+            }
+        }
+    }
     else if( object_name == "MotionDetector" )
     {
         images_path = images_path + object_name + "/";
