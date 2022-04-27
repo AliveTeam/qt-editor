@@ -283,7 +283,8 @@ struct MapInfo final
 class Model final
 {
 public:
-    void LoadJson(const std::string& jsonFile);
+    void LoadJsonFromString(const std::string& json);
+    void LoadJsonFromFile(const std::string& jsonFile);
     void CreateAsNewPath(int newPathId);
     const MapInfo& GetMapInfo() const { return mMapInfo; }
     MapInfo& GetMapInfo() { return mMapInfo; }

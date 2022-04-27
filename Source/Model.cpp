@@ -199,21 +199,14 @@ std::vector<UP_ObjectProperty> Model::ReadProperties(const ObjectStructure* pObj
     return tmpProperties;
 }
 
-
-void Model::LoadJson(const std::string& jsonFile)
+void Model::LoadJsonFromString(const std::string& json)
 {
-    std::optional<std::string> jsonString = LoadFileToString(jsonFile);
-    if (!jsonString)
-    {
-        throw IOReadException(jsonFile);
-    }
-
     jsonxx::Object root;
-    if (!root.parse(*jsonString))
+    if (!root.parse(json))
     {
         throw InvalidJsonException();
     }
-    
+
     mMapInfo.mApiVersion = ReadNumber(root, "api_version");
     mMapInfo.mGame = ReadString(root, "game");
 
@@ -341,7 +334,7 @@ void Model::LoadJson(const std::string& jsonFile)
     jsonxx::Array collisionsArray = ReadArray(collisionObject, "items");
     mCollisionStructureSchema = ReadArray(collisionObject, "structure");
 
-    mCollisionStructure= std::make_unique<ObjectStructure>();
+    mCollisionStructure = std::make_unique<ObjectStructure>();
     mCollisionStructure->mName = "Collision";
     mCollisionStructure->mEnumAndBasicTypeProperties = ReadObjectStructureProperties(mCollisionStructureSchema);
 
@@ -355,6 +348,17 @@ void Model::LoadJson(const std::string& jsonFile)
     }
 
     CreateEmptyCameras();
+}
+
+void Model::LoadJsonFromFile(const std::string& jsonFile)
+{
+    std::optional<std::string> jsonString = LoadFileToString(jsonFile);
+    if (!jsonString)
+    {
+        throw IOReadException(jsonFile);
+    }
+
+    LoadJsonFromString(*jsonString);
 }
 
 void Model::CreateAsNewPath(int newPathId)
