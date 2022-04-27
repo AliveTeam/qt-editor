@@ -175,6 +175,10 @@
         <file>rsc/object_images/Drill/Drill_1_7.png</file>
         <file>rsc/object_images/Drill/Drill_1_8.png</file>
         <file>rsc/object_images/Drill/Drill_1_9.png</file>
+        <file>rsc/object_images/Edge/Left.png</file>
+        <file>rsc/object_images/Edge/Right.png</file>
+        <file>rsc/object_images/Hoist/Left.png</file>
+        <file>rsc/object_images/Hoist/Right.png</file>
         <file>rsc/object_images/MotionDetector/0.png</file>
         <file>rsc/object_images/MotionDetector/1.png</file>
         <file>rsc/object_images/MotionDetector/2.png</file>
