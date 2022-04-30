@@ -169,6 +169,7 @@ bool EditorMainWindow::onOpenPath(QString fullFileName, bool createNewPath)
 {
     int newPathId = 0;
     bool isTempfile = false;
+    bool isUpgraded = false;
     std::optional<int> selectedPath;
 
     EditorFileIO fileIo;
@@ -291,6 +292,7 @@ bool EditorMainWindow::onOpenPath(QString fullFileName, bool createNewPath)
             }
             model = std::make_unique<Model>();
             model->LoadJsonFromString(upgradedJson);
+            isUpgraded = true;
         }
 
         if (createNewPath)
@@ -325,7 +327,10 @@ bool EditorMainWindow::onOpenPath(QString fullFileName, bool createNewPath)
         m_ui->stackedWidget->setCurrentIndex(1);
 
         view->UpdateTabTitle(view->IsClean());
-
+        if (isUpgraded)
+        {
+            view->Save();
+        }
         setMenuActionsEnabled(true);
 
         return true;
