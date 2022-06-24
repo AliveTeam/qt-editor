@@ -96,6 +96,8 @@ public:
     void Copy(ClipBoard& clipBoard);
     void Paste(ClipBoard& clipBoard);
 
+    void Hide();
+    void Unhide();
 signals:
     void CleanChanged();
 
