@@ -503,8 +503,42 @@ void CameraManager::on_btnExportImage_clicked()
             return;
         }
 
-        CameraGraphicsItem* pCameraGraphicsItem = CameraGraphicsItemByModelPtr(pItem->GetCamera());
+        const auto tabIndex = static_cast<TabImageIdx>(ui->tabWidget->currentIndex());
         QByteArray camName = QString::fromStdString(pItem->GetCamera()->mName).toLocal8Bit();
+        QPixmap camToExport;
+        switch (tabIndex)
+        {
+            case TabImageIdx::Main:
+                camToExport = Base64ToPixmap(pItem->GetCamera()->mCameraImageandLayers.mCameraImage);
+                break;
+
+            case TabImageIdx::Foreground:
+                camToExport = Base64ToPixmap(pItem->GetCamera()->mCameraImageandLayers.mForegroundLayer);
+                camName.append("_fg");
+                break;
+
+            case TabImageIdx::Background:
+                camToExport = Base64ToPixmap(pItem->GetCamera()->mCameraImageandLayers.mBackgroundLayer);
+                camName.append("_bg");
+                break;
+
+            case TabImageIdx::ForegroundWell:
+                camToExport = Base64ToPixmap(pItem->GetCamera()->mCameraImageandLayers.mForegroundWellLayer);
+                camName.append("_fg_well");
+                break;
+
+            case TabImageIdx::BackgroundWell:
+                camToExport = Base64ToPixmap(pItem->GetCamera()->mCameraImageandLayers.mBackgroundWellLayer);
+                camName.append("_bg_well");
+                break;
+        }
+
+        if (camToExport.isNull())
+        {
+            QMessageBox::critical(this, "Error", "The selected camera tab has no image");
+            return;
+        }
+
         QString cameraSaveFileName = QFileDialog::getSaveFileName(this, tr("Export camera image"), camName, tr("PNG Files (*.png);;All Files (*)"));
         if (cameraSaveFileName.isEmpty())
         {
@@ -518,15 +552,14 @@ void CameraManager::on_btnExportImage_clicked()
             cameraSaveFileName += ".png";
         }
 
-        auto image = pCameraGraphicsItem->GetImage();
         if (ui->radioButton_640x480->isChecked())
         {
-            image = image.scaled(640, 480);
-            image.save(cameraSaveFileName);
+            camToExport = camToExport.scaled(640, 480);
+            camToExport.save(cameraSaveFileName);
         }
         else if (ui->radioButton_640x240->isChecked())
         {
-            image.save(cameraSaveFileName);
+            camToExport.save(cameraSaveFileName);
         }
     }
 }
