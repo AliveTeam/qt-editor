@@ -1,56 +1,183 @@
 version: 0.7.{build}
 
-image: Visual Studio 2019
-
-platform: 
- - x86
- - x64
-
 configuration:
- - Release
+  - Release
 
-clone_folder: c:\editor
+environment:
+  #APPVEYOR_VNC_PASSWORD: alive_rev
+  #APPVEYOR_VNC_BLOCK: false
 
-install:
- - git submodule update --init --recursive
+  matrix:
+    - job_name: macOS
+      appveyor_build_worker_image: macos-monterey
 
-build_script:
- - mkdir build
- - cd build
- - echo %platform%
- - echo %APPVEYOR_BUILD_NUMBER%
- - if %platform%==x64 set QT_DIR=C:\Qt\5.15.2\msvc2019_64
- - if %platform%==x86 set QT_DIR=C:\Qt\5.15.2\msvc2019
- - set PATH=%PATH%;%QT_DIR%;%QT_DIR%\bin
- - echo %PATH%
- - if %platform%==x64 (cmake .. -DBUILD_NUMBER=%APPVEYOR_BUILD_NUMBER% -DCI_PROVIDER=AppVeyor -G "Visual Studio 16 2019")
- - if %platform%==x86 (cmake .. -DBUILD_NUMBER=%APPVEYOR_BUILD_NUMBER% -DCI_PROVIDER=AppVeyor -G "Visual Studio 16 2019" -A Win32)
- - cmake --build . --config %configuration% -- /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+    - job_name: Linux
+      appveyor_build_worker_image: Ubuntu
 
-after_build:
- - mkdir C:\editor\Editor_%APPVEYOR_BUILD_NUMBER%
- - copy C:\editor\build\%CONFIGURATION%\qt-editor.exe C:\editor\Editor_%APPVEYOR_BUILD_NUMBER%\qt-editor.exe
+    - job_name: Windows32
+      appveyor_build_worker_image: Visual Studio 2019
 
- - copy %QT_DIR%\bin\Qt5Multimedia.dll C:\editor\Editor_%APPVEYOR_BUILD_NUMBER%\Qt5Multimedia.dll
- - copy %QT_DIR%\bin\Qt5Widgets.dll C:\editor\Editor_%APPVEYOR_BUILD_NUMBER%\Qt5Widgets.dll
- - copy %QT_DIR%\bin\Qt5Gui.dll C:\editor\Editor_%APPVEYOR_BUILD_NUMBER%\Qt5Gui.dll
- - copy %QT_DIR%\bin\Qt5Core.dll C:\editor\Editor_%APPVEYOR_BUILD_NUMBER%\Qt5Core.dll
- - copy %QT_DIR%\bin\Qt5Network.dll C:\editor\Editor_%APPVEYOR_BUILD_NUMBER%\Qt5Network.dll
+    - job_name: Windows64
+      appveyor_build_worker_image: Visual Studio 2019
 
- - mkdir C:\editor\Editor_%APPVEYOR_BUILD_NUMBER%\plugins\audio
- - copy %QT_DIR%\plugins\audio\qtaudio_wasapi.dll C:\editor\Editor_%APPVEYOR_BUILD_NUMBER%\plugins\audio\qtaudio_wasapi.dll
- - copy %QT_DIR%\plugins\audio\qtaudio_windows.dll C:\editor\Editor_%APPVEYOR_BUILD_NUMBER%\plugins\audio\qtaudio_windows.dll
+for:
+  -
+    matrix:
+      only:
+        - job_name: macOS
 
- - mkdir C:\editor\Editor_%APPVEYOR_BUILD_NUMBER%\plugins\platforms
- - copy %QT_DIR%\plugins\platforms\qwindows.dll C:\editor\Editor_%APPVEYOR_BUILD_NUMBER%\plugins\platforms\qwindows.dll
+    platform:
+      - x64
 
- - mkdir C:\editor\Editor_%APPVEYOR_BUILD_NUMBER%\plugins\styles
- - copy %QT_DIR%\plugins\styles\qwindowsvistastyle.dll C:\editor\Editor_%APPVEYOR_BUILD_NUMBER%\plugins\styles\qwindowsvistastyle.dll
+    #init:
+    #  - sh: curl -sflL 'https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-vnc.sh' | bash -e -
 
- - 7z a Editor_%CONFIGURATION%_%PLATFORM%_%APPVEYOR_BUILD_NUMBER%.zip C:\editor\Editor_%APPVEYOR_BUILD_NUMBER%
+    install:
+      - git submodule update --init --recursive --depth=1
 
-artifacts:
- - path: build\Editor*.zip
-   name: Editor_$(configuration)_$(APPVEYOR_BUILD_NUMBER)
+    build_script:
+      - echo $PATH 
+      - export LDFLAGS="-L$HOME/Qt/5.15.2/clang_64/lib"
+      - export CPPFLAGS="-I$HOME/Qt/5.15.2/clang_64/include"
+      - echo 'export PATH="$HOME/Qt/5.15.2/clang_64/bin:$PATH"' >> ~/.bash_profile
+      - source ~/.bash_profile
+      - export QT_DIR=$HOME/Qt
+      - export PATH="$HOME/Qt/5.15.2/clang_64/bin:$PATH"
+      - cmake --version
+      - mkdir build
+      - cd build
+      - cmake -DQt5_DIR=$HOME/Qt/5.15.2/clang_64/lib/cmake/Qt5 -DCMAKE_PREFIX_PATH=$HOME/Qt/5.15.2/clang_64 -DBUILD_NUMBER=$(Build.BuildId) -G"Unix Makefiles" ..
+      - make -j4
+      #- cpack -G DragNDrop
+ 
+    artifacts:
+      - path: 'build/qt-editor-0.1.1-Darwin.dmg'
+        name: qt-editor-macOS
+  -
+    matrix:
+      only:
+        - job_name: Linux
 
-test: off
+    platform:
+      - x64
+
+    install:
+      - git submodule update --init --recursive --depth=1
+
+    build_script:
+      - sudo apt-get update
+      - echo 'export PATH=$PATH:$HOME/Qt/5.15.2/gcc_64/bin' >> ~/.profile
+      - echo 'export PATH=$PATH:~/.local/bin' >> ~/.profile
+      - source ~/.profile
+      - cmake --version
+      - mkdir build
+      - cd build
+      - cmake -DQt5_DIR=$HOME/Qt/5.15.2/gcc_64/lib/cmake/Qt5 -DCMAKE_PREFIX_PATH=$HOME/Qt/5.15.2/gcc_64 -DBUILD_NUMBER=$(Build.BuildId) -G"Unix Makefiles" ..
+      - make -j4
+      #- cpack -G DEB
+
+    artifacts:
+      - path: 'build/qt-editor-0.1.1-Linux.deb'
+        name: qt-editor-linux
+
+  -
+    matrix:
+      only:
+        - job_name: Windows32
+
+    platform:
+      - x86
+
+    clone_folder: c:\editor
+
+    install:
+      - git submodule update --init --recursive --depth=1
+
+    build_script:
+      - mkdir build
+      - cd build
+      - echo %platform%
+      - echo %APPVEYOR_BUILD_NUMBER%
+      - set QT_DIR=C:\Qt\5.15.2\msvc2019
+      - set PATH=%PATH%;%QT_DIR%;%QT_DIR%\bin
+      - echo %PATH%
+      - cmake .. -DBUILD_NUMBER=%APPVEYOR_BUILD_NUMBER% -DCI_PROVIDER=AppVeyor -G "Visual Studio 16 2019" -A Win32
+      - cmake --build . --config %configuration% -- /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+
+    after_build:
+      - mkdir C:\editor\Editor_%APPVEYOR_BUILD_NUMBER%
+      - copy C:\editor\build\%CONFIGURATION%\qt-editor.exe C:\editor\Editor_%APPVEYOR_BUILD_NUMBER%\qt-editor.exe
+      
+      - copy %QT_DIR%\bin\Qt5Multimedia.dll C:\editor\Editor_%APPVEYOR_BUILD_NUMBER%\Qt5Multimedia.dll
+      - copy %QT_DIR%\bin\Qt5Widgets.dll C:\editor\Editor_%APPVEYOR_BUILD_NUMBER%\Qt5Widgets.dll
+      - copy %QT_DIR%\bin\Qt5Gui.dll C:\editor\Editor_%APPVEYOR_BUILD_NUMBER%\Qt5Gui.dll
+      - copy %QT_DIR%\bin\Qt5Core.dll C:\editor\Editor_%APPVEYOR_BUILD_NUMBER%\Qt5Core.dll
+      - copy %QT_DIR%\bin\Qt5Network.dll C:\editor\Editor_%APPVEYOR_BUILD_NUMBER%\Qt5Network.dll
+      
+      - mkdir C:\editor\Editor_%APPVEYOR_BUILD_NUMBER%\plugins\audio
+      - copy %QT_DIR%\plugins\audio\qtaudio_wasapi.dll C:\editor\Editor_%APPVEYOR_BUILD_NUMBER%\plugins\audio\qtaudio_wasapi.dll
+      - copy %QT_DIR%\plugins\audio\qtaudio_windows.dll C:\editor\Editor_%APPVEYOR_BUILD_NUMBER%\plugins\audio\qtaudio_windows.dll
+      
+      - mkdir C:\editor\Editor_%APPVEYOR_BUILD_NUMBER%\plugins\platforms
+      - copy %QT_DIR%\plugins\platforms\qwindows.dll C:\editor\Editor_%APPVEYOR_BUILD_NUMBER%\plugins\platforms\qwindows.dll
+      
+      - mkdir C:\editor\Editor_%APPVEYOR_BUILD_NUMBER%\plugins\styles
+      - copy %QT_DIR%\plugins\styles\qwindowsvistastyle.dll C:\editor\Editor_%APPVEYOR_BUILD_NUMBER%\plugins\styles\qwindowsvistastyle.dll
+      
+      - 7z a Editor_%CONFIGURATION%_x86_%APPVEYOR_BUILD_NUMBER%.zip C:\editor\Editor_%APPVEYOR_BUILD_NUMBER%
+
+    artifacts:
+      - path: build\Editor*.zip
+        name: Editor_$(configuration)_$(APPVEYOR_BUILD_NUMBER)
+    
+  -
+    matrix:
+      only:
+        - job_name: Windows64
+
+    platform:
+      - x64
+
+    clone_folder: c:\editor
+
+    install:
+      - git submodule update --init --recursive --depth=1
+
+    build_script:
+      - mkdir build
+      - cd build
+      - echo %platform%
+      - echo %APPVEYOR_BUILD_NUMBER%
+      - set QT_DIR=C:\Qt\5.15.2\msvc2019_64
+      - set PATH=%PATH%;%QT_DIR%;%QT_DIR%\bin
+      - echo %PATH%
+      - cmake .. -DBUILD_NUMBER=%APPVEYOR_BUILD_NUMBER% -DCI_PROVIDER=AppVeyor -G "Visual Studio 16 2019"
+      - cmake --build . --config %configuration% -- /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+
+    after_build:
+      - mkdir C:\editor\Editor_%APPVEYOR_BUILD_NUMBER%
+      - copy C:\editor\build\%CONFIGURATION%\qt-editor.exe C:\editor\Editor_%APPVEYOR_BUILD_NUMBER%\qt-editor.exe
+      
+      - copy %QT_DIR%\bin\Qt5Multimedia.dll C:\editor\Editor_%APPVEYOR_BUILD_NUMBER%\Qt5Multimedia.dll
+      - copy %QT_DIR%\bin\Qt5Widgets.dll C:\editor\Editor_%APPVEYOR_BUILD_NUMBER%\Qt5Widgets.dll
+      - copy %QT_DIR%\bin\Qt5Gui.dll C:\editor\Editor_%APPVEYOR_BUILD_NUMBER%\Qt5Gui.dll
+      - copy %QT_DIR%\bin\Qt5Core.dll C:\editor\Editor_%APPVEYOR_BUILD_NUMBER%\Qt5Core.dll
+      - copy %QT_DIR%\bin\Qt5Network.dll C:\editor\Editor_%APPVEYOR_BUILD_NUMBER%\Qt5Network.dll
+      
+      - mkdir C:\editor\Editor_%APPVEYOR_BUILD_NUMBER%\plugins\audio
+      - copy %QT_DIR%\plugins\audio\qtaudio_wasapi.dll C:\editor\Editor_%APPVEYOR_BUILD_NUMBER%\plugins\audio\qtaudio_wasapi.dll
+      - copy %QT_DIR%\plugins\audio\qtaudio_windows.dll C:\editor\Editor_%APPVEYOR_BUILD_NUMBER%\plugins\audio\qtaudio_windows.dll
+      
+      - mkdir C:\editor\Editor_%APPVEYOR_BUILD_NUMBER%\plugins\platforms
+      - copy %QT_DIR%\plugins\platforms\qwindows.dll C:\editor\Editor_%APPVEYOR_BUILD_NUMBER%\plugins\platforms\qwindows.dll
+      
+      - mkdir C:\editor\Editor_%APPVEYOR_BUILD_NUMBER%\plugins\styles
+      - copy %QT_DIR%\plugins\styles\qwindowsvistastyle.dll C:\editor\Editor_%APPVEYOR_BUILD_NUMBER%\plugins\styles\qwindowsvistastyle.dll
+      
+      - 7z a Editor_%CONFIGURATION%_x64_%APPVEYOR_BUILD_NUMBER%.zip C:\editor\Editor_%APPVEYOR_BUILD_NUMBER%
+
+    artifacts:
+      - path: build\Editor*.zip
+        name: Editor_$(configuration)_$(APPVEYOR_BUILD_NUMBER)
+
+test: false

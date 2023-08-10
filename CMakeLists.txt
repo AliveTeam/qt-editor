@@ -125,10 +125,10 @@ set(PROJECT_SOURCES
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
-    qt_create_translation(QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES})
+    qt_create_translation(QM_FILES ${CMAKE_CURRENT_SOURCE_DIR}/Source ${TS_FILES})
     qt_add_executable(qt-editor ${PROJECT_SOURCES} ${QM_FILES})
 else()
-    qt5_create_translation(QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES})
+    qt5_create_translation(QM_FILES ${CMAKE_CURRENT_SOURCE_DIR}/Source ${TS_FILES})
     if(ANDROID)
         add_library(qt-editor SHARED ${PROJECT_SOURCES} ${QM_FILES})
     elseif(WIN32)
@@ -144,3 +144,10 @@ target_compile_options(qt-editor PUBLIC "/permissive-")
 endif()
 
 target_link_libraries(qt-editor PUBLIC relive_api Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Multimedia modplug jsonxx)
+
+set(CPACK_PACKAGE_NAME "qt-editor")
+set(CPACK_PACKAGE_CONTACT "nemin@oddwords.hu")
+set(CPACK_DEBIAN_PACKAGE_HOMEPAGE "https://aliveteam.github.io/")
+set(CPACK_DEBIAN_PACKAGE_DEPENDS "qtdeclarative5-dev, qtmultimedia5-dev, qttools5-dev")
+
+INCLUDE(CPack)
