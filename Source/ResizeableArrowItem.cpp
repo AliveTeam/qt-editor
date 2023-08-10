@@ -313,6 +313,8 @@ void ResizeableArrowItem::PosOrLineChanged()
     mLine->SetX2(static_cast<int>(curLine.x1()));
     mLine->SetY2(static_cast<int>(curLine.y1()));
 
+    mLine->CalculateLength();
+
     // Update the property tree view
     mPropSyncer.Sync(this);
 }
