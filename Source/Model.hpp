@@ -241,7 +241,7 @@ public:
 
         if (objProperty)
         {
-            const auto length = abs(X2() - X1()) + abs(Y2() - Y1());
+            const auto length = abs(X2() - X1() + Y2() - Y1());
             objProperty->mBasicTypeValue = length;
         }
     }
