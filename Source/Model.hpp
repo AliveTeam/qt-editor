@@ -220,10 +220,32 @@ public:
         return PropertyByName("Next", mProperties)->mBasicTypeValue;
     }
 
+    void SetNext(int next)
+    {
+        PropertyByName("Next", mProperties)->mBasicTypeValue = next;
+    }
+
     int Previous() const
     {
         return PropertyByName("Previous", mProperties)->mBasicTypeValue;
     }
+
+    void SetPrevious(int previous)
+    {
+        PropertyByName("Previous", mProperties)->mBasicTypeValue = previous;
+    }
+
+    void CalculateLength()
+    {
+        ObjectProperty* objProperty = PropertyByName("Length", mProperties);
+
+        if (objProperty)
+        {
+            const auto length = abs(X2() - X1() + Y2() - Y1());
+            objProperty->mBasicTypeValue = length;
+        }
+    }
+
 };
 using UP_CollisionObject = std::unique_ptr<CollisionObject>;
 
