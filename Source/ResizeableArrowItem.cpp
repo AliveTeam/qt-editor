@@ -308,10 +308,10 @@ void ResizeableArrowItem::PosOrLineChanged()
     QLineF curLine = line();
 
     // Sync the model to the graphics item
-    mLine->SetX1(static_cast<int>(curLine.x2()));
-    mLine->SetY1(static_cast<int>(curLine.y2()));
-    mLine->SetX2(static_cast<int>(curLine.x1()));
-    mLine->SetY2(static_cast<int>(curLine.y1()));
+    mLine->SetX1(static_cast<int>(curLine.x2() + pos().x()));
+    mLine->SetY1(static_cast<int>(curLine.y2() + pos().y()));
+    mLine->SetX2(static_cast<int>(curLine.x1() + pos().x()));
+    mLine->SetY2(static_cast<int>(curLine.y1() + pos().y()));
 
     mLine->CalculateLength();
 
