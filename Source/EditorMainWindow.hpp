@@ -70,6 +70,10 @@ private slots:
 
     void on_actionConnect_collisions_triggered();
 
+    void on_actionHide_selected_triggered();
+
+    void on_actionUnhide_selected_triggered();
+
     void on_action_close_path_triggered();
 
     void on_actionItem_transparency_triggered();
