@@ -1,5 +1,7 @@
 version: 0.7.{build}
 
+# ci do something
+
 configuration:
   - Release
 
