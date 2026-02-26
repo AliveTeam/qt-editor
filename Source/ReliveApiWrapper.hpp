@@ -156,14 +156,14 @@ bool ExecApiCall(ApiCall apiCall, std::function<void(const QString)> onFailure)
     {
         return apiCall();
     }
-    catch (const ReliveAPI::IOReadException&)
+    catch (const ReliveAPI::IOReadException& e)
     {
-        onFailure(QString("IO read failure"));
+        onFailure(QString("IO read failure on file: ") + e.FileName().c_str());
         return false;
     }
-    catch (const ReliveAPI::IOWriteException&)
+    catch (const ReliveAPI::IOWriteException& e)
     {
-        onFailure(QString("IO write failure"));
+        onFailure(QString("IO write failure on file: ") + e.FileName().c_str());
         return false;
     }
     catch (const ReliveAPI::IOReadPastEOFException&)
