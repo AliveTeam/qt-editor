@@ -8,7 +8,7 @@ on:
 
 # build setting(s)
 env:
-  CONFIGURATION: Debug
+  CONFIGURATION: Release
 
 jobs:
   build:
@@ -23,7 +23,7 @@ jobs:
             name: Windows64
           - os: ubuntu-latest
             name: Linux
-          - os: macos-13
+          - os: macos-26
             name: macOS
 
     steps:
@@ -50,7 +50,10 @@ jobs:
         cd build
         cmake .. -G"Visual Studio 17 2022" -DCMAKE_PREFIX_PATH="$env:QT_ROOT_DIR" -A Win32
         cmake --build . --config $env:CONFIGURATION
-        cpack -G ZIP -C $env:CONFIGURATION
+        cd $env:CONFIGURATION
+        mkdir deploy
+        move qt-editor.exe ./deploy
+        windeployqt qt-editor.exe --no-translations --no-system-d3d-compiler --no-angle --no-opengl-sw --no-svg --dir ./deploy --plugindir ./deploy/plugins
 
     # ======================================
     #      Windows64
@@ -70,7 +73,10 @@ jobs:
         cd build
         cmake .. -G"Visual Studio 17 2022" -DCMAKE_PREFIX_PATH="$env:QT_ROOT_DIR" -A x64
         cmake --build . --config $env:CONFIGURATION
-        cpack -G ZIP -C $env:CONFIGURATION
+        cd $env:CONFIGURATION
+        mkdir deploy
+        move qt-editor.exe ./deploy
+        windeployqt qt-editor.exe --no-translations --no-system-d3d-compiler --no-angle --no-opengl-sw --no-svg --dir ./deploy --plugindir ./deploy/plugins
         
     # ======================================
     #      Linux
@@ -118,30 +124,22 @@ jobs:
     #      Artifacts
     # ======================================
 
+     - name: 'Windows: Upload qt-editor binaries'
+       if: runner.os == 'Windows'
+       uses: actions/upload-artifact@v4
+       with:
+         name: ${{ matrix.name }}-${{ env.CONFIGURATION }}-qt-editor
+         path: build\${{ env.CONFIGURATION }}\deploy
+
+     - name: 'Linux: Upload qt-editor deb'
+       if: matrix.name == 'Linux'
+       uses: actions/upload-artifact@v4
+       with:
+         name: ${{ matrix.name }}-${{ env.CONFIGURATION }}-qt-editor.deb
+         path: build/qt-editor-0.1.1-Linux.deb
+
     # TODO
 
-    # - name: 'Windows: Upload qt-editor binaries'
-    #   if: runner.os == 'Windows'
-    #   uses: actions/upload-artifact@v4
-    #   with:
-    #     name: ${{ matrix.name }}-${{ env.CONFIGURATION }}-qt-editor
-    #     path: |
-    #       build\${{ env.CONFIGURATION }}\qt-editor.exe
-    #       build\${{ env.CONFIGURATION }}\SDL2.dll
-    
-    # - name: 'Windows: Upload qt-editor symbols'
-    #   uses: actions/upload-artifact@v4
-    #   with:
-    #     name: ${{ matrix.name }}-${{ env.CONFIGURATION }}-qt-editor-symbols
-    #     path: build\${{ env.CONFIGURATION }}\qt-editor.pdb
-    
-    # - name: 'Linux: Upload qt-editor deb'
-    #   if: matrix.name == 'Linux'
-    #   uses: actions/upload-artifact@v4
-    #   with:
-    #     name: ${{ matrix.name }}-${{ env.CONFIGURATION }}-qt-editor.deb
-    #     path: build/qt-editor-0.1-Linux.deb
-    
     # - name: 'macOS: Upload relive dmg'
     #   if: matrix.name == 'macOS'
     #   uses: actions/upload-artifact@v4
