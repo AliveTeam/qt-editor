@@ -1,0 +1,150 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+# build setting(s)
+env:
+  CONFIGURATION: Debug
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            name: Windows32
+          - os: windows-latest
+            name: Windows64
+          - os: ubuntu-latest
+            name: Linux
+          - os: macos-13
+            name: macOS
+
+    steps:
+    - name: Checkout repository recursively
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    # ======================================
+    #      Windows32
+    # ======================================
+
+    - name: 'Windows32: Install Qt 5.15.2'
+      if: runner.os == 'Windows'
+      uses: jurplel/install-qt-action@v4
+      with:
+        version: '5.15.2'
+        arch: 'win32_msvc2019'
+
+    - name: 'Windows32: Build'
+      if: matrix.name == 'Windows32'
+      run: |
+        mkdir build
+        cd build
+        cmake .. -G"Visual Studio 17 2022" -DCMAKE_PREFIX_PATH="$env:QT_ROOT_DIR" -A Win32
+        cmake --build . --config $env:CONFIGURATION
+        cpack -G ZIP -C $env:CONFIGURATION
+
+    # ======================================
+    #      Windows64
+    # ======================================
+
+    - name: 'Windows64: Install Qt 5.15.2'
+      if: runner.os == 'Windows'
+      uses: jurplel/install-qt-action@v4
+      with:
+        version: '5.15.2'
+        arch: 'win64_msvc2019_64'
+
+    - name: 'Windows64: Build'
+      if: matrix.name == 'Windows64'
+      run: |
+        mkdir build
+        cd build
+        cmake .. -G"Visual Studio 17 2022" -DCMAKE_PREFIX_PATH="$env:QT_ROOT_DIR" -A x64
+        cmake --build . --config $env:CONFIGURATION
+        cpack -G ZIP -C $env:CONFIGURATION
+        
+    # ======================================
+    #      Linux
+    # ======================================
+
+    - name: 'Linux: Install Qt 5.15.2'
+      if: matrix.name == 'Linux'
+      uses: jurplel/install-qt-action@v4
+      with:
+        version: '5.15.2'
+        arch: 'gcc_64'
+
+    - name: 'Linux: Build'
+      if: matrix.name == 'Linux'
+      run: |
+        mkdir build
+        cd build
+        cmake .. -G"Unix Makefiles" -DCMAKE_BUILD_TYPE=$CONFIGURATION
+        make -j$(nproc)
+        cpack -G DEB
+
+    # ======================================
+    #      macOS
+    # ======================================
+
+    - name: 'macOS: Install Qt 5.15.2'
+      if: matrix.name == 'macOS'
+      uses: jurplel/install-qt-action@v4
+      with:
+        version: '5.15.2'
+        arch: 'clang_64'
+
+    # TODO: mac artifacts
+    # cpack -G DragNDrop
+
+    - name: 'macOS: Build'
+      if: matrix.name == 'macOS'
+      run: |
+        mkdir build
+        cd build
+        cmake .. -G"Unix Makefiles" -DCMAKE_BUILD_TYPE=$CONFIGURATION -DCMAKE_PREFIX_PATH=$(brew --prefix qt5)
+        make -j4
+
+    # ======================================
+    #      Artifacts
+    # ======================================
+
+    # TODO
+
+    # - name: 'Windows: Upload qt-editor binaries'
+    #   if: runner.os == 'Windows'
+    #   uses: actions/upload-artifact@v4
+    #   with:
+    #     name: ${{ matrix.name }}-${{ env.CONFIGURATION }}-qt-editor
+    #     path: |
+    #       build\${{ env.CONFIGURATION }}\qt-editor.exe
+    #       build\${{ env.CONFIGURATION }}\SDL2.dll
+    
+    # - name: 'Windows: Upload qt-editor symbols'
+    #   uses: actions/upload-artifact@v4
+    #   with:
+    #     name: ${{ matrix.name }}-${{ env.CONFIGURATION }}-qt-editor-symbols
+    #     path: build\${{ env.CONFIGURATION }}\qt-editor.pdb
+    
+    # - name: 'Linux: Upload qt-editor deb'
+    #   if: matrix.name == 'Linux'
+    #   uses: actions/upload-artifact@v4
+    #   with:
+    #     name: ${{ matrix.name }}-${{ env.CONFIGURATION }}-qt-editor.deb
+    #     path: build/qt-editor-0.1-Linux.deb
+    
+    # - name: 'macOS: Upload relive dmg'
+    #   if: matrix.name == 'macOS'
+    #   uses: actions/upload-artifact@v4
+    #   with:
+    #     name: ${{ matrix.name }}-${{ env.CONFIGURATION }}-relive.dmg
+    #     path: build/relive-0.1-Darwin.dmg
