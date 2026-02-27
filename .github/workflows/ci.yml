@@ -19,10 +19,10 @@ jobs:
             name: Windows32
           - os: windows-latest
             name: Windows64
-          - os: ubuntu-latest
+          - os: ubuntu-22.04
             name: Linux
-          - os: macos-26
-            name: macOS
+          - os: macos-26-intel
+            name: macOS-intel
 
     steps:
     - name: Checkout repository recursively
@@ -51,7 +51,7 @@ jobs:
         cd $env:CONFIGURATION
         mkdir deploy
         move qt-editor.exe ./deploy
-        windeployqt qt-editor.exe --no-translations --no-system-d3d-compiler --no-angle --no-opengl-sw --no-svg --dir ./deploy --plugindir ./deploy/plugins
+        windeployqt ./deploy/qt-editor.exe --no-translations --no-system-d3d-compiler --no-angle --no-opengl-sw --no-svg --dir ./deploy --plugindir ./deploy/plugins
 
     # ======================================
     #      Windows64
@@ -74,7 +74,7 @@ jobs:
         cd $env:CONFIGURATION
         mkdir deploy
         move qt-editor.exe ./deploy
-        windeployqt qt-editor.exe --no-translations --no-system-d3d-compiler --no-angle --no-opengl-sw --no-svg --dir ./deploy --plugindir ./deploy/plugins
+        windeployqt ./deploy/qt-editor.exe --no-translations --no-system-d3d-compiler --no-angle --no-opengl-sw --no-svg --dir ./deploy --plugindir ./deploy/plugins
         
     # ======================================
     #      Linux
@@ -97,11 +97,11 @@ jobs:
         cpack -G DEB
 
     # ======================================
-    #      macOS
+    #      macOS-intel
     # ======================================
 
-    - name: 'macOS: Install Qt 5.15.2'
-      if: matrix.name == 'macOS'
+    - name: 'macOS-intel: Install Qt 5.15.2'
+      if: matrix.name == 'macOS-intel'
       uses: jurplel/install-qt-action@v4
       with:
         version: '5.15.2'
@@ -110,36 +110,36 @@ jobs:
     # TODO: mac artifacts
     # cpack -G DragNDrop
 
-    - name: 'macOS: Build'
-      if: matrix.name == 'macOS'
+    - name: 'macOS-intel: Build'
+      if: matrix.name == 'macOS-intel'
       run: |
         mkdir build
         cd build
-        cmake .. -G"Unix Makefiles" -DCMAKE_BUILD_TYPE=$CONFIGURATION -DCMAKE_PREFIX_PATH=$(brew --prefix qt5)
+        cmake .. -G"Unix Makefiles" -DCMAKE_BUILD_TYPE=$CONFIGURATION -DCMAKE_PREFIX_PATH=$(brew --prefix qt@5) -DCMAKE_POLICY_VERSION_MINIMUM=3.5
         make -j4
 
     # ======================================
     #      Artifacts
     # ======================================
 
-     - name: 'Windows: Upload qt-editor binaries'
-       if: runner.os == 'Windows'
-       uses: actions/upload-artifact@v4
-       with:
-         name: ${{ matrix.name }}-${{ env.CONFIGURATION }}-qt-editor
-         path: build\${{ env.CONFIGURATION }}\deploy
+    - name: 'Windows: Upload qt-editor binaries'
+      if: runner.os == 'Windows'
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ matrix.name }}-${{ env.CONFIGURATION }}-qt-editor
+        path: build\${{ env.CONFIGURATION }}\deploy
 
-     - name: 'Linux: Upload qt-editor deb'
-       if: matrix.name == 'Linux'
-       uses: actions/upload-artifact@v4
-       with:
-         name: ${{ matrix.name }}-${{ env.CONFIGURATION }}-qt-editor.deb
-         path: build/qt-editor-0.1.1-Linux.deb
+    - name: 'Linux: Upload qt-editor deb'
+      if: matrix.name == 'Linux'
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ matrix.name }}-${{ env.CONFIGURATION }}-qt-editor.deb
+        path: build/qt-editor-0.1.1-Linux.deb
 
     # TODO
 
-    # - name: 'macOS: Upload relive dmg'
-    #   if: matrix.name == 'macOS'
+    # - name: 'macOS-intel: Upload relive dmg'
+    #   if: matrix.name == 'macOS-intel'
     #   uses: actions/upload-artifact@v4
     #   with:
     #     name: ${{ matrix.name }}-${{ env.CONFIGURATION }}-relive.dmg
