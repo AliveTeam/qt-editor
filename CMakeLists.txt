@@ -11,6 +11,12 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# without this the editor will crash on startup:
+# qt-editor: symbol lookup error: qt-editor: undefined symbol: _ZdlPvm, version Qt_5
+if(UNIX)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-sized-deallocation")
+endif()
+
 # QtCreator supports the following variables for Android, which are identical to qmake Android variables.
 # Check https://doc.qt.io/qt/deployment-android.html for more information.
 # They need to be set before the find_package( ...) calls below.
@@ -31,6 +37,7 @@ set(TS_FILES qt-editor_en_GB.ts qt-editor_German.ts)
 
 add_subdirectory(3rdParty/libmodplug)
 add_subdirectory(3rdParty/alive_reversing/Source/Tools/relive_api)
+add_subdirectory(assets)
 
 include_directories(3rdParty/libmodplug/src)
 include_directories(3rdParty/jsonxx)
@@ -145,9 +152,18 @@ endif()
 
 target_link_libraries(qt-editor PUBLIC relive_api Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Multimedia modplug jsonxx)
 
-set(CPACK_PACKAGE_NAME "qt-editor")
+set(CPACK_PACKAGE_NAME "relive-qt-editor")
 set(CPACK_PACKAGE_CONTACT "nemin@oddwords.hu")
 set(CPACK_DEBIAN_PACKAGE_HOMEPAGE "https://aliveteam.github.io/")
-set(CPACK_DEBIAN_PACKAGE_DEPENDS "qtdeclarative5-dev, qtmultimedia5-dev, qttools5-dev")
+set(CPACK_DEBIAN_PACKAGE_DEPENDS "libqt5core5a, libqt5gui5, libqt5widgets5, libqt5network5, libqt5multimedia5")
+set(CPACK_DEBIAN_PACKAGE_DESCRIPTION "An Open-Source Level Editor for Abe's Oddysee and Abe's Exoddus.
+Team R.E.L.I.V.E. proudly presents the replacement for the legacy Paul's Level Editor.
+ .
+Compared to the old editor it allows for editing far more kinds of objects, removes the arbitrary limitations the original engine imposed, and features a vastly improved user interface.")
+
+if(UNIX)
+    set_target_properties(qt-editor PROPERTIES OUTPUT_NAME relive-qt-editor)
+    install(TARGETS qt-editor DESTINATION bin)
+endif()
 
 INCLUDE(CPack)

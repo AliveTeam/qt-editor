@@ -1,28 +1,15 @@
 name: CI
 
-on:
-  push:
-  pull_request:
+on: [push, pull_request]
 
 # build setting(s)
 env:
   CONFIGURATION: Release
 
 jobs:
-  build:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - os: windows-latest
-            name: Windows32
-          - os: windows-latest
-            name: Windows64
-          - os: ubuntu-22.04
-            name: Linux
-          - os: macos-26-intel
-            name: macOS-intel
+  build-windows32:
+    runs-on: windows-latest
+    name: Windows32
 
     steps:
     - name: Checkout repository recursively
@@ -30,117 +17,121 @@ jobs:
       with:
         submodules: recursive
 
-    # ======================================
-    #      Windows32
-    # ======================================
-
-    - name: 'Windows32: Install Qt 5.15.2'
-      if: runner.os == 'Windows'
+    - name: 'Install Qt 5.15.2'
       uses: jurplel/install-qt-action@v4
       with:
         version: '5.15.2'
         arch: 'win32_msvc2019'
 
-    - name: 'Windows32: Build'
-      if: matrix.name == 'Windows32'
+    - name: 'Build'
       run: |
         mkdir build
         cd build
-        cmake .. -G"Visual Studio 17 2022" -DCMAKE_PREFIX_PATH="$env:QT_ROOT_DIR" -A Win32
+        cmake -S .. -B . -G"Visual Studio 17 2022" -DCMAKE_PREFIX_PATH="$env:QT_ROOT_DIR" -A Win32
         cmake --build . --config $env:CONFIGURATION
         cd $env:CONFIGURATION
         mkdir deploy
         move qt-editor.exe ./deploy
         windeployqt ./deploy/qt-editor.exe --no-translations --no-system-d3d-compiler --no-angle --no-opengl-sw --no-svg --dir ./deploy --plugindir ./deploy/plugins
 
-    # ======================================
-    #      Windows64
-    # ======================================
+    - name: 'Upload Artifact'
+      uses: actions/upload-artifact@v7
+      with:
+        name: Windows32-${{ env.CONFIGURATION }}-qt-editor
+        path: build\${{ env.CONFIGURATION }}\deploy
 
-    - name: 'Windows64: Install Qt 5.15.2'
-      if: runner.os == 'Windows'
+  build-windows64:
+    runs-on: windows-latest
+    name: Windows64
+  
+    steps:
+    - name: Checkout repository recursively
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - name: 'Install Qt 5.15.2'
       uses: jurplel/install-qt-action@v4
       with:
         version: '5.15.2'
         arch: 'win64_msvc2019_64'
 
-    - name: 'Windows64: Build'
-      if: matrix.name == 'Windows64'
+    - name: 'Build'
       run: |
         mkdir build
         cd build
-        cmake .. -G"Visual Studio 17 2022" -DCMAKE_PREFIX_PATH="$env:QT_ROOT_DIR" -A x64
+        cmake -S .. -B . -G"Visual Studio 17 2022" -DCMAKE_PREFIX_PATH="$env:QT_ROOT_DIR" -A x64
         cmake --build . --config $env:CONFIGURATION
         cd $env:CONFIGURATION
         mkdir deploy
         move qt-editor.exe ./deploy
         windeployqt ./deploy/qt-editor.exe --no-translations --no-system-d3d-compiler --no-angle --no-opengl-sw --no-svg --dir ./deploy --plugindir ./deploy/plugins
-        
-    # ======================================
-    #      Linux
-    # ======================================
 
-    - name: 'Linux: Install Qt 5.15.2'
-      if: matrix.name == 'Linux'
+    - name: 'Upload Artifact'
+      uses: actions/upload-artifact@v7
+      with:
+        name: Windows64-${{ env.CONFIGURATION }}-qt-editor
+        path: build\${{ env.CONFIGURATION }}\deploy
+
+  build-linux:
+    runs-on: ubuntu-22.04
+    name: Linux
+
+    steps:
+    - name: Checkout repository recursively
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - name: 'Install Qt 5.15.2'
       uses: jurplel/install-qt-action@v4
       with:
         version: '5.15.2'
         arch: 'gcc_64'
 
-    - name: 'Linux: Build'
-      if: matrix.name == 'Linux'
+    - name: 'Build'
       run: |
         mkdir build
         cd build
-        cmake .. -G"Unix Makefiles" -DCMAKE_BUILD_TYPE=$CONFIGURATION
+        cmake -S .. -B . -G"Unix Makefiles" -DCMAKE_BUILD_TYPE=$CONFIGURATION
         make -j$(nproc)
         cpack -G DEB
 
-    # ======================================
-    #      macOS-intel
-    # ======================================
+    - name: 'Upload Artifact'
+      uses: actions/upload-artifact@v7
+      with:
+        name: Linux-${{ env.CONFIGURATION }}-qt-editor.deb
+        path: build/relive-qt-editor-0.1.1-Linux.deb
+        archive: false
 
-    - name: 'macOS-intel: Install Qt 5.15.2'
-      if: matrix.name == 'macOS-intel'
+  build-macos-intel:
+    runs-on: macos-26-intel
+    name: macOS Intel
+
+    steps:
+    - name: Checkout repository recursively
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - name: 'Install Qt 5.15.2'
       uses: jurplel/install-qt-action@v4
       with:
         version: '5.15.2'
         arch: 'clang_64'
 
-    # TODO: mac artifacts
-    # cpack -G DragNDrop
-
-    - name: 'macOS-intel: Build'
-      if: matrix.name == 'macOS-intel'
+    - name: 'Build'
       run: |
         mkdir build
         cd build
-        cmake .. -G"Unix Makefiles" -DCMAKE_BUILD_TYPE=$CONFIGURATION -DCMAKE_PREFIX_PATH=$(brew --prefix qt@5) -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+        cmake -S .. -B . -G"Unix Makefiles" -DCMAKE_BUILD_TYPE=$CONFIGURATION -DCMAKE_PREFIX_PATH=$(brew --prefix qt@5) -DCMAKE_POLICY_VERSION_MINIMUM=3.5
         make -j4
 
-    # ======================================
-    #      Artifacts
-    # ======================================
+    # TODO: mac artifacts
+    # cpack -G DragNDrop
 
-    - name: 'Windows: Upload qt-editor binaries'
-      if: runner.os == 'Windows'
-      uses: actions/upload-artifact@v4
-      with:
-        name: ${{ matrix.name }}-${{ env.CONFIGURATION }}-qt-editor
-        path: build\${{ env.CONFIGURATION }}\deploy
-
-    - name: 'Linux: Upload qt-editor deb'
-      if: matrix.name == 'Linux'
-      uses: actions/upload-artifact@v4
-      with:
-        name: ${{ matrix.name }}-${{ env.CONFIGURATION }}-qt-editor.deb
-        path: build/qt-editor-0.1.1-Linux.deb
-
-    # TODO
-
-    # - name: 'macOS-intel: Upload relive dmg'
-    #   if: matrix.name == 'macOS-intel'
-    #   uses: actions/upload-artifact@v4
+    # - name: 'Upload Artifact'
+    #   uses: actions/upload-artifact@v7
     #   with:
-    #     name: ${{ matrix.name }}-${{ env.CONFIGURATION }}-relive.dmg
+    #     name: Intel-${{ env.CONFIGURATION }}-relive.dmg
     #     path: build/relive-0.1-Darwin.dmg
