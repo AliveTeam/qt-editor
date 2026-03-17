@@ -284,7 +284,7 @@ bool EditorMainWindow::onOpenPath(QString fullFileName, bool createNewPath)
                 /*
                 QString filename = "upgrade_test.json";
                 QFile file(filename);
-                if (file.open(QIODevice::ReadWrite)) 
+                if (file.open(QIODevice::ReadWrite))
                 {
                     QTextStream stream(&file);
                     stream << upgradedJson.c_str() << endl;
@@ -746,6 +746,24 @@ void EditorMainWindow::on_actionConnect_collisions_triggered()
     if (pTab)
     {
         pTab->ConnectCollisions();
+    }
+}
+
+void EditorMainWindow::on_actionHide_selected_triggered()
+{
+    EditorTab* pTab = getActiveTab(m_ui->tabWidget);
+    if (pTab)
+    {
+        pTab->Hide();
+    }
+}
+
+void EditorMainWindow::on_actionUnhide_selected_triggered()
+{
+    EditorTab* pTab = getActiveTab(m_ui->tabWidget);
+    if (pTab)
+    {
+        pTab->Unhide();
     }
 }
 

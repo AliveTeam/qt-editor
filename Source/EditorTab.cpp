@@ -499,6 +499,28 @@ void EditorTab::Paste(ClipBoard& clipBoard)
     }
 }
 
+
+void EditorTab::Hide()
+{
+    if (!mScene->selectedItems().isEmpty())
+    {
+        for (auto& selectedItem : mScene->selectedItems())
+        {
+            selectedItem->setVisible(false);
+        }
+        mStatusBar->showMessage(tr("Selection hidden"), 2000);
+    }
+}
+
+void EditorTab::Unhide()
+{
+    for (auto& item : mScene->items())
+    {
+        item->setVisible(true);
+    }
+    mStatusBar->showMessage(tr("Unhidden all objects"), 2000);
+}
+
 void EditorTab::cleanChanged(bool clean)
 {
     UpdateCleanState();
